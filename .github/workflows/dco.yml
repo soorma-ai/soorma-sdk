@@ -1,0 +1,58 @@
+name: DCO
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    name: Check sign-off
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify every commit carries a matching sign-off
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          failed=0
+          commits="$(git rev-list --no-merges "${BASE_SHA}..${HEAD_SHA}")"
+
+          if [ -z "${commits}" ]; then
+            echo "No non-merge commits to check."
+            exit 0
+          fi
+
+          while read -r sha; do
+            name="$(git show -s --format='%an' "${sha}")"
+            email="$(git show -s --format='%ae' "${sha}")"
+            subject="$(git show -s --format='%s' "${sha}")"
+
+            case "${email}" in
+              *"[bot]"*) echo "skip  ${sha:0:8}  ${subject}  (bot)" ; continue ;;
+            esac
+
+            expected="Signed-off-by: ${name} <${email}>"
+            if git show -s --format='%B' "${sha}" | grep -qxF "${expected}"; then
+              echo "ok    ${sha:0:8}  ${subject}"
+            else
+              echo "::error::${sha:0:8} is missing or mismatches: ${expected}"
+              failed=1
+            fi
+          done <<< "${commits}"
+
+          if [ "${failed}" -ne 0 ]; then
+            echo ""
+            echo "Every commit must carry a Signed-off-by line matching its author."
+            echo "Fix the whole branch with:"
+            echo "  git rebase --signoff ${BASE_SHA}"
+            echo "  git push --force-with-lease"
+            exit 1
+          fi
