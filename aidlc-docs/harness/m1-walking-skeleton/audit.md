@@ -536,3 +536,32 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 NFR Requirements, questions presented
 
 ---
+## U1 NFR Requirements — answers
+**Timestamp**: 2026-11-18T07:45:14Z
+**User Input**: "Answers: Q1 A, Q2 A, Q3 A, Q4 A. Q5, Q6 and Q7 are X:
+
+Q5 X: Fail closed in CI, as A, but the remote half uses git, not the GitHub REST API:
+
+git ls-remote reads the tag's peeled commit;
+a shallow fetch of that commit (--depth 1) gives the contract/ tree ID.
+No token and no API rate limit (hosted runners share IP addresses, so unauthenticated API calls fail at random). It also keeps the check consistent with the rule that secrets never go in environment variables. Locally, --offline runs only the local half and says so; CI never passes it.
+
+Q6 X: Linux CI is authoritative and always runs CC-SEC-05, creating the second user with sudo. Locally, a named flag (for example --local-skip CC-SEC-05) skips that one case and prints that it didn't run and why; without the flag, the case runs and fails if it can't create the user. CI never passes the flag, and the runner refuses it when it detects CI. Don't use sudo in local test set-up. On macOS, user creation would be dscl, not useradd; don't build that. Windows: not supported in M1, as A.
+
+Q7 X: As A (Dependabot weekly with a 7-day cooldown, pnpm audit at moderate, dependency review, every action pinned by SHA with read-only permissions), plus:
+
+Dependabot uses target-branch: dev for both ecosystems, so its updates take the dev → main path.
+The DCO workflow exempts dependabot[bot] only, matched on the PR author, since Dependabot can't sign off. Every other commit still needs Signed-off-by.
+Add a test showing that a PR from another author without a sign-off still fails.
+Log this word for word in audit.md, then generate the NFR Requirements."
+**AI Response**: "Answers recorded; checking for ambiguity, then generating U1's NFR Requirements."
+**Context**: CONSTRUCTION — U1 NFR Requirements, answers received
+
+---
+## U1 NFR Requirements — follow-up question Q7a
+**Timestamp**: 2026-11-18T07:45:50Z
+**User Input**: (none)
+**AI Response**: "Step 5 analysis: Q1 to Q6 clear. Q7's DCO exemption 'matched on the PR author' conflicts with target-branch dev: Dependabot's unsigned commits merged into dev are also in the next dev → main PR, whose author is the user, so that PR's DCO check would fail. Also found in the existing .github/workflows/dco.yml: it exempts any commit whose author email contains [bot] (broader than dependabot[bot], and forgeable), uses actions/checkout@v4 (a tag, not a SHA) and runs on ubuntu-latest (not pinned); U1 fixes all three. Added follow-up Q7a to the plan: A) exempt a commit only if it reached the repository through a merged PR authored by dependabot[bot] (recommended), B) squash-merge Dependabot PRs into dev as the user with sign-off, C) PR author only, as stated. Generation waits for the answer."
+**Context**: CONSTRUCTION — U1 NFR Requirements, follow-up presented
+
+---
