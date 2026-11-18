@@ -259,3 +259,25 @@ Log this word for word in audit.md, then start Workflow Planning."
 **Context**: INCEPTION — Workflow Planning, approval gate presented
 
 ---
+## Workflow Planning — approval
+**Timestamp**: 2026-11-18T05:13:20Z
+**User Input**: "Approve & Continue: execution plan approved. Proceed to Application Design.
+
+Accepted: the stages to run and to skip; the order (language-neutral layer, then TypeScript, then Python); Infrastructure Design skipped with per-unit reinstatement; US-Q1 targeting Functional Design; every code PR green including DCO.
+
+Application Design must also settle:
+
+The examples' secret source. Secrets never go in environment variables, source, or IaC. The TypeScript starter's configuration block (US-11 #2) names where the secret comes from, never the secret itself. The provider the examples ship doesn't read an environment variable. Name that provider, for example a file path with owner-only permissions, read once per bootstrap and not retained (D-09). The end-to-end run in CI hands each agent its secret the same way.
+How CI runs soorma-core. Name the mechanism: a checkout of soorma-ai/soorma-core at contract-v0.1.0, which stack script brings it up, how agents A and B are registered in one environment (raw calls outside the package, as US-11 #1 says), and how their secrets reach the SDK processes under point 1. Record the expected CI time this adds.
+Log this word for word in audit.md, then start Application Design."
+**AI Response**: "Workflow Planning APPROVED. Starting Application Design. The two items the user named (the examples' secret provider; how CI runs soorma-core at contract-v0.1.0, registers agents A and B, and hands their secrets over) are carried into the Application Design plan as items the design must settle."
+**Context**: INCEPTION — Workflow Planning approved; Application Design begins
+
+---
+## Application Design — plan and questions
+**Timestamp**: 2026-11-18T05:17:11Z
+**User Input**: (none since the Workflow Planning approval)
+**AI Response**: "Loaded application-design.md. Read soorma-core at contract-v0.1.0, read only (deploy/local/scripts/smoke.ts and stack-client.ts, services/data-gateway and event-ingest READMEs, .github/workflows/ci.yml, package.json, .node-version) and the step timings of its CI run 43391996560 at the tag's commit (image builds 28 s for S1 and about 6 s each for S2 to S4; stack:init 1 s; stack:up 20 s). Wrote inception/working/application-design-plan.md (git-ignored) with nine questions: Q1 repository layout, Q2 package names, Q3 naming convention, Q4 public interface shape, Q5 how a subscription reaches tenant code, Q6 the instance identifier (T-5), Q7 the secret provider and the examples' secret source (the user's item 1: fileSecret(path), no environment-variable provider, the configuration block names the path), Q8 how the conformance suite drives each language, Q9 how CI runs soorma-core and the end-to-end topology (the user's item 2: e2e/core-up clones the tag and verifies c1e3d7f3, builds S1 to S4, pnpm stack:init, pnpm stack:up; e2e/setup registers A and B in environment e by raw calls and writes each secret to a 0600 file read by fileSecret; expected about 3 to 5 minutes per end-to-end job for bring-up). US-Q1 stays deferred to Functional Design. Awaiting answers."
+**Context**: INCEPTION — Application Design, questions presented
+
+---
