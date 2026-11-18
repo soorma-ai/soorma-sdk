@@ -811,3 +811,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G8
 
 ---
+## U1 Code Generation — G8 CI green; G9 gate green
+**Timestamp**: 2026-11-18T15:42:55Z
+**User Input**: (none)
+**AI Response**: "G8 pushed as f63e652; CI run 44337861952 green, the conformance-self-test job included. G9 written: README.md (early construction; layout; working on it; sign-off and the Dependabot exemption), conformance/README.md (running, budgets, the driver protocol in full for U3 and U4: commands, secret kinds, items, error shapes and reason codes, values and the timing hook, CDI-02 per language, the case format), construction/contract-and-conformance/code/code-summary.md (files, commands, commit groups with their CI runs, done-when locally, changes to earlier units' tests: none, recorded deviations). l1-coverage-matrix.md and invariant-coverage-matrix.md rows updated per plan 1.3 (Verified by the reference run where their cases are declared, Verified by structure otherwise, executed at U3 and U4); the I8 packaging table added (no commercial capability; nothing lands in soorma-core). G9 gate: frozen install, typecheck, lint, format, 94 tests, audit, audit-exceptions, pnpm checks, the self-test: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G9
+
+---
