@@ -762,3 +762,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G1
 
 ---
+## U1 Code Generation — G1 CI green; G2 gate green
+**Timestamp**: 2026-11-18T08:57:07Z
+**User Input**: (none)
+**AI Response**: "G1 pushed as 34d6f76; CI run 44271040027 green (unit job; dependency review skipped on a push). G2 written: tools/dco/check.ts (pure check: a matching Signed-off-by, else exempt only if the commit API reports author.login dependabot[bot] and verification.verified true; a failed lookup or missing field fails closed), tools/dco/git.ts (non-merge commits base..head), tools/dco/action.ts (the github-script wrapper using the action's own client), tools/dco/check.test.ts (a local test git repository and recorded API responses: fails for another author's unsigned commit, an unverified [bot]-email commit (and a dependabot login that is not verified), a human commit in a Dependabot PR, a lookup error and a response without verification; passes for a verified Dependabot commit on its own PR and on the dev -> main range with a merge commit and signed work; the wrapper tested with a fake client), and .github/workflows/dco.yml rewritten (ubuntu-24.04; checkout v7.0.1 and github-script v9.0.0 pinned by SHA with tag comments; contents: read; the [bot] email exemption removed; the job name 'Check sign-off' kept). action.ts imports under plain Node 24 type stripping, as github-script's node24 runtime will. G2 gate: frozen install, typecheck, lint, format, 16 tests, audit (1 ignored), audit-exceptions: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G2
+
+---
