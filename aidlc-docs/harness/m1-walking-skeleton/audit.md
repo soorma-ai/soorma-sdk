@@ -818,3 +818,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G9
 
 ---
+## U1 Code Generation — code PR #10 opened; one check red (repository setting)
+**Timestamp**: 2026-11-18T15:48:45Z
+**User Input**: (none)
+**AI Response**: "G9 pushed as 7ca7c57; CI run 44338826146 green. Every commit in origin/main..dev (10) carries a Signed-off-by. Opened soorma-ai/soorma-sdk#10 (dev → main). Pull-request runs: CI 44339401082: unit, checks and conformance self-test green; dependency review failed with 'Dependency review is not supported on this repository. Please ensure that Dependency graph is enabled'. The Dependency graph is disabled on soorma-sdk (its SBOM endpoint answers 404) and enabled on soorma-core (338 packages). DCO 44339401604 green: the rewritten dco.yml checked its own PR, all ten commits ok. Enabling a repository setting is the user's decision; stopped and asked. The red run is a repository-setting cause, recorded here; once the setting is enabled the job may be rerun once (code-generation.md Step 12a). Code PR state recorded OPEN in aidlc-state.md."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR, awaiting a decision
+
+---
