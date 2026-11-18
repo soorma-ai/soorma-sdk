@@ -337,3 +337,28 @@ Log this word for word in audit.md, then start Units Generation."
 **Context**: INCEPTION — Units Generation, questions presented
 
 ---
+## Units Generation — answers
+**Timestamp**: 2026-11-18T06:05:15Z
+**User Input**: "Answers: Q1 A, Q2 A, Q3 A, with two additions to the units' "done when" criteria:
+
+U1 proves its own runner. U1 includes a test-only reference driver, written against the stub, that passes every case it covers. It also includes negative controls: a driver that breaks a rule must make the runner fail, naming the case. Cover at least these broken rules:
+it retains the secret;
+it reorders the forwarded envelope's text;
+it retries a publish;
+it skips a stream boundary item.
+U1's code PR shows all of them in CI. The reference driver isn't part of either package.
+U2 proves the stack before U3 uses it. U2's CI job runs core-up, then setup, then one raw POST /agent-credentials per agent using the secret file setup wrote, expecting 201, then core-down. The raw calls stay outside both packages, and the job prints no secret or credential. AD-13's CI time is first measured on U2's code PR, with the run ID recorded.
+Q1 A changes D-14 for U2 (ordinary, not harness), at my direction: U2 is test infrastructure that makes raw control-face calls and that no agent code links. Q2 A moves US-Q1 to U1's Functional Design, where the span rules are written; U3 and U4 implement them in C-19.
+
+Log this word for word in audit.md, then generate the units."
+**AI Response**: "Answers recorded. Step 7 analysis found one conflict with the contract: the contract at contract-v0.1.0 defines exchangeBootstrap's success response as 200 (data-gateway.openapi.yaml, responses '200'; soorma-core's smoke.ts checks 200), not 201. The contract is not adapted locally. Generated the units with U2's check expecting the contract's success response, 200, and added follow-up Q1a to the plan, to be confirmed at the Units Generation gate. Generating the units."
+**Context**: INCEPTION — Units Generation, answers received; one follow-up (Q1a)
+
+---
+## Units Generation — units generated; approval requested
+**Timestamp**: 2026-11-18T06:07:29Z
+**User Input**: (none since the answers at 2026-11-18T06:05:15Z)
+**AI Response**: "Generated inception/application-design/unit-of-work.md (four units in build order U1 contract-and-conformance ordinary, U2 e2e-stack ordinary, changed from harness at the user's direction, U3 typescript-harness harness, U4 python-harness harness; harness fields: face none, calls the data face S3 and S4, NFR profile PF §11 and §14 @ prd-platform-foundations-v1.3, edition core, repository soorma-sdk; the user's done-when additions for U1 (reference driver; negative controls for a retained secret, a reordered forwarded envelope text, a retried publish, a skipped boundary item, each failing on its named case in CI) and U2 (core-up, setup, one raw POST /agent-credentials per agent, core-down, nothing printed, CI time measured with run ID); code organization; I6 check compliant), unit-of-work-dependency.md (matrix, hand-overs, build order Mermaid with text alternative, proof points), unit-of-work-story-map.md (80 criteria by check tag; done when 2, 3, 5 to U3 then U4 on U2's stack; FRs and personas to units). Assigned soorma-sdk GAP-INT-001 and GAP-INT-002 to U1, U3, U4 in specification-gaps.md and the register; US-Q1 to U1's Functional Design; CDI-01 to CDI-03 to U1, U3, U4. aidlc-state.md: unit shapes confirmed, ## Units, per-unit stage list (U2 without NFR Design). Follow-up Q1a: the user's 201 conflicts with the contract's 200 for exchangeBootstrap; generated with 200; to confirm at the gate. Presenting the Units Generation approval gate."
+**Context**: INCEPTION — Units Generation, approval gate presented
+
+---

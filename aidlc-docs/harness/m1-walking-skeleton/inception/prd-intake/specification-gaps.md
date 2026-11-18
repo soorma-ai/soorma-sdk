@@ -19,7 +19,7 @@ unrelated. (User instruction, intake answers, 2026-11-18T02:07:55Z.)
 **Raised against**: PF — soorma-prd/aiprd-docs/platform-foundations/requirements/prd.md @ `prd-platform-foundations-v1.3`
 **PRD section**: PF §2 *What This Is Not* (delivery semantics belong to Event); PF §13 (Event row); PF §19 *Success-Claim Trace* step 8; OB-6
 **Owner**: Event plane, which has no approved PRD
-**Unit**: (pre-unit), until Units Generation assigns it
+**Unit**: U1 `contract-and-conformance` (the specification states live-only delivery and no continuity; cases check it); U3 `typescript-harness`, U4 `python-harness` (C-17 surfaces every boundary). Assigned at Units Generation (2026-11-18T06:05:15Z)
 **Issue**: [soorma-prd#13](https://github.com/soorma-ai/soorma-prd/issues/13) — **already open**, raised by soorma-core as its GAP-INT-003. Not a new issue (brief, *Specification gaps from two sessions*)
 **Resolved by**: —
 
@@ -69,7 +69,7 @@ as "soorma-sdk GAP-INT-001 (= soorma-core GAP-INT-003)": https://github.com/soor
 **Raised against**: PF — soorma-prd/aiprd-docs/platform-foundations/requirements/prd.md @ `prd-platform-foundations-v1.3`
 **PRD section**: PF §19 *Success-Claim Trace* step 10; PF §7b (trace context field; Observability row); PF §2 *Seams*; OB-8
 **Owner**: Observability plane, which has no approved PRD
-**Unit**: (pre-unit), until Units Generation assigns it
+**Unit**: U1 `contract-and-conformance` (the span rules under the work-around, and US-Q1); U3 `typescript-harness`, U4 `python-harness` (C-19; the end-to-end test's in-memory exporter). Assigned at Units Generation (2026-11-18T06:05:15Z)
 **Issue**: [soorma-prd#37](https://github.com/soorma-ai/soorma-prd/issues/37), opened 2026-11-18, titled "Specification gap from build: span semantics for the trace the SDK emits (soorma-sdk GAP-INT-002)", labelled `spec-gap`
 **Resolved by**: —
 
