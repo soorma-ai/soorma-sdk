@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: INCEPTION - User Stories
+- **Current Stage**: INCEPTION - Workflow Planning
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -68,6 +68,7 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 
 | ID | Question | Deferred To | Reason | Source | Status |
 |---|---|---|---|---|---|
+| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | Functional Design of the unit that owns trace emission | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | Open |
 
 ## Extension Configuration
 
@@ -97,16 +98,27 @@ the first published release.
 | SECURITY-10 | SBOM for production deployments | The first hosted deployment, or the first published release |
 | SECURITY-14 | Security event alerting; log integrity (append-only, not deletable by the application); log retention (90 days minimum) | The first hosted deployment |
 
+## Execution Plan Summary
+- **Plan**: inception/working/execution-plan.md (session artifact)
+- **Stages to execute**: Application Design; Units Generation; tickets, QA test specs and the Inception PR gate (extensions); per unit: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation with its Code PR; Build and Test
+- **Stages skipped**: Reverse Engineering (greenfield); Infrastructure Design (expected for every unit: nothing deployed, packages unpublished; reinstated per unit if Functional Design shows infrastructure)
+- **Order**: language-neutral layer first, then TypeScript, then Python (D-01)
+
 ## Stage Progress
 
 ### INCEPTION PHASE
 - [x] Workspace Detection — 2026-11-17T07:29:06Z (greenfield; entry point: slice brief)
 - [x] PRD Intake — APPROVED 2026-11-18T02:14:55Z. Questions answered 2026-11-18T02:07:55Z (Q1 A harness only; Q2 A raised soorma-prd#37 and worked around; Q3 A commented on #13)
 - [x] Requirements Analysis — APPROVED 2026-11-18T02:47:34Z, with the user's correction to Q1 (Node.js 24 or later; CI Node 24 and 26; Python 3.11+, CI 3.11 and newest). Questions answered 2026-11-18T02:37:58Z (Q1 X two languages, TypeScript first; Q2–Q10 A; Q11 A2; Q12 A; Q13 A; Q14 A3; Q15 B)
-- [ ] User Stories — plan approved 2026-11-18T02:55:43Z (Q1–Q6 A); personas.md and stories.md generated (2 personas, 14 stories, 80 criteria; 16 [A] flagged, 1 ⚑ TypeScript-only by request); gap pass: no new specification gap; awaiting approval
-- [ ] Workflow Planning
-- [ ] Application Design
-- [ ] Units Generation
+- [x] User Stories — APPROVED 2026-11-18T03:05:37Z. Plan answered 2026-11-18T02:55:43Z (Q1–Q6 A); 2 personas, 14 stories, 80 criteria; gap pass: no new gap; US-Q1 carried to Functional Design
+- [ ] Workflow Planning — plan written; awaiting approval
+- [ ] Application Design — EXECUTE
+- [ ] Units Generation — EXECUTE
+- [ ] Tickets (extension) — EXECUTE
+- [ ] QA test specs, inception pass (extension) — EXECUTE
+- [ ] Inception PR gate (extension) — EXECUTE
 
 ### CONSTRUCTION PHASE
-- (planned at Workflow Planning)
+- [ ] Construction Phase Initialization — EXECUTE
+- Per unit (units set at Units Generation): Unit Initialization and L1 gate; Functional Design EXECUTE; NFR Requirements EXECUTE; NFR Design EXECUTE; Infrastructure Design SKIP; QA enrichment EXECUTE; Design PR gate EXECUTE; Code Generation and Code PR EXECUTE
+- [ ] Build and Test — EXECUTE

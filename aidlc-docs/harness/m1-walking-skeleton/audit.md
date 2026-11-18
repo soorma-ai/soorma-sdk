@@ -234,3 +234,28 @@ Log the answers in audit.md word for word, then generate the stories and persona
 **Context**: INCEPTION — User Stories, approval gate presented
 
 ---
+## User Stories — approval
+**Timestamp**: 2026-11-18T03:05:37Z
+**User Input**: "Approve & Continue: User Stories approved. Proceed to Workflow Planning.
+
+Reviewed and accepted:
+
+the 14 language-neutral stories and their check tags;
+US-08's byte-for-byte forwarding, with forwarding as the default path;
+the 16 criteria checked by each language's own tests, with US-13 #3 as their guard;
+the TypeScript starter (US-11 #2);
+the gap pass's result: no new gap.
+Carry into design: US-08 #4 leaves open how a forwarding hop's span relates to the trace it received, child or link. That's GAP-INT-002's open choice. Settle it in Functional Design under the workaround, consistent with done when 5's trace-ID check, and record it as a decision.
+
+Log this word for word in audit.md, then start Workflow Planning."
+**AI Response**: "User Stories APPROVED. Registered the carried item as US-Q1 under ## Deferred Questions in aidlc-state.md: how a forwarding hop's span relates to the trace it received (child or link), GAP-INT-002's open choice, deferred to Functional Design of the unit that owns trace emission; settled under the work-around, consistent with done when 5's trace-id check, and recorded as a decision. Starting Workflow Planning."
+**Context**: INCEPTION — User Stories approved; Workflow Planning begins
+
+---
+## Workflow Planning — plan written; approval requested
+**Timestamp**: 2026-11-18T03:06:45Z
+**User Input**: (none since the User Stories approval)
+**AI Response**: "Loaded workflow-planning.md and all prior artifacts. Wrote inception/working/execution-plan.md (Mermaid validated: alphanumeric node IDs, <br/> line breaks; text alternative included). Risk: medium (public interface hard to withdraw; byte-exact forwarding, order-independent extraction with fallback, stream boundaries, two languages in step). EXECUTE: Application Design (coverage map: not addressed; layout D-04, naming FR-17, public interfaces, T-5); Units Generation (confirms amended shapes, assigns GAP-INT-001/002, sets the trace-emission unit for US-Q1); tickets, QA specs, Inception PR gate (extensions); per unit Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation with Code PR; Build and Test. SKIP: Reverse Engineering (greenfield); Infrastructure Design (expected for every unit: nothing deployed; reinstated per unit if needed). Order: language-neutral layer, then TypeScript, then Python. Updated aidlc-state.md (Execution Plan Summary, stage list). Presenting the Workflow Planning approval gate."
+**Context**: INCEPTION — Workflow Planning, approval gate presented
+
+---
