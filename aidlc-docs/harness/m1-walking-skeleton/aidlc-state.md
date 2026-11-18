@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: INCEPTION - Inception PR gate (extension)
+- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Construction Design PR gate
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -63,12 +63,13 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 |---|---|---|---|---|---|---|
 | GAP-INT-001 | U1, U3, U4 | Event delivery guarantees, as the SDK's subscriber sees them | Awaiting PRD: Event; worked around (contract-v0.1.0 live-only) | PF @ `prd-platform-foundations-v1.3` | — | soorma-prd#13 (existing; soorma-core GAP-INT-003); comment: https://github.com/soorma-ai/soorma-prd/issues/13#issuecomment-6966876924 |
 | GAP-INT-002 | U1, U3, U4 | Span semantics for the trace the SDK emits (OB-8) | Awaiting PRD: Observability; worked around (OpenTelemetry API only; no SDK exporter; proof by a test-installed exporter) | PF @ `prd-platform-foundations-v1.3` | — | soorma-prd#37: https://github.com/soorma-ai/soorma-prd/issues/37 |
+| GAP-CAC-001 | U1 (U3, U4 implement) | Whether a renewal leaves the previous agent token valid (decides whether `credential_refused` on a retried renewal is terminal) | Open; worked around (refused on a retried renewal treated as terminal, fail closed) | soorma-core wire contract @ `contract-v0.1.0` (PF §11, §14 context) | — | soorma-ai/soorma-core#34: https://github.com/soorma-ai/soorma-core/issues/34 |
 
 ## Deferred Questions
 
 | ID | Question | Deferred To | Reason | Source | Status |
 |---|---|---|---|---|---|
-| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | **U1 `contract-and-conformance` Functional Design**, where the span rules are written (Units Generation Q2 A, at the user's direction; was: the unit holding C-19). U3 and U4 implement the rule in C-19 | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | Open |
+| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | **U1 `contract-and-conformance` Functional Design**, where the span rules are written (Units Generation Q2 A, at the user's direction; was: the unit holding C-19). U3 and U4 implement the rule in C-19 | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | **Discharged** 2026-11-18T07:05:50Z: DEC-U1-01, child of the received context; no link to it as parent; a link to tenant code's active span when that is not the received context; the deviation from ambient-context parenting documented in the unstable span shape (SPN-03, SPN-06; construction/contract-and-conformance/functional-design/business-rules.md) |
 
 ## Units
 
@@ -88,9 +89,10 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 
 | ID | Input | Owning component | Unit | Kind | Status |
 |---|---|---|---|---|---|
-| CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | U1 (specification); U3, U4 | Decision (recorded) | Settled |
-| CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | Open: to Functional Design |
-| CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | Open: to Functional Design |
+| CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | U1 (specification); U3, U4 | Decision (recorded) | Settled; stated as CRD-03 in U1's specification |
+| CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | **Defined** 2026-11-18T07:05:50Z in U1's Functional Design (business-logic-model.md §4; case CC-SEC-01) |
+| CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | **Stated** 2026-11-18T07:05:50Z as SEC-04, SEC-05 (cases CC-SEC-03, CC-SEC-07); Windows open to U3 and U4 Functional Design (SEC-09) |
+| CDI-04 | **The typed envelope claims no field is present that the SDK did not check** (DEC-U1-09 follow-on): optional types, or documented, per language | C-18 | U3, U4 (each language's Functional Design); stated in U1 as RCV-08 | Design input | Open: to U3 and U4 Functional Design |
 
 ## Tickets
 - **Status**: Complete
@@ -108,11 +110,19 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 ## PR Checkpoint State
 
 ### Inception PR Gate
-- **Status**: PENDING
+- **Status**: APPROVED (merged)
 - **Branch**: dev (confirmed by the user's standing instruction: work on dev, PR dev to main)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/inception/working/pr-checkpoint-instructions.md
-- **PR**: soorma-ai/soorma-sdk#8 (dev → main), opened 2026-11-18T06:20:40Z; checks green 2026-11-18T06:21:08Z (Check sign-off: pass). Merge is the user's; recorded only when GitHub shows it
+- **PR**: soorma-ai/soorma-sdk#8 (dev → main), opened 2026-11-18T06:20:40Z; checks green 2026-11-18T06:21:08Z (Check sign-off: pass). Merged 2026-11-18T06:34:29Z, merge commit `c8bffb3020e9474043608e703eb0b77fc549cb54` (confirmed on GitHub 2026-11-18T06:47:24Z)
 - **Created**: 2026-11-18T06:20:15Z
+- **Approved**: 2026-11-18T06:47:24Z
+
+### Construction Design PR Gate — contract-and-conformance
+- **Status**: PENDING
+- **Branch**: dev (the user's standing instruction)
+- **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/contract-and-conformance-design-pr-checkpoint-instructions.md
+- **PR**: soorma-ai/soorma-sdk#9 (dev → main), opened 2026-11-18T08:28:30Z; checks green 2026-11-18T08:28:55Z (Check sign-off: pass). Merge is the user's; recorded only when GitHub shows it
+- **Created**: 2026-11-18T08:28:18Z
 - **Approved**: —
 
 ## Extension Configuration
@@ -126,6 +136,13 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 | tickets | Yes | Requirements Analysis (Q15) | Opted in — target: GitHub issues: soorma-ai/soorma-sdk; initiative ticket → tracking issue; unit ticket → sub-issue |
 
 Full rules loaded at opt-in: security-baseline.md, soorma-platform-invariants.md, pr-checkpoint.md, qa-test-cases.md, tickets.md.
+
+## Open Obligations
+
+| ID | Obligation | Source | Status |
+|---|---|---|---|
+| OBL-01 | **Live confirmation of the DCO exemption**: the first real Dependabot PR into `dev`, and the `dev` → `main` PR after it; record both CI run IDs here | U1 NFR-U1-32 (the user, 2026-11-18T08:05:52Z) | Open: awaiting the first Dependabot PR |
+| OBL-02 | **AD-13's CI time**, first measured on U2's code PR, with the run ID recorded | Units Generation (U2 *done when*) | Open: at U2 Code Generation |
 
 ## Carried Security Obligations
 
@@ -161,12 +178,12 @@ the first published release.
 - [x] Units Generation — APPROVED 2026-11-18T06:14:40Z. Answers 2026-11-18T06:05:15Z (Q1 A with U1 and U2 done-when additions; Q2 A; Q3 A); Q1a answered: 200, per the contract
 - [x] Tickets (extension) — Complete: tracking issue #3; sub-issues #4 to #7
 - [x] QA test specs, inception pass (extension) — 2026-11-18T06:20:15Z: comprehensive; contract-and-conformance 24 (CAC), e2e-stack 12 (ES), typescript-harness 66 (TH), python-harness 66 (PH); inception/test-cases/
-- [ ] Inception PR gate (extension) — PENDING: PR #8 open, checks green; awaiting the user's merge
+- [x] Inception PR gate (extension) — APPROVED: PR #8 merged 2026-11-18T06:34:29Z (`c8bffb3`); dev fast-forwarded to main
 
 ### CONSTRUCTION PHASE
-- [ ] Construction Phase Initialization — EXECUTE
+- [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR gate PENDING.md), awaiting answers.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE

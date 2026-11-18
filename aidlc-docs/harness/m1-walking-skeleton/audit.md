@@ -405,3 +405,274 @@ Log this word for word in audit.md, then start Tickets."
 **Context**: INCEPTION — Inception PR gate, awaiting merge
 
 ---
+## Inception PR gate — merged
+**Timestamp**: 2026-11-18T06:47:24Z
+**User Input**: "soorma-ai/soorma-sdk#8 is merged: merge commit c8bffb3020e9474043608e703eb0b77fc549cb54 on main, 2026-11-18T06:34:29Z. Confirm it on GitHub, then record the Inception PR gate as approved and merged.
+
+Sync dev: git fetch origin && git merge --ff-only origin/main on dev, then push. Fast-forward only; no new merge commit. If a merge on dev is ever unavoidable, use git merge --signoff so the DCO check passes on the next PR.
+
+Then start Construction with U1 contract-and-conformance (#4): Construction Phase Initialization (load the five enabled extensions' rules and prd-gap-classification.md), Unit Initialization, the L1 Domain Coverage Gate, then Functional Design. U1's Functional Design writes the whole behaviour specification and settles US-Q1 (child or link) under GAP-INT-002's work-around, consistent with done when 5's trace-ID check, recorded as a decision. It also defines CDI-02's runtime checks, states CDI-01 and CDI-03, and specifies the reference driver and the four negative controls.
+
+Log this word for word in audit.md."
+**AI Response**: "Confirmed on GitHub: PR #8 MERGED at 2026-11-18T06:34:29Z, merge commit c8bffb3020e9474043608e703eb0b77fc549cb54. Recorded the Inception PR gate APPROVED and merged. Synced dev: git fetch origin; git merge --ff-only origin/main (833032f..c8bffb3, fast-forward, no merge commit); pushed; origin/dev = origin/main = c8bffb3. Starting Construction with U1 contract-and-conformance (#4)."
+**Context**: INCEPTION complete; CONSTRUCTION begins
+
+---
+## Construction Phase Initialization
+**Timestamp**: 2026-11-18T06:49:05Z
+**User Input**: (see the entry "Inception PR gate — merged")
+**AI Response**: "Construction Phase Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets]. ## PRD Intake exists: loaded inception/prd-gap-classification.md, active for every construction stage."
+**Context**: CONSTRUCTION — initialization
+
+---
+## Unit Initialization — U1 contract-and-conformance
+**Timestamp**: 2026-11-18T06:49:05Z
+**User Input**: (none)
+**AI Response**: "Unit Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets] (unit: contract-and-conformance). L1 Domain Coverage Gate: L1 sources from ## PRD Intake, PF @ prd-platform-foundations-v1.3: §7b Envelope Fields and Compatibility Policy; FR-004, FR-005, FR-006; §11 What the SDK may not populate; §9 Operations and Failure Modes; §17 Envelope, Namespacing Rules, Recognised Kinds. ID @ prd-identity-v1.0: no L1 source (constraints only). Applicable to U1 as specification statements (implementation target) and conformance cases (verification target); l1-coverage-matrix.md is produced in Functional Design and blocks completion while any row is Missing. Assessment result recorded at Functional Design completion."
+**Context**: CONSTRUCTION — U1 Unit Initialization and L1 gate
+
+---
+## U1 Functional Design — plan and questions
+**Timestamp**: 2026-11-18T06:50:02Z
+**User Input**: (none)
+**AI Response**: "Loaded construction/functional-design.md. Read contract-v0.1.0 conventions/envelope.md on the stamped traceContext of a forwarded call: the draft's traceparent is this hop's assertion; a forwarded traceparent is never carried; the contract does not choose between continuing the received trace and starting a new one. Wrote construction/working/contract-and-conformance-functional-design-plan.md (git-ignored) with eight questions, each classified technology or design under an existing work-around (no new specification gap): Q1 US-Q1 child or link (recommended A: child of the received context, with a link); Q2 which operations emit spans (A: messaging send and receive only); Q3 boundary item order on replacement (A: ended before started); Q4 what follows a non-terminal end (A: re-subscribe; unknown codes non-terminal); Q5 background renewal failures (A: no new API; next operation re-bootstraps after an unrenewed expiry); Q6 back-pressure (A: pull-based); Q7 a second subscribe() (A: ClientStateError); Q8 reference driver coverage (A: declared subset; negative controls as one fault switch each). Awaiting answers."
+**Context**: CONSTRUCTION — U1 Functional Design, questions presented
+
+---
+## U1 Functional Design — answers
+**Timestamp**: 2026-11-18T06:57:33Z
+**User Input**: "Answers: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q7 A, Q8 A, with three additions:
+
+Q1 (US-Q1), child, as A, except the links:
+
+When the parent is the received context, don't link it as well. A link to your own parent adds nothing.
+When tenant code has an active span that isn't the received context, link that one.
+Document the deviation. Choosing the received context over the tenant's active span departs from OpenTelemetry's usual ambient-context parenting. State this in the unstable span shape documentation (GAP-INT-002's work-around), with the reason: one trace follows the event across hops.
+Record the result as the US-Q1 decision and discharge US-Q1.
+
+Q3 A, with a bounded wait. If the old stream's end hasn't arrived within a bounded time after the new stream opens, the SDK:
+
+closes the old stream itself;
+yields its stream ended with no code received;
+then yields stream started and the held Deliveries.
+The held Deliveries count against the bounded buffer from Q6. Name the wait's value for NFR Requirements; don't invent it.
+
+Q4 A, with a guard against reconnect loops:
+
+Re-subscribing after any non-terminal end, including an unknown code, uses backoff, with Retry-After taking precedence.
+Consecutive ends with no Delivery received in between count against the retry limit. When the limit is reached, the subscription yields a terminal stream ended and finishes.
+Name the backoff and limit values for NFR Requirements.
+Give each rule a conformance case: one where the stub ends every stream at once, and one where the old stream never sends end.
+Log this word for word in audit.md, then generate the Functional Design."
+**AI Response**: "Answers recorded in the plan; no ambiguity found (Step 5). Generating U1's Functional Design: US-Q1 decided (child of the received context; no link to the parent; a link to tenant code's active span when it differs; the deviation from ambient-context parenting documented in the unstable span shape, with its reason) and discharged; Q3's bounded wait and Q4's backoff and consecutive-end limit specified, their values named for NFR Requirements, each with its conformance case."
+**Context**: CONSTRUCTION — U1 Functional Design, answers received
+
+---
+## U1 Functional Design — generated; approval requested
+**Timestamp**: 2026-11-18T07:05:50Z
+**User Input**: (none since the answers at 2026-11-18T06:57:33Z)
+**AI Response**: "Generated construction/contract-and-conformance/functional-design/: business-rules.md (the behaviour specification: 100 statements in 16 areas, each sourced and linked to cases; nine values named for NFR Requirements: H_renew, R_max/W_max, B_init/B_factor/B_cap, L_ends, W_super, N_buf, D_lang, T_idle, T_req; decisions DEC-U1-01 to DEC-U1-14), domain-entities.md (conformance domain, SDK concepts, the complete name table), business-logic-model.md (contract copy, PIN and the four repository checks; stub, runner, modes, negative fixtures; the driver protocol in full; CDI-02's runtime checks: TypeScript heap snapshot after forced GC, searching every string for the value and its halves; Python sys.getrefcount on the returned string against its pre-bootstrap baseline, with its stated limit; the reference driver, test only, in neither package, 23 declared cases across all 16 areas and all ten assertion kinds; four negative controls as single faults with target cases CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04; the catalogue of 88 cases, every agent-side fixture used), l1-coverage-matrix.md (30 rows: 25 Covered, 5 N/A, 0 Missing), invariant-coverage-matrix.md (10 Covered, I11 N/A, 0 Missing). US-Q1 decided as DEC-U1-01 (child of the received context; no link to the parent; a link to tenant code's active span when it is not the received context; the deviation documented in the unstable span shape) and discharged in aidlc-state.md. CDI-02 defined; CDI-01 stated as CRD-03; CDI-03 stated as SEC-04 and SEC-05. The user's additions specified: Q3's bounded wait W_super (STR-05; case CC-STR-05, the old stream never sends end); Q4's backoff with Retry-After first and the L_ends limit on consecutive ends (STR-06; case CC-STR-07, the stub ends every stream at once). Flagged for the user at the gate, as decisions made here: DEC-U1-09 (no schema validation of received envelopes), DEC-U1-10 (connection failures retried like 503; TLS never), DEC-U1-11 (messaging.system = soorma), DEC-U1-12 (lineage change: open new, close old; no duplicate suppression). Gap pass: no new specification gap. L1 Domain Coverage Gate result: covered (25), non-applicable (5), missing (0). Presenting the U1 Functional Design approval gate; next stage NFR Requirements (U1)."
+**Context**: CONSTRUCTION — U1 Functional Design, approval gate presented
+
+---
+## U1 Functional Design — changes requested
+**Timestamp**: 2026-11-18T07:15:17Z
+**User Input**: "Request Changes: two corrections to U1's Functional Design, then present the gate again.
+
+1. DEC-U1-12: duplicates at every replacement, not only a lineage change. STR-04 opens the new stream before the platform ends the old one with superseded, so a Delivery accepted in that overlap can be read on both streams on every renewal replacement too.
+
+Restate DEC-U1-12 and STR-05 to cover both cases.
+Add to SUB-03's documentation statement: "a Delivery may be delivered twice around a stream boundary; nothing identifies a duplicate (GAP-INT-001)".
+Make sure a conformance case shows a duplicate in the renewal overlap being yielded, not suppressed.
+2. DEC-U1-10 / PRB-05: split connection failures by whether the request was sent.
+
+Not sent (connection refused, DNS failure, or a timeout before the connection opened): retried for bootstrap, renewal and subscribe, as now.
+Sent, no answer (reset or timeout after the request was written):
+Subscribe: retry; a repeat is harmless.
+Renewal: retry while the current credential is unexpired; the contract describes renewal as a new token for the same credential.
+Bootstrap: retry, recording that a repeat may mint an unused credential. That credential expires within the contract's 15-minute bound, and repeats count toward the too_many_attempts abuse limit.
+Publish is never retried, in either case, as now.
+Record this reasoning in DEC-U1-10. If the contract's silence on repeating bootstrap or renewal turns out to matter, classify it per prd-gap-classification.md; don't assume.
+Add a case for each kind of failure: a refusal before sending, and a reset after sending.
+Accepted as written: DEC-U1-01 (US-Q1); STR-05 and STR-06 with CC-STR-05 and CC-STR-07; DEC-U1-09, with one follow-on: the typed envelope (ReadonlyEnvelope and its Python equivalent) mustn't claim a field is present that the SDK didn't check. Use optional types, or document it, decided in U3 and U4. Also accepted: DEC-U1-11; the CDI-02 checks and their stated Python limit; the reference driver and the four negative controls; the 88-case catalogue; both coverage matrices.
+
+Log this word for word in audit.md, then make the changes and present the Functional Design gate again."
+**AI Response**: "Making the two corrections and recording the DEC-U1-09 follow-on as a carried input to U3 and U4; then presenting the gate again."
+**Context**: CONSTRUCTION — U1 Functional Design, changes requested
+
+---
+## U1 Functional Design — changes made; gate presented again
+**Timestamp**: 2026-11-18T07:17:08Z
+**User Input**: (see "U1 Functional Design — changes requested", 2026-11-18T07:15:17Z)
+**AI Response**: "1. DEC-U1-12 and STR-05 restated: at every replacement, renewal or lineage change, a Delivery accepted while both streams are open may be read on both; both copies are yielded in STR-05's order and neither is suppressed. SUB-03 now states: "a Delivery may be delivered twice around a stream boundary; nothing identifies a duplicate (GAP-INT-001)". New case CC-STR-11: a duplicate in the renewal overlap is yielded, not suppressed. 2. DEC-U1-10 restated with the user's reasoning; PRB-05 split into PRB-05 (503), PRB-08 (not sent: retried for bootstrap, renewal, subscribe), PRB-09 (sent, no answer: subscribe retried; renewal retried while unexpired; bootstrap retried, a repeat possibly minting an unused credential expiring within 15 minutes and counting toward too_many_attempts), PRB-10 (TLS never; publish never). Cases: CC-PRB-06 (a refusal before sending) and new CC-PRB-08 (a reset after sending). Stub gains refuse and reset faults. Classified the contract's silence on repeats per prd-gap-classification.md: subscribe and bootstrap repeats technology (the contract states their consequences); renewal repeats specification: the contract does not say whether a renewal leaves the previous token valid, which decides whether credential_refused on a retried renewal is a revocation. Raised as GAP-CAC-001 (construction/contract-and-conformance/prd-gaps/specification-gaps.md; register in aidlc-state.md), raised against soorma-core's wire contract at contract-v0.1.0; work-around in place: refused on a retried renewal treated as terminal (fail closed). Routing question presented with the gate. DEC-U1-09 follow-on recorded: RCV-08 and CDI-04 (typed envelope claims no unchecked field; optional types or documented; decided in U3 and U4). Catalogue now 90 cases, 103 statements; every case in the rules exists; NEV-05 and SEC-09 exempt as before."
+**Context**: CONSTRUCTION — U1 Functional Design, gate presented again with GAP-CAC-001 routing
+
+---
+## U1 Functional Design — GAP-CAC-001 routing and approval
+**Timestamp**: 2026-11-18T07:24:45Z
+**User Input**: "GAP-CAC-001: A. Raise it against soorma-core, keeping the work-around (a credential_refused that answers a retried renewal is terminal; fail closed).
+
+Open the issue on soorma-ai/soorma-core, citing contract-v0.1.0. Link the gap entry by a permalink pinned to 1449f09, and list the three options. Qualify the ID as soorma-sdk GAP-CAC-001.
+You may note, labelled as an observation and not the contract, that soorma-core's implementation at the tag appears to match option 1: renewal moves the lineage record's expiry forward, and each token keeps its own exp. The ask is for the contract to state the behaviour, whichever it is.
+Status: set it to Open with the issue link, in the gap entry and in the register in aidlc-state.md.
+Then Continue to Next Stage: U1 Functional Design approved, with the two corrections as made: DEC-U1-12, STR-05, SUB-03 and CC-STR-11; DEC-U1-10 split into PRB-05, 08, 09 and 10, with CC-PRB-06 and CC-PRB-08. CDI-04 is carried to U3 and U4. Proceed to NFR Requirements for U1.
+
+Log this word for word in audit.md."
+**AI Response**: "Opening the issue on soorma-ai/soorma-core for soorma-sdk GAP-CAC-001, then recording it Open with the link, approving U1 Functional Design, and starting NFR Requirements for U1."
+**Context**: CONSTRUCTION — U1 Functional Design approved; GAP-CAC-001 routed (A)
+
+---
+## U1 Functional Design — GAP-CAC-001 raised; approved
+**Timestamp**: 2026-11-18T07:25:27Z
+**User Input**: (see the entry at 2026-11-18T07:24:45Z)
+**AI Response**: "Checked soorma-core for an existing open issue on renewal tokens: none. Verified the observation at the tag (packages/credentials/src/sql.ts renewAgentCredential: expires_at = GREATEST(expires_at, $7); agent-token.ts: renewal mints a new jti for the same cid, each token with its own exp). Opened soorma-ai/soorma-core#34, 'Contract gap from build: does a renewal leave the previous agent token valid? (soorma-sdk GAP-CAC-001)', citing contract-v0.1.0, the gap entry by permalink pinned to 1449f09e3b5002da20caf23702c0759f9da6efd7 (resolves, HTTP 200), the three options, the implementation observation labelled as not the contract, the ask (the contract to state the behaviour), and the fail-closed work-around. No spec-gap label exists on soorma-core; none was created. GAP-CAC-001 set to Open with the issue link in the gap entry and the register. U1 Functional Design APPROVED with the corrections as made; CDI-04 carried to U3 and U4. Starting NFR Requirements for U1."
+**Context**: CONSTRUCTION — U1 Functional Design approved; NFR Requirements begins
+
+---
+## U1 NFR Requirements — plan and questions
+**Timestamp**: 2026-11-18T07:26:29Z
+**User Input**: (none since the Functional Design approval)
+**AI Response**: "Loaded construction/nfr-requirements.md. U1 is ordinary: no shape profile to seed (Step 1.5 N/A). Read soorma-core at the tag for alignment only (pnpm 12.18.0 without Corepack; ajv 2020-12; openssl CLI for the local CA; Vitest; Dependabot with a 7-day cooldown). Wrote construction/working/contract-and-conformance-nfr-requirements-plan.md (git-ignored) with seven questions: Q1 toolchain (A: Node 24 LTS pinned, pnpm exact without Corepack, one workspace); Q2 libraries (A: Node built-ins, ajv, yaml, openssl CLI, OpenTelemetry test SDK in the reference driver only, Vitest); Q3 time budget (A: 5 minutes per driver per runtime; 8 minutes for the self-test job); Q4 flaky timing cases (A: no automatic retries; margins of at least twice the value); Q5 remote drift check (A: fail closed in CI; --offline locally); Q6 where the suite runs (A: Linux CI authoritative, second user via sudo; local macOS and Linux; CC-SEC-05 fails rather than skips without sudo); Q7 dependency updates and scanning (A: as soorma-core). The SDK's named values stay with U3 and U4. Awaiting answers."
+**Context**: CONSTRUCTION — U1 NFR Requirements, questions presented
+
+---
+## U1 NFR Requirements — answers
+**Timestamp**: 2026-11-18T07:45:14Z
+**User Input**: "Answers: Q1 A, Q2 A, Q3 A, Q4 A. Q5, Q6 and Q7 are X:
+
+Q5 X: Fail closed in CI, as A, but the remote half uses git, not the GitHub REST API:
+
+git ls-remote reads the tag's peeled commit;
+a shallow fetch of that commit (--depth 1) gives the contract/ tree ID.
+No token and no API rate limit (hosted runners share IP addresses, so unauthenticated API calls fail at random). It also keeps the check consistent with the rule that secrets never go in environment variables. Locally, --offline runs only the local half and says so; CI never passes it.
+
+Q6 X: Linux CI is authoritative and always runs CC-SEC-05, creating the second user with sudo. Locally, a named flag (for example --local-skip CC-SEC-05) skips that one case and prints that it didn't run and why; without the flag, the case runs and fails if it can't create the user. CI never passes the flag, and the runner refuses it when it detects CI. Don't use sudo in local test set-up. On macOS, user creation would be dscl, not useradd; don't build that. Windows: not supported in M1, as A.
+
+Q7 X: As A (Dependabot weekly with a 7-day cooldown, pnpm audit at moderate, dependency review, every action pinned by SHA with read-only permissions), plus:
+
+Dependabot uses target-branch: dev for both ecosystems, so its updates take the dev → main path.
+The DCO workflow exempts dependabot[bot] only, matched on the PR author, since Dependabot can't sign off. Every other commit still needs Signed-off-by.
+Add a test showing that a PR from another author without a sign-off still fails.
+Log this word for word in audit.md, then generate the NFR Requirements."
+**AI Response**: "Answers recorded; checking for ambiguity, then generating U1's NFR Requirements."
+**Context**: CONSTRUCTION — U1 NFR Requirements, answers received
+
+---
+## U1 NFR Requirements — follow-up question Q7a
+**Timestamp**: 2026-11-18T07:45:50Z
+**User Input**: (none)
+**AI Response**: "Step 5 analysis: Q1 to Q6 clear. Q7's DCO exemption 'matched on the PR author' conflicts with target-branch dev: Dependabot's unsigned commits merged into dev are also in the next dev → main PR, whose author is the user, so that PR's DCO check would fail. Also found in the existing .github/workflows/dco.yml: it exempts any commit whose author email contains [bot] (broader than dependabot[bot], and forgeable), uses actions/checkout@v4 (a tag, not a SHA) and runs on ubuntu-latest (not pinned); U1 fixes all three. Added follow-up Q7a to the plan: A) exempt a commit only if it reached the repository through a merged PR authored by dependabot[bot] (recommended), B) squash-merge Dependabot PRs into dev as the user with sign-off, C) PR author only, as stated. Generation waits for the answer."
+**Context**: CONSTRUCTION — U1 NFR Requirements, follow-up presented
+
+---
+## U1 NFR Requirements — Q7a answer
+**Timestamp**: 2026-11-18T07:55:51Z
+**User Input**: "Q7a: X. Option A as described won't work. GitHub's commit-to-PR lookup (GET /repos/{owner}/{repo}/commits/{sha}/pulls) returns only open PRs for a commit that isn't on the default branch. Once a Dependabot commit is on dev, it finds the open dev → main PR, not the merged Dependabot PR. Option B depends on who GitHub records as a squash commit's author, and the check requires the sign-off to match the author.
+
+Instead, anchor the exemption on GitHub's own signature. An unsigned commit is exempt only when GitHub's API (GET /repos/{owner}/{repo}/commits/{sha}) reports both:
+
+author.login == "dependabot[bot]";
+commit.verification.verified == true.
+Dependabot's commits are signed by GitHub, so the email can't be spoofed into the exemption. This works on the Dependabot PR and on every later dev → main PR.
+
+Token: read with the workflow's own token via an action input (for example actions/github-script with its default github-token), never as an environment variable, and with contents: read only.
+Everything else unchanged: every other commit still needs a Signed-off-by matching its author, and merge commits stay skipped (--no-merges).
+Fix the three problems you found: drop the *[bot]* email exemption; pin actions/checkout by commit SHA with its tag in a comment; pin the runner image (ubuntu-24.04).
+Tests. Each of these fails:
+another author's commit without a sign-off;
+a commit whose author email contains [bot] but that isn't verified as Dependabot's;
+a human commit without a sign-off pushed into a Dependabot PR.
+And each of these passes:
+a verified Dependabot commit, on its own PR;
+the same commit already merged into dev, on the dev → main PR.
+If the API lookup fails, the check fails closed.
+Record target-branch: dev as before. Log this word for word in audit.md, then generate the NFR Requirements."
+**AI Response**: "Q7a recorded; no further ambiguity. Generating U1's NFR Requirements."
+**Context**: CONSTRUCTION — U1 NFR Requirements, follow-up answered
+
+---
+## U1 NFR Requirements — generated; approval requested
+**Timestamp**: 2026-11-18T07:57:13Z
+**User Input**: (none since the Q7a answer at 2026-11-18T07:55:51Z)
+**AI Response**: "Generated construction/contract-and-conformance/nfr-requirements/: nfr-requirements.md (NFR-U1-01 to -36: performance budgets 5 and 8 minutes; no automatic retries, timing windows with margins of at least twice the value; drift check local half always, remote half by git ls-remote and a --depth 1 fetch, fail closed in CI, --offline locally only and refused in CI; Linux CI authoritative with CC-SEC-05 always run via sudo, --local-skip CC-SEC-05 locally only, refused in CI, no local sudo, no dscl, no Windows; secrets never printed or in reports; loopback-only stub with a per-run CA; test-only code out of the packages; pinned toolchain; Dependabot weekly with a 7-day cooldown and target-branch dev for npm and GitHub Actions; pnpm audit; dependency review; actions pinned by SHA, ubuntu-24.04, contents: read; the DCO check rewritten: exempt an unsigned commit only when GitHub's commit API reports author.login dependabot[bot] and verification.verified true, the [bot] email exemption removed, token via actions/github-script's input, fail closed on lookup failure, with three failing and two passing tests plus a failing lookup; security and invariant compliance; no new gap) and tech-stack-decisions.md (TS-U1-01 to -12; the jobs U1 adds or changes). Presenting the U1 NFR Requirements gate; next stage NFR Design (U1)."
+**Context**: CONSTRUCTION — U1 NFR Requirements, approval gate presented
+
+---
+## U1 NFR Requirements — approval
+**Timestamp**: 2026-11-18T08:05:52Z
+**User Input**: "Continue to Next Stage: U1 NFR Requirements approved, including NFR-U1-31's added test (an API lookup that errors fails the check). One clarification to record in NFR-U1-32 before NFR Design:
+
+How the DCO tests run. The check's logic is a script that can be tested apart from the workflow. Its tests run in CI against:
+
+a local test git repository holding the commit shapes;
+recorded or stubbed responses from GitHub's commit API, covering a verified Dependabot commit, an unverified commit with a [bot] email, a human commit, and a lookup error.
+They don't depend on real PRs. The live confirmation is the first real Dependabot PR into dev, plus the dev → main PR after it. Record both run IDs in this initiative when they happen, as an open obligation tracked in aidlc-state.md until then.
+
+Then proceed to NFR Design for U1. Log this word for word in audit.md."
+**AI Response**: "U1 NFR Requirements APPROVED. Recorded the clarification in NFR-U1-32 and an open obligation (OBL-01: the first real Dependabot PR into dev and the dev → main PR after it, run IDs to record) in aidlc-state.md. Starting NFR Design for U1."
+**Context**: CONSTRUCTION — U1 NFR Requirements approved; NFR Design begins
+
+---
+## U1 NFR Design — plan and questions
+**Timestamp**: 2026-11-18T08:06:24Z
+**User Input**: (none)
+**AI Response**: "Loaded construction/nfr-design.md. Also recorded OBL-02 (AD-13's CI time, first measured on U2's code PR, run ID recorded) beside OBL-01 under ## Open Obligations, since it is the same kind of pending record. Wrote construction/working/contract-and-conformance-nfr-design-plan.md (git-ignored) with two questions: Q1 driver process lifetime (A: a new driver process per case); Q2 enforcing the time budgets (A: finish then judge, per-case timeouts, a watchdog at twice the budget). Other patterns follow from the approved requirements. Awaiting answers."
+**Context**: CONSTRUCTION — U1 NFR Design, questions presented
+
+---
+## U1 NFR Design — state-file fix; answers
+**Timestamp**: 2026-11-18T08:13:23Z
+**User Input**: "First, fix aidlc-state.md. Your last edit inserted ## Open Obligations before the first match of \"## Carried Security Obligations\". That match is inside the security-baseline row of ## Extension Configuration, not the section heading.
+
+The damage: the row is split at line 124, the obligations table sits inside the extension table, and the soorma-platform-invariants row and the ones after it now follow a stray \"## Carried Security Obligations` |\" line.
+The fix: restore the security-baseline row to one line, ending \"(hosted) clauses listed under ## Carried Security Obligations |\". Move ## Open Obligations with OBL-01 and OBL-02 to just before the real ## Carried Security Obligations heading.
+Check:
+the extension table has exactly five rows, each with Enabled Yes;
+the file has exactly one ## Open Obligations heading and one ## Carried Security Obligations heading.
+When editing this file from now on, anchor each insertion on a whole heading line (\n## Heading\n), never on text that can also appear inside a row.
+Commit the fix on its own, signed off.
+Then the NFR Design answers: Q1 A, Q2 A.
+
+Q1: a new driver process per case, because the CDI-02 runtime checks need a clean heap and clean reference counts.
+Q2: finish the run, then fail if it went over the budget, naming the slowest cases. Keep the per-case timeout and the watchdog at twice the budget.
+Log this word for word in audit.md, then generate the NFR Design."
+**AI Response**: "Fixed aidlc-state.md: the security-baseline row restored to one line ending '*(hosted)* clauses listed under `## Carried Security Obligations` |'; ## Open Obligations (OBL-01, OBL-02) moved to just before the real ## Carried Security Obligations heading. Checked: the extension table has exactly five rows, each Enabled Yes; exactly one ## Open Obligations heading and one ## Carried Security Obligations heading. Committed on its own, signed off: c8db581. Insertions into this file now anchor on a whole heading line, asserted unique (saved as a standing memory). NFR Design answers recorded (Q1 A, Q2 A); generating the NFR Design."
+**Context**: CONSTRUCTION — U1 NFR Design, answers received
+
+---
+## U1 NFR Design — generated; approval requested
+**Timestamp**: 2026-11-18T08:14:41Z
+**User Input**: (none since the answers at 2026-11-18T08:13:23Z)
+**AI Response**: "Generated construction/contract-and-conformance/nfr-design/: nfr-design-patterns.md (P-01 a new driver process per case; P-02 budgets: finish then judge, per-case timeouts, watchdog at twice the budget, slowest cases named; P-03 timing windows, no retries; P-04 per-run secrets and CAs in a 0700 run directory, removed at the end; P-05 loopback-only stub with refuse and reset faults; P-06 fail closed; P-07 the CI guard for --offline and --local-skip CC-SEC-05; P-08 the DCO check as a pure function with injected git and API readers, wrapped by actions/github-script with its default github-token input, tested with a local git repository and recorded responses, live confirmation OBL-01; P-09 the drift check by git; P-10 supply-chain guards: frozen install, workflow check, audit, dependency review, Dependabot, packaging guard) and logical-components.md (data components; runner, stub, reference driver, repository checks and CI components, each with the NFRs it carries; every NFR-U1 requirement covered). Security: no findings; invariants unchanged; no new gap. Presenting the U1 NFR Design gate; next stage QA test specs, construction enrichment (U1), then the Construction Design PR gate."
+**Context**: CONSTRUCTION — U1 NFR Design, approval gate presented
+
+---
+## U1 NFR Design — approval
+**Timestamp**: 2026-11-18T08:26:29Z
+**User Input**: "Continue to Next Stage: U1 NFR Design approved (P-01 to P-10 and the logical components), with one addition to P-04:
+
+Heap snapshots stay private. The CDI-02 check's heap snapshot may contain the test secret when a driver fails the check, and the reference driver's retain-secret fault guarantees it does.
+
+Analyse it as a stream in memory, or write it only inside the run's 0700 directory, and delete it at the end of the case, pass or fail.
+Never put it in a report and never upload it as a CI artifact. A failure report names the case and the number of matches, never the content.
+Then proceed to the QA test specs' construction enrichment for U1, then the Construction Design PR gate. When the design PR is open and its checks are green, stop and tell me the PR number; don't record it as merged until GitHub shows it.
+
+Log this word for word in audit.md."
+**AI Response**: "U1 NFR Design APPROVED. Adding the heap-snapshot rule to P-04, then QA enrichment for U1, then the Construction Design PR gate; will stop with the PR number once its checks are green."
+**Context**: CONSTRUCTION — U1 NFR Design approved
+
+---
+## U1 QA enrichment and Construction Design PR gate
+**Timestamp**: 2026-11-18T08:28:18Z
+**User Input**: (see the entry at 2026-11-18T08:26:29Z)
+**AI Response**: "P-04 gained the heap-snapshot rule as directed (stream in memory, or only inside the run's 0700 directory, deleted at the end of the case; never in a report or a CI artifact; failure reports give the case and the number of matches only); to enforce the artifact rule, the workflow check also fails on an upload step naming the run directory. QA construction enrichment for contract-and-conformance, sources: functional-design, nfr-requirements, nfr-design (no user stories, tickets, requirements.md or unit-of-work.md): 13 test cases modified in place (TC-CAC-001, 005, 007, 012 to 021), 21 added (TC-CAC-025 to 045: --offline and --local-skip guards, budgets and watchdog, per-case processes, no retry, timing windows, secrets and heap snapshots never leaving the run, run directory removal, loopback stub, the six DCO cases, the token and pins of dco.yml, the workflow check, Dependabot, frozen install and audit); IDs unchanged; enrichment-delta.md written (a session artifact, git-ignored). Construction Design PR gate: functional-design artifacts present; instructions written to construction/working/contract-and-conformance-design-pr-checkpoint-instructions.md (git-ignored); ## PR Checkpoint State gains 'Construction Design PR Gate — contract-and-conformance' PENDING, branch dev. Committing, pushing and opening the PR dev → main."
+**Context**: CONSTRUCTION — U1 QA enrichment; design PR gate
+
+---
+## U1 Construction Design PR — open, checks green
+**Timestamp**: 2026-11-18T08:28:55Z
+**User Input**: (none)
+**AI Response**: "Opened soorma-ai/soorma-sdk#9 (dev → main), 'feat(construction): harness/m1-walking-skeleton — contract-and-conformance design', with the unit summary and the design artifact list per pr-checkpoint.md §5.3. Every commit in origin/main..dev carries a Signed-off-by. Checks: Check sign-off pass; mergeable clean. Stopping for the user to merge; the gate stays PENDING and nothing is recorded as merged until GitHub shows it."
+**Context**: CONSTRUCTION — U1 Construction Design PR gate, awaiting merge
+
+---
