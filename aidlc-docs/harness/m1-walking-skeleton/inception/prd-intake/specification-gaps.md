@@ -55,7 +55,7 @@ and hide the gaps between streams.
 *Done when* 3, worked around under option 1. The SDK's subscription operation.
 
 **Routing**: options 1 and 3 (intake Q3 A, 2026-11-18T02:07:55Z). Comment on soorma-prd#13
-as "soorma-sdk GAP-INT-001 (= soorma-core GAP-INT-003)": *(URL recorded once posted)*
+as "soorma-sdk GAP-INT-001 (= soorma-core GAP-INT-003)": https://github.com/soorma-ai/soorma-prd/issues/13#issuecomment-6966876924
 
 **Status**: `Awaiting PRD: Event`. Worked around in M1 by building against
 `contract-v0.1.0`'s live-only delivery.
@@ -70,7 +70,7 @@ as "soorma-sdk GAP-INT-001 (= soorma-core GAP-INT-003)": *(URL recorded once pos
 **PRD section**: PF §19 *Success-Claim Trace* step 10; PF §7b (trace context field; Observability row); PF §2 *Seams*; OB-8
 **Owner**: Observability plane, which has no approved PRD
 **Unit**: (pre-unit), until Units Generation assigns it
-**Issue**: — *(being raised; routing: intake Q2 A)*
+**Issue**: [soorma-prd#37](https://github.com/soorma-ai/soorma-prd/issues/37), opened 2026-11-18, titled "Specification gap from build: span semantics for the trace the SDK emits (soorma-sdk GAP-INT-002)", labelled `spec-gap`
 **Resolved by**: —
 
 ### What the build needs
@@ -137,5 +137,4 @@ The reading AI-DLC would choose is option 1's work-around. It is an option, not 
    `traceparent` on the envelope B receives. Requirements Analysis carries this into *done
    when* 5's proof
 
-**Status**: `Awaiting PRD: Observability`. Worked around in M1, as above. Issue: *(URL
-recorded once opened)*
+**Status**: `Awaiting PRD: Observability`. Worked around in M1, as above. Issue: [soorma-prd#37](https://github.com/soorma-ai/soorma-prd/issues/37).

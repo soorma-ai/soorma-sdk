@@ -76,3 +76,10 @@ present the intake approval gate."
 **Context**: INCEPTION — PRD Intake, Step 5.6 routing (prd-gap-classification.md Step 3, option A for both gaps)
 
 ---
+## PRD Intake — gaps routed
+**Timestamp**: 2026-11-18T02:09:55Z
+**User Input**: (none — executing the instructions logged at 2026-11-18T02:07:55Z)
+**AI Response**: "Committed the intake artifacts on dev as d1e030696c0cb612757071522368af3cf857d21d and pushed, so the issue links resolve to a fixed commit. Checked soorma-prd's open spec-gap issues: none covers span semantics. Opened https://github.com/soorma-ai/soorma-prd/issues/37, 'Specification gap from build: span semantics for the trace the SDK emits (soorma-sdk GAP-INT-002)', labelled spec-gap, raised against PF @ prd-platform-foundations-v1.3, with the gap entry verbatim and permalinks pinned to d1e0306. Commented on soorma-prd#13 as 'soorma-sdk GAP-INT-001 (= soorma-core GAP-INT-003)', with the entry verbatim and a pinned permalink: https://github.com/soorma-ai/soorma-prd/issues/13#issuecomment-6966876924. Recorded both URLs in specification-gaps.md, the aidlc-state.md register and the coverage map. Statuses: soorma-sdk GAP-INT-001 Awaiting PRD: Event, worked around; soorma-sdk GAP-INT-002 Awaiting PRD: Observability, worked around (OpenTelemetry API only; no SDK exporter or sampler; span shape unstable; done when 5 proven by a test-installed exporter). Presenting the PRD Intake approval gate (prd-intake.md Step 7)."
+**Context**: INCEPTION — PRD Intake, gaps routed; approval gate presented
+
+---
