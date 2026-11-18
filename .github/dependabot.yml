@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Dependency updates (NFR-U1-27): weekly, held to a 7-day release cooldown, into
+# dev so they take the dev -> main path like every other change. Dependabot's
+# commits cannot carry a sign-off; the DCO check exempts them only when GitHub
+# reports them authored by dependabot[bot] and verified (NFR-U1-29).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    versioning-strategy: increase
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5

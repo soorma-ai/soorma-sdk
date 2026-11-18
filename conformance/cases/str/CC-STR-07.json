@@ -1,0 +1,175 @@
+{
+  "id": "CC-STR-07",
+  "title": "The stub ends every stream at once: backoff, then terminal at L_ends",
+  "statements": ["STR-06"],
+  "timeoutMs": 20000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 3,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "end": "unavailable"
+            }
+          ]
+        },
+        "times": 10
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": "unavailable",
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": "unavailable",
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": "unavailable",
+          "terminal": true
+        },
+        {
+          "kind": "done"
+        }
+      ]
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/subscriptions"
+      },
+      "count": 3
+    },
+    {
+      "kind": "request-timing",
+      "requests": {
+        "path": "/subscriptions"
+      },
+      "minGapMs": 100
+    }
+  ]
+}

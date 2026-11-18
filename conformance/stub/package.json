@@ -1,0 +1,7 @@
+{
+  "name": "@soorma-sdk/conformance-stub",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "The scripted S3 and S4 stub the conformance runner judges drivers against. Test only; never published."
+}

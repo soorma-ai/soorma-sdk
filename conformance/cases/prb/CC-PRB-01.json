@@ -1,0 +1,455 @@
+{
+  "id": "CC-PRB-01",
+  "title": "Problems: every member kept, unknown codes included",
+  "statements": ["DRF-04", "PRB-01", "PRB-03"],
+  "$comment": "Each problem/valid fixture answers a publish (400, 403 or 409); a 503 with Retry-After: 7 is the only check of Retry-After on a publish Problem. The unknown-field fixture's members, x-future included, are kept in error.problem.",
+  "fixtures": ["problem/valid/*"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "e1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 400,
+          "fixture": "problem/valid/authentication-failed.json"
+        }
+      },
+      {
+        "label": "e2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 403,
+          "fixture": "problem/valid/empty.json"
+        }
+      },
+      {
+        "label": "e3",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 409,
+          "fixture": "problem/valid/gateway-about-blank.json"
+        }
+      },
+      {
+        "label": "e4",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 400,
+          "fixture": "problem/valid/malformed-request-header.json"
+        }
+      },
+      {
+        "label": "e5",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 403,
+          "fixture": "problem/valid/second-factor-enrollment-required.json"
+        }
+      },
+      {
+        "label": "e6",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 409,
+          "fixture": "problem/valid/second-factor-not-confirmed.json"
+        }
+      },
+      {
+        "label": "e7",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 400,
+          "fixture": "problem/valid/secret-rejected-unknown-reason.json"
+        }
+      },
+      {
+        "label": "e8",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 403,
+          "fixture": "problem/valid/secret-rejected.json"
+        }
+      },
+      {
+        "label": "e9",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 409,
+          "fixture": "problem/valid/unknown-code.json"
+        }
+      },
+      {
+        "label": "e10",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 400,
+          "fixture": "problem/valid/unknown-field.json"
+        }
+      },
+      {
+        "label": "e11",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 403,
+          "fixture": "problem/valid/unsupported-contract-version.json"
+        }
+      },
+      {
+        "label": "e12",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 409,
+          "fixture": "problem/valid/validation.json"
+        }
+      },
+      {
+        "label": "e503",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "7"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 1
+      },
+      "label": "p1"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 2
+      },
+      "label": "p2"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 3
+      },
+      "label": "p3"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 4
+      },
+      "label": "p4"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 5
+      },
+      "label": "p5"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 6
+      },
+      "label": "p6"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 7
+      },
+      "label": "p7"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 8
+      },
+      "label": "p8"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 9
+      },
+      "label": "p9"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 10
+      },
+      "label": "p10"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 11
+      },
+      "label": "p11"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 12
+      },
+      "label": "p12"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 0
+      },
+      "label": "p503"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 300
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "p1",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 400,
+        "code": "authentication_failed"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p2",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p3",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 409
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p4",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 400,
+        "code": "malformed_request"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p5",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403,
+        "code": "second_factor_enrollment_required"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p6",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 409,
+        "code": "second_factor_not_confirmed"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p7",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 400,
+        "code": "secret_rejected"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p8",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403,
+        "code": "secret_rejected"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p9",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 409,
+        "code": "some_future_code"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p10",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 400,
+        "code": "unknown_field"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p11",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403,
+        "code": "unsupported_contract_version"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p12",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 409,
+        "code": "unknown_field"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p503",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 503,
+        "code": "unavailable",
+        "retryAfter": 7
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "p10",
+      "ok": false,
+      "error": {
+        "/problem/x-future": 1,
+        "/problem/errors/0/pointer": "/x-future"
+      }
+    }
+  ]
+}

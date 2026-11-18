@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soorma.ai/sdk/conformance/case.schema.json",
+  "title": "A conformance case: language-neutral data, never code",
+  "type": "object",
+  "required": ["id", "title", "statements", "timeoutMs", "script", "commands", "expect"],
+  "additionalProperties": false,
+  "properties": {
+    "$comment": { "type": "string" },
+    "id": { "type": "string", "pattern": "^CC-[A-Z]{3}-[0-9]{2}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "statements": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z]{3}-[0-9]{2}$" }
+    },
+    "fixtures": { "type": "array", "items": { "type": "string" } },
+    "negativeFixtures": { "type": "array", "items": { "type": "string" } },
+    "timeoutMs": { "type": "integer", "minimum": 1000, "maximum": 120000 },
+    "values": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "H_renew",
+          "R_max",
+          "W_max",
+          "B_init",
+          "B_factor",
+          "B_cap",
+          "L_ends",
+          "W_super",
+          "N_buf",
+          "T_idle",
+          "T_req"
+        ]
+      },
+      "additionalProperties": { "type": "number", "minimum": 0 }
+    },
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "otelSdk": { "type": "boolean" },
+        "noOtelSdk": { "type": "boolean" },
+        "foreignOwner": { "type": "boolean" },
+        "posix": { "type": "boolean" }
+      }
+    },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              "type": { "enum": ["file", "fifo", "device", "symlink"] },
+              "content": { "type": "string" },
+              "mode": { "type": "string", "pattern": "^0[0-7]{3}$" },
+              "owner": { "enum": ["self", "foreign"] },
+              "target": { "type": "string" },
+              "chain": { "type": "integer", "minimum": 1, "maximum": 4 }
+            }
+          }
+        },
+        "env": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "script": {
+      "type": "object",
+      "required": ["exchanges"],
+      "additionalProperties": false,
+      "properties": {
+        "listeners": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(S3|S4|UNTRUSTED|STRAY)$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": { "refuse": { "type": "integer", "minimum": 0 } }
+            }
+          }
+        },
+        "exchanges": { "type": "array", "items": { "$ref": "#/$defs/exchange" } }
+      }
+    },
+    "commands": { "type": "array", "items": { "$ref": "#/$defs/command" } },
+    "expect": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/assertion" } }
+  },
+  "$defs": {
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "listener": { "enum": ["S3", "S4", "UNTRUSTED", "STRAY"] },
+        "method": { "type": "string" },
+        "path": { "type": "string" },
+        "nth": { "type": "integer", "minimum": 1 },
+        "label": { "type": "string" }
+      }
+    },
+    "exchange": {
+      "type": "object",
+      "required": ["match", "respond"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "type": "string" },
+        "match": { "$ref": "#/$defs/match" },
+        "times": { "type": "integer", "minimum": 1 },
+        "delayMs": { "type": "integer", "minimum": 0 },
+        "respond": { "type": "object" }
+      }
+    },
+    "command": {
+      "type": "object",
+      "required": ["op"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": [
+            "create",
+            "start",
+            "credential",
+            "publish",
+            "subscribe",
+            "next",
+            "forward",
+            "closeSubscription",
+            "close",
+            "fileSecret",
+            "newInstanceId",
+            "inspect",
+            "spans",
+            "names",
+            "surface",
+            "env",
+            "docs",
+            "wait",
+            "waitForRequest"
+          ]
+        },
+        "args": { "type": "object" },
+        "label": { "type": "string" }
+      }
+    },
+    "assertion": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "request-exact",
+            "request-shape",
+            "request-count",
+            "request-timing",
+            "observation",
+            "item-sequence",
+            "runtime-check",
+            "span",
+            "surface",
+            "absence"
+          ]
+        }
+      }
+    }
+  }
+}

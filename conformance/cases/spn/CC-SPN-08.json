@@ -1,0 +1,40 @@
+{
+  "id": "CC-SPN-08",
+  "title": "The documentation states the unstable shape, the deviation, live-only delivery and possible duplicates",
+  "statements": ["SUB-03", "SPN-06"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "docs",
+      "args": {
+        "topic": "spans"
+      },
+      "label": "spans"
+    },
+    {
+      "op": "docs",
+      "args": {
+        "topic": "delivery"
+      },
+      "label": "delivery"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "surface",
+      "command": "spans",
+      "docIncludes": ["unstable", "one trace follows the event across hops"]
+    },
+    {
+      "kind": "surface",
+      "command": "delivery",
+      "docIncludes": [
+        "live only",
+        "a Delivery may be delivered twice around a stream boundary; nothing identifies a duplicate (GAP-INT-001)"
+      ]
+    }
+  ]
+}

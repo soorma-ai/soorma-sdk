@@ -1,0 +1,151 @@
+{
+  "id": "CC-FWD-04",
+  "title": "The draft's traceparent is this hop's, continuing trace T",
+  "statements": ["TRC-02", "TRC-04"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "d1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 202
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        },
+        "otel": true
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "forward",
+      "args": {
+        "ref": "1",
+        "payload": {
+          "r": 1
+        }
+      },
+      "label": "f"
+    },
+    {
+      "op": "spans",
+      "label": "sp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/events"
+      },
+      "bodyAt": {
+        "/draft/traceContext/traceparent": {
+          "matches": "^00-4bf92f3577b34da6a3ce929d0e0e4736-(?!00f067aa0ba902b7)[0-9a-f]{16}-[0-9a-f]{2}$"
+        }
+      }
+    },
+    {
+      "kind": "span",
+      "command": "sp",
+      "spans": [
+        {
+          "kind": "producer",
+          "sameAs": {
+            "draftOf": "f"
+          },
+          "parent": {
+            "receivedOf": "d1"
+          }
+        }
+      ]
+    }
+  ]
+}

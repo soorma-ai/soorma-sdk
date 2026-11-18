@@ -1,0 +1,44 @@
+{
+  "id": "CC-CFG-05",
+  "title": "An untrusted certificate fails before any body is sent",
+  "statements": ["CFG-04"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${UNTRUSTED}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": false,
+      "error": {
+        "type": "TransportError",
+        "reason": "tls"
+      }
+    },
+    {
+      "kind": "absence",
+      "noRequests": true
+    }
+  ]
+}

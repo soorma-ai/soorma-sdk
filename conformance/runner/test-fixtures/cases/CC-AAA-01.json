@@ -1,0 +1,9 @@
+{
+  "id": "CC-AAA-01",
+  "title": "reports its pid",
+  "statements": ["AAA-01"],
+  "timeoutMs": 5000,
+  "script": { "exchanges": [] },
+  "commands": [{ "op": "newInstanceId", "label": "pid" }],
+  "expect": [{ "kind": "observation", "command": "pid", "ok": true }]
+}

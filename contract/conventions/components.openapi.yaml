@@ -1,0 +1,256 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# The soorma wire contract's shared components. Every surface document
+# (contract/*.openapi.yaml) references these by $ref and never copies them.
+# The written rules are in contract/conventions/*.md.
+openapi: 3.1.1
+info:
+  title: soorma wire contract, shared components
+  version: 0.1.0
+  description: >-
+    Pre-release (0.y.z). The operations, error codes, and credential
+    presentation may change between 0.y versions. Envelope v1 does not.
+    See contract/conventions/README.md.
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+paths: {}
+components:
+  schemas:
+    Envelope:
+      $ref: '../envelope.schema.json#/$defs/Envelope'
+    Draft:
+      $ref: '../envelope.schema.json#/$defs/Draft'
+    Inbound:
+      $ref: '../envelope.schema.json#/$defs/Inbound'
+    Delivery:
+      $ref: '../delivery.schema.json#/$defs/Delivery'
+    ContractVersion:
+      $ref: '../envelope.schema.json#/$defs/ContractVersion'
+
+    Problem:
+      description: >-
+        An error, as RFC 9457 Problem Details (application/problem+json). A
+        received schema: a client also receives problems that a gateway or proxy
+        emits, usually about:blank with no code or instance, so no field is
+        required and no value's form is constrained. Every Problem soorma-core
+        emits carries type, title, status, code, and instance (see
+        conventions/errors.md).
+      type: object
+      additionalProperties: true
+      properties:
+        type:
+          description: >-
+            soorma-core emits urn:soorma:problem:{code}. Accept any value,
+            about:blank included; absent means about:blank.
+          type: string
+        title:
+          description: Generic. Never internal detail.
+          type: string
+        status:
+          description: The HTTP status.
+          type: integer
+        code:
+          $ref: '#/components/schemas/ProblemCode'
+        instance:
+          description: >-
+            soorma-core emits urn:soorma:request:{request id}, equal to the
+            response's Soorma-Request-Id. Accept any value.
+          type: string
+        errors:
+          description: >-
+            On validation errors. Each entry names what failed: a JSON Pointer
+            into the request body (pointer), or a request header (header).
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemFieldError'
+        supportedVersions:
+          description: On unsupported_contract_version, the accepted contract versions.
+          type: array
+          items:
+            type: string
+    ProblemCode:
+      description: >-
+        A stable, machine-readable error code. An open set: tolerate codes you
+        do not know, and problems with none.
+      anyOf:
+        - enum:
+            - malformed_request
+            - unknown_field
+            - stamped_field_set
+            - invalid_inbound_context
+            - chain_too_deep
+            - envelope_too_large
+            - unsupported_contract_version
+            - credential_refused
+            - credential_expired
+            - forbidden
+            - payload_too_large
+            - too_many_attempts
+            - unavailable
+            - internal_error
+            - authentication_failed
+            - second_factor_enrollment_required
+            - second_factor_not_confirmed
+            - secret_rejected
+            - unknown_permission
+            - unknown_principal
+            - human_only_permission
+            - declaration_outside_standing
+            - exceeds_sponsor_ceiling
+            - registration_exists
+            - unknown_registration
+            - secret_limit_reached
+        - type: string
+    ProblemFieldError:
+      type: object
+      additionalProperties: true
+      properties:
+        pointer:
+          description: A JSON Pointer into the request body.
+          type: string
+        header:
+          description: >-
+            The name of a request header, on malformed_request when an operation
+            that names no security scheme receives an Authorization or
+            Soorma-Delegation header. Never the header's value.
+          type: string
+        detail:
+          type: string
+        reason:
+          description: >-
+            Why the field was rejected, on secret_rejected. An open set.
+          $ref: '#/components/schemas/SecretRejectedReason'
+    SecretRejectedReason:
+      description: >-
+        Why a new secret (K) was rejected, on secret_rejected. An open set:
+        tolerate reasons you do not know.
+      anyOf:
+        - enum:
+            - too_short
+            - too_long
+            - disallowed_character
+            - breached
+            - reused
+            - context_word
+        - type: string
+
+    # Identifier definitions, for request inputs only (BR-ID-01 to 06). Wherever
+    # an identifier is received, it is a plain string (BR-ID-11). Identifiers
+    # are case-sensitive and compared exactly.
+    ConfiguredIdentifier:
+      description: An organization, project, or environment identifier.
+      type: string
+      minLength: 1
+      maxLength: 64
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~-]*$'
+    LogicalAgentIdentifier:
+      description: A logical agent identifier.
+      type: string
+      minLength: 1
+      maxLength: 64
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~-]*$'
+    PlatformReference:
+      description: A registration, credential, grant, secret, or request reference.
+      type: string
+      minLength: 1
+      maxLength: 64
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~-]*$'
+    InstanceIdentifier:
+      description: An agent instance identifier, asserted by the agent. Admits host:pid and host:port forms.
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._~:-]*$'
+    HumanPrincipalIdentifier:
+      description: >-
+        A human principal identifier: an email address, or an issuer, a vertical
+        bar, and a subject. ASCII-only in this contract version.
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.@:-]+$"
+    HumanPrincipalReferenceInput:
+      description: >-
+        A human principal, named with its organization (request side). Two
+        references are equal only when both parts are equal, compared exactly.
+      type: object
+      additionalProperties: false
+      required:
+        - organization
+        - principal
+      properties:
+        organization:
+          $ref: '#/components/schemas/ConfiguredIdentifier'
+        principal:
+          $ref: '#/components/schemas/HumanPrincipalIdentifier'
+    HumanPrincipalReference:
+      description: >-
+        A human principal, named with its organization (received side). Each part
+        is an opaque string; do not validate its syntax.
+      type: object
+      additionalProperties: true
+      required:
+        - organization
+        - principal
+      properties:
+        organization:
+          type: string
+        principal:
+          type: string
+    PermissionIdentifier:
+      description: A permission identifier. The accepted set may widen in a compatible version.
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '^[a-z][a-z0-9._-]*(:[a-z][a-z0-9._-]*)+$'
+
+  parameters:
+    SoormaContractVersion:
+      name: Soorma-Contract-Version
+      in: header
+      description: >-
+        The client contract version, required on every call without a draft. On
+        a call with a draft it may be sent, and must then equal the draft's
+        clientContractVersion.
+      required: true
+      schema:
+        $ref: '#/components/schemas/ContractVersion'
+
+  headers:
+    Soorma-Contract-Version:
+      description: The server's contract version. On every response.
+      required: true
+      schema:
+        $ref: '#/components/schemas/ContractVersion'
+    Soorma-Request-Id:
+      description: >-
+        The request id, on every response. Equal to the request id in a Problem's
+        instance. Received only: an opaque string.
+      required: true
+      schema:
+        type: string
+    Retry-After:
+      description: On a 429 or a 503 (RFC 9110).
+      schema:
+        type: string
+
+  securitySchemes:
+    agentCredential:
+      type: http
+      scheme: bearer
+      description: >-
+        An agent credential, typed prefix soorma_ac_. Accepted at S3 renewal and
+        S4 publish and subscribe.
+    environmentCredential:
+      type: http
+      scheme: bearer
+      description: >-
+        A human environment credential, typed prefix soorma_ec_. Accepted at S2,
+        in its own environment only.
+    signIn:
+      type: http
+      scheme: bearer
+      description: >-
+        An organization sign-in, typed prefix soorma_si_. Accepted at S1, and at
+        S2's environment credential issuance only.

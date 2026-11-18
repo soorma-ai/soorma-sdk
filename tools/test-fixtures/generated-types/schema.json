@@ -1,0 +1,1 @@
+{ "title": "Thing", "properties": { "name": { "type": "string" }, "size": { "type": "integer" } } }

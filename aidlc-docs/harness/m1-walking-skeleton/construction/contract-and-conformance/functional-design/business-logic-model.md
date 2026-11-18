@@ -226,21 +226,27 @@ and the stub has recorded the bootstrap request.
 ### 5.2 The four negative controls
 
 Each is the reference driver started with **one** fault switched on, so a control differs from
-the passing driver by exactly the rule it breaks.
+the passing driver by exactly the rule it breaks. **Declared-set rule** (the user, at U1 Code
+Generation plan approval, 2026-11-18T08:46:28Z): each faulted run must fail its **named case**,
+and its **full set of failures must equal the declared expected set** below: the named case plus
+its knock-on cases. A failure outside the set, or a missing named failure, fails the self-test.
+Real cases are never weakened to shrink a set; a newly observed knock-on is declared here, by a
+recorded change, never suppressed.
 
-| Fault | What the driver does wrong | Rule broken | Target case (runner must fail it, by name) | How the runner sees it |
-|---|---|---|---|---|
-| `retain-secret` | keeps each secret string it obtains in a module-level list | SEC-02 | **CC-SEC-01** | `runtime-check`: the heap snapshot finds the value |
-| `reorder-forwarded-envelope` | forwards `inbound.envelope` re-serialized with members sorted | FWD-02 | **CC-FWD-02** | `request-exact`: the forwarded bytes differ from the delivered envelope's |
-| `retry-publish` | retries a publish once after `503` | PUB-05 | **CC-PUB-03** | `request-count`: two `POST /events` where one is required |
-| `skip-boundary` | drops *stream ended* items | STR-05 (and STR-02) | **CC-STR-04** (also fails CC-STR-05) | `item-sequence`: the *stream ended (old)* item is missing |
+| Fault | What the driver does wrong | Rule broken | Named case | Declared expected set | How the runner sees the named case |
+|---|---|---|---|---|---|
+| `retain-secret` | keeps each secret string it obtains in a module-level list | SEC-02 | **CC-SEC-01** | {CC-SEC-01} | `runtime-check`: the heap snapshot finds the value (reported as a count) |
+| `reorder-forwarded-envelope` | forwards `inbound.envelope` re-serialized with members sorted | FWD-02 | **CC-FWD-02** | {CC-FWD-02, CC-RCV-06}: CC-RCV-06 forwards after the deep-payload fallback (FWD-06), and its envelope keeps unusual member order and spacing, so it must catch the reorder on that path too | `request-exact`: the forwarded bytes differ from the delivered envelope's |
+| `retry-publish` | retries a publish once after `503` | PUB-05 | **CC-PUB-03** | {CC-PUB-03, CC-PRB-01}: CC-PRB-01 keeps its `503` to publish (the only check of `Retry-After` in a Problem returned to publish); the retry reaches no scripted exchange and fails it | `request-count`: two `POST /events` where one is required |
+| `skip-boundary` | drops **only the superseded stream's *stream ended* item** (`code: "superseded"`) | STR-05 | **CC-STR-04** | {CC-STR-04} | `item-sequence`: the *stream ended (old)* item is missing |
 
 ### 5.3 In CI (U1's code PR shows all of them)
 
 The conformance self-test job runs, in order: the reference driver in `reference` mode (must
-pass); then each fault (must exit non-zero, and the report must list the target case as
-failed). Each step prints the case the runner named. The job fails if the reference run fails,
-if a faulted run passes, or if a faulted run fails without naming its target.
+pass all 23 declared cases); then each fault. For each faulted run the job prints the
+**expected set and the actual set** of failed cases, and is green only when every faulted run's
+actual set equals its expected set, its named case included. The job fails if the reference run
+fails, if a faulted run passes, or if any actual set differs from its declared set.
 
 ---
 
@@ -309,7 +315,7 @@ negative fixtures (§2.3).
 | CC-STR-02 | No code: dropped, silent, or malformed `end` | STR-02 | `event-ingest/StreamEnd/invalid/no-code.json`, `…/code-not-string.json`; `event-ingest/StreamEndCode/invalid/not-string.json` | `drop`; `silence` > `T_idle`; each malformed `end` | is | | |
 | CC-STR-03 | An unknown code is surfaced, not fatal | STR-03 | `event-ingest/StreamEnd/valid/unknown-code.json`; `event-ingest/StreamEndCode/valid/unknown.json` | `end brand_new_code` | is | | |
 | CC-STR-04 | Replacement across renewal: ended (old), then started (new) | STR-04, STR-05, STR-08 | `event-ingest/StreamEnd/valid/superseded.json` | short `expiresAt`; renewal; old stream sends a Delivery, waits for the replacement subscribe, sends a Delivery, then `end superseded`; new stream sends a Delivery at once | is, rt, rs | R | skip-boundary |
-| CC-STR-05 | **The old stream never sends `end`** | STR-05 | — | as CC-STR-04, but the old stream stays silent and open | is, rt | R | skip-boundary |
+| CC-STR-05 | **The old stream never sends `end`** | STR-05 | — | as CC-STR-04, but the old stream stays silent and open | is, rt | R | |
 | CC-STR-06 | A lineage change closes the old stream itself | STR-05 | — | renewal `401 credential_expired`; bootstrap; new stream | is, rs | | |
 | CC-STR-07 | **The stub ends every stream at once**: backoff, then terminal at `L_ends` | STR-06 | — | every subscribe: `200`, then immediately `end unavailable` | is, rt, rc | | |
 | CC-STR-08 | `Retry-After` takes precedence over backoff | STR-06 | — | re-subscribe answered `503`, `Retry-After: 2` | rt | | |
@@ -321,10 +327,10 @@ negative fixtures (§2.3).
 | CC-RCV-03 | Unknown fields and values kept | RCV-03 | `envelope/valid/unknown-fields-at-every-level.json`, `…/unknown-origin-mode.json`; `delivery/valid/unknown-field.json` | deliveries | is | | |
 | CC-RCV-04 | Received identifiers are opaque | RCV-04 | `envelope/valid/received-identifiers-opaque.json` | delivery | is | | |
 | CC-RCV-05 | Native numbers with source text | RCV-05 | `delivery/valid/payload-array.json`, `…/payload-null.json` | payloads with `1.0`, `1e400`, a 30-digit integer | is | | |
-| CC-RCV-06 | A payload beyond `D_lang` falls back to text, envelope and seal intact | RCV-06, FWD-06 | — | `deepPayload(D_lang + 8)`; then `forward` | is, rx | R | |
+| CC-RCV-06 | A payload beyond `D_lang` falls back to text, envelope and seal intact | RCV-06, FWD-06 | — | `deepPayload(D_lang + 8)`, its envelope text with unusual member order and spacing; then `forward` | is, rx | R | reorder-forwarded-envelope (knock-on) |
 | CC-RCV-07 | An unreadable line is an error item; the stream continues | RCV-07 | `delivery/invalid/missing-envelope.json`, `…/missing-seal.json`, `…/missing-payload.json` | a non-JSON line, each fixture, then a valid delivery | is | | |
 | CC-RCV-08 | Envelopes are not schema-validated by the SDK | RCV-08, NEV-04 | `delivery/invalid/envelope-missing-actor-chain.json`; `envelope/invalid/*` (each as a Delivery's envelope) | one delivery per fixture; `forward` one | is, rx | | |
-| CC-PRB-01 | Problems: every member kept, unknown codes included | PRB-01, PRB-03, DRF-04 | `problem/valid/*` | each as a `400`, `403`, `409` or `503` response to publish | ob | R | |
+| CC-PRB-01 | Problems: every member kept, unknown codes included | PRB-01, PRB-03, DRF-04 | `problem/valid/*` | each as a `400`, `403`, `409` or `503` response to publish (the `503` with `Retry-After`) | ob | R | retry-publish (knock-on) |
 | CC-PRB-02 | A non-Problem error body | PRB-02 | `problem/invalid/*` | each as a `400` body; also a `502` with HTML | ob | | |
 | CC-PRB-03 | `forbidden` surfaces with no added cause | PRB-04 | — | `403 forbidden` on publish | ob | | |
 | CC-PRB-04 | `503` retried after `Retry-After`, within the bound | PRB-05, ACQ-05 | — | bootstrap `503`, `Retry-After: 1`, twice, then `200` | rc, rt | R | |
@@ -346,7 +352,7 @@ negative fixtures (§2.3).
 | CC-NAM-01 | Exported names match the table | NAM-01 | — | `names`; `surface` | sf | R | |
 
 **Totals**: 90 cases. Reference coverage (R): 23 cases, spanning all 16 areas and all ten
-assertion kinds. Fault targets: CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04 (and CC-STR-05).
+assertion kinds. Named cases of the faults: CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04; declared expected sets in §5.2.
 The two loop-guard rules the user named each have a case: **CC-STR-07** (the stub ends every
 stream at once) and **CC-STR-05** (the old stream never sends `end`).
 

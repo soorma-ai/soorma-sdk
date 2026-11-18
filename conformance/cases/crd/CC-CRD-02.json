@@ -1,0 +1,118 @@
+{
+  "id": "CC-CRD-02",
+  "title": "No secret or credential in logs, errors or string forms",
+  "statements": ["CRD-01", "CRD-04"],
+  "$comment": "render: the driver writes every error, and the client, as text to its stderr.",
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 400,
+          "json": {
+            "type": "urn:soorma:problem:unknown_field",
+            "title": "unknown_field",
+            "status": 400,
+            "code": "unknown_field"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "status": 403,
+          "json": {
+            "type": "urn:soorma:problem:forbidden",
+            "title": "forbidden",
+            "status": 403,
+            "code": "forbidden"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        },
+        "logLevel": "debug",
+        "render": true
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": {
+          "k": "v"
+        }
+      },
+      "label": "p"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "absence",
+      "noSecretAnywhere": true
+    },
+    {
+      "kind": "absence",
+      "noCredentialIn": "soorma_ac_token.one"
+    }
+  ]
+}

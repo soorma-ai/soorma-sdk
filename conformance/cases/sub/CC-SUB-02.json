@@ -1,0 +1,155 @@
+{
+  "id": "CC-SUB-02",
+  "title": "Heartbeats yield nothing",
+  "statements": ["SUB-02"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "heartbeat": true
+            },
+            {
+              "delivery": {
+                "label": "d1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "delivery": {
+                "label": "d2",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 800
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d1",
+          "sealOf": "d1"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d2",
+          "sealOf": "d2"
+        }
+      ]
+    }
+  ]
+}

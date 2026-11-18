@@ -1,0 +1,177 @@
+{
+  "id": "CC-RCV-07",
+  "title": "An unreadable line is an error item; the stream continues",
+  "statements": ["RCV-07"],
+  "fixtures": [
+    "delivery/invalid/missing-envelope.json",
+    "delivery/invalid/missing-seal.json",
+    "delivery/invalid/missing-payload.json"
+  ],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "bad",
+                "raw": "this is not JSON"
+              }
+            },
+            {
+              "delivery": {
+                "label": "m1",
+                "fixture": "delivery/invalid/missing-envelope.json"
+              }
+            },
+            {
+              "delivery": {
+                "label": "m2",
+                "fixture": "delivery/invalid/missing-seal.json"
+              }
+            },
+            {
+              "delivery": {
+                "label": "m3",
+                "fixture": "delivery/invalid/missing-payload.json"
+              }
+            },
+            {
+              "delivery": {
+                "label": "ok",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "deliveryError"
+        },
+        {
+          "kind": "deliveryError"
+        },
+        {
+          "kind": "deliveryError"
+        },
+        {
+          "kind": "deliveryError"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "ok",
+          "sealOf": "ok"
+        }
+      ]
+    }
+  ]
+}

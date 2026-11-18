@@ -1,0 +1,165 @@
+{
+  "id": "CC-RCV-03",
+  "title": "Unknown fields and values are kept",
+  "statements": ["RCV-03"],
+  "fixtures": [
+    "envelope/valid/unknown-fields-at-every-level.json",
+    "envelope/valid/unknown-origin-mode.json",
+    "delivery/valid/unknown-field.json"
+  ],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "u1",
+                "envelope": {
+                  "fixture": "envelope/valid/unknown-fields-at-every-level.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "u2",
+                "envelope": {
+                  "fixture": "envelope/valid/unknown-origin-mode.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "u3",
+                "fixture": "delivery/valid/unknown-field.json"
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "u1",
+          "sealOf": "u1",
+          "envelope/x-future": 1,
+          "envelope/scope/x-future": 1,
+          "envelope/actorChain/0/x-future": 1,
+          "envelope/traceContext/x-future": 1
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "u2",
+          "sealOf": "u2",
+          "envelope/originMode": "sponsored"
+        },
+        {
+          "kind": "delivery",
+          "payload": {
+            "k": "v"
+          }
+        }
+      ]
+    }
+  ]
+}

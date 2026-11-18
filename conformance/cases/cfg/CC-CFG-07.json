@@ -1,0 +1,41 @@
+{
+  "id": "CC-CFG-07",
+  "title": "newInstanceId is a fresh UUID v4",
+  "statements": ["CFG-06"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "newInstanceId",
+      "label": "a"
+    },
+    {
+      "op": "newInstanceId",
+      "label": "b"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "a",
+      "ok": true,
+      "result": {
+        "/value": {
+          "matches": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        }
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "b",
+      "ok": true,
+      "result": {
+        "/value": {
+          "differsFrom": "a"
+        }
+      }
+    }
+  ]
+}

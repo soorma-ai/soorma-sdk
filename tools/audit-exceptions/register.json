@@ -1,0 +1,14 @@
+{
+  "exceptions": [
+    {
+      "ghsa": "GHSA-fc5q-39xc-vjpf",
+      "package": "picomatch",
+      "severity": "high",
+      "affectedRange": "<=4.0.7",
+      "fixedIn": null,
+      "paths": ["vitest", "typescript-eslint"],
+      "scope": "Development only: the test runner and the linter match globs that live in this repository, never untrusted input",
+      "removeWhen": "A picomatch version outside the affected range is published and older than the release cooldown (minimumReleaseAge in pnpm-workspace.yaml, by the registry's publish time), or no installed picomatch matches the range. A fix still inside the cooldown passes with a notice naming the version and when it becomes installable"
+    }
+  ]
+}

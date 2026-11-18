@@ -1,0 +1,9 @@
+{
+  "id": "CC-AAA-02",
+  "title": "crashes",
+  "statements": ["AAA-02"],
+  "timeoutMs": 5000,
+  "script": { "exchanges": [] },
+  "commands": [{ "op": "start", "args": { "crash": true }, "label": "s" }],
+  "expect": [{ "kind": "observation", "command": "s", "ok": true }]
+}

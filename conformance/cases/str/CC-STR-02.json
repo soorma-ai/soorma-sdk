@@ -1,0 +1,249 @@
+{
+  "id": "CC-STR-02",
+  "title": "No code: a dropped, silent, or malformed end",
+  "statements": ["STR-02"],
+  "$comment": "A drop; silence past T_idle; an end with no code ({}, the no-code fixture); an end whose code is a number (code-not-string; StreamEndCode not-string).",
+  "fixtures": [
+    "event-ingest/StreamEnd/invalid/no-code.json",
+    "event-ingest/StreamEnd/invalid/code-not-string.json",
+    "event-ingest/StreamEndCode/invalid/not-string.json"
+  ],
+  "timeoutMs": 40000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 10,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "drop": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "s2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "silence": 4000
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "s3",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "endData": "{}"
+            }
+          ]
+        }
+      },
+      {
+        "label": "s4",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "endData": "{\"code\":1}"
+            }
+          ]
+        }
+      },
+      {
+        "label": "s5",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": null,
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": null,
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": null,
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "streamEnded",
+          "code": null,
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        }
+      ]
+    }
+  ]
+}

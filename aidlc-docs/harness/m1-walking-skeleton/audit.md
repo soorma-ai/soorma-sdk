@@ -676,3 +676,191 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 Construction Design PR gate, awaiting merge
 
 ---
+## U1 Construction Design PR — merged; Code Generation begins
+**Timestamp**: 2026-11-18T08:40:41Z
+**User Input**: "soorma-ai/soorma-sdk#9 is merged: merge commit c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6 on main, 2026-11-18T08:38:48Z. Confirm it on GitHub, then record U1's Construction Design PR gate as approved and merged.
+
+Sync dev: git fetch origin && git merge --ff-only origin/main on dev, then push. Fast-forward only.
+
+Accepted: P-04's heap-snapshot rule, plus your addition that the workflow check fails on an upload step naming the run directory; the QA enrichment (13 updated, 21 added, 45 total, IDs unchanged).
+
+Then start U1's Code Generation, Part 1 (the plan) first, and stop for approval. The plan must show:
+
+Commit groups and CI. Each group is pushed and CI is waited on before the next starts (F40). Every commit is signed off.
+U1's "done when" in CI on the code PR:
+the reference driver passes its 23 declared cases in reference mode;
+each of the four faulted runs fails on exactly its named case: CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04. The self-test job is green only when all four fail as expected;
+the drift, generated-types, names, SPDX, workflow and packaging checks each have a test proving they catch the defect they look for;
+the DCO tests (NFR-U1-32) run in CI.
+The new dco.yml checks its own PR. Record the run ID that shows it.
+The code PR (dev → main) is opened before the completion message, every check green, DCO included. Stop and tell me the PR number; don't record it as merged until GitHub shows it.
+Log this word for word in audit.md."
+**AI Response**: "Confirmed on GitHub: PR #9 MERGED at 2026-11-18T08:38:48Z, merge commit c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6. Recorded U1's Construction Design PR gate APPROVED and merged. Synced dev: git fetch origin; git merge --ff-only origin/main (f712c20..c8ebb7a, fast-forward); pushed; origin/dev = origin/main = c8ebb7a. Starting U1 Code Generation, Part 1 (the plan)."
+**Context**: CONSTRUCTION — U1 design gate merged; Code Generation Part 1 begins
+
+---
+## U1 Code Generation — Part 1 plan; approval requested
+**Timestamp**: 2026-11-18T08:43:07Z
+**User Input**: (see the entry at 2026-11-18T08:40:41Z)
+**AI Response**: "Loaded construction/code-generation.md. L1 matrix has no Missing rows. Wrote construction/working/contract-and-conformance-code-generation-plan.md (git-ignored): 38 steps in 9 commit groups (G1 workspace and CI skeleton; G2 the DCO check rewritten with its tests; G3 the contract copy, PIN and the six repository checks, each with a test proving it catches its defect; G4 the specification and name table; G5 the runner; G6 the stub; G7 the 90 case files; G8 the reference driver, the four faults and the self-test job; G9 documentation, coverage rows, and the code PR with the dco.yml self-check run ID). Every group: gate (install frozen, typecheck, lint, format, tests, checks, and from G8 the self-test), signed-off commit, push, CI waited on before the next group. Points for approval: 1.1 the user's 'fails on exactly its named case' conflicts with the Functional Design's faults: as designed, reorder-forwarded-envelope would also fail CC-RCV-06, retry-publish CC-PRB-01, and skip-boundary CC-STR-05 and CC-STR-01; proposed: CC-RCV-06's envelope text in sorted compact form, CC-PRB-01 without a 503, and skip-boundary dropping only a superseded stream's ended item, so each faulted run's failed set equals exactly its named case (Step 2 aligns business-logic-model §5.2 and §6); 1.2 ESLint with typescript-eslint and Prettier; 1.3 'Verified' for U1's L1 and invariant rows: case validated, and for the 23 reference cases a passing reference run; others executed at U3 and U4; 1.4 the foreseen risk that U3 finds defects in cases it first executes, handled as changes to an earlier unit's tests by class. Changes to earlier units' tests: none (U1 is first)."
+**Context**: CONSTRUCTION — U1 Code Generation Part 1, approval requested
+
+---
+## U1 Code Generation — plan approval
+**Timestamp**: 2026-11-18T08:46:28Z
+**User Input**: "Approve the plan, with 1.1 changed. \"Fails on exactly its named case\" was too strict on my part. Don't weaken real cases to satisfy the self-test:
+
+CC-RCV-06 keeps its envelope with unusual member order and spacing. Its forward after the deep-payload fallback (FWD-06) must still catch a reordered envelope on that path.
+CC-PRB-01 keeps 503. It's the only check of Retry-After in a Problem returned to publish.
+The self-test rule instead:
+
+Each faulted run must fail its named case (CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04).
+Its full set of failures must equal a declared expected set: the named case plus any knock-on cases, listed per fault in the business logic model §5.2. For example, reorder-forwarded-envelope fails {CC-FWD-02, CC-RCV-06}, and retry-publish fails {CC-PUB-03, CC-PRB-01}.
+A failure outside the declared set, or a missing named failure, fails the self-test. The report prints each fault's expected and actual sets.
+skip-boundary: your narrowing is accepted (it drops only the superseded stream's stream ended). That changes the fault, not a case; if it still fails more than CC-STR-04, declare those cases too.
+
+Step 2 updates the Functional Design to the declared-set rule, with no change to CC-RCV-06 or CC-PRB-01. Steps 33 and 34 and the \"done when\" table follow.
+
+1.2, 1.3, 1.4: approved as proposed.
+
+Log this word for word in audit.md, then start G1."
+**AI Response**: "Plan APPROVED with 1.1 changed: the declared-set rule (each faulted run fails its named case, and its failed set equals the declared expected set in business-logic-model §5.2; anything else fails the self-test; the report prints expected and actual sets). CC-RCV-06 and CC-PRB-01 unchanged. skip-boundary narrowed to the superseded stream's stream ended. Plan updated (1.1, Steps 2, 33, 34, the done-when table); 1.2 to 1.4 approved. Starting G1."
+**Context**: CONSTRUCTION — U1 Code Generation, plan approved; Part 2 begins
+
+---
+## U1 Code Generation — G1 gate blocked by pnpm audit
+**Timestamp**: 2026-11-18T08:49:10Z
+**User Input**: (none)
+**AI Response**: "G1 written locally, not committed: root package.json (pnpm 12.18.0, Node >=24.22.3 <25, exact devDependencies chosen past the 7-day cooldown and within peer ranges: typescript 6.0.3, vitest 5.1.0, eslint 10.14.0, @eslint/js 10.0.1, typescript-eslint 8.72.1, prettier 3.9.10, @types/node 24.19.2), pnpm-workspace.yaml, .node-version 24.22.3 (installed locally with nvm), tsconfig.json, eslint.config.js, Prettier configuration, vitest.config.ts, .gitignore, .github/dependabot.yml (npm and github-actions, weekly, cooldown 7, target-branch dev), .github/workflows/ci.yml skeleton (unit and dependency-review jobs; actions pinned by SHA as soorma-core pins them). Step 2 done: business-logic-model §5.2 and §5.3 now state the declared-set rule; §6 marks CC-RCV-06 and CC-PRB-01 as knock-ons; CC-RCV-06 and CC-PRB-01 unchanged in substance; skip-boundary narrowed. Gate: typecheck, lint, format, tests pass; pnpm audit fails: minimatch GHSA-g3hv-75wg-m249 (moderate, via eslint and typescript-eslint, fixed in 11.0.1+) and picomatch GHSA-fc5q-39xc-vjpf (high, via vitest and typescript-eslint, published 2026-10-19, no patched version; 4.0.7 newest). Plan Step 1a added. minimatch: an override to 11.0.3 as soorma-core records it. picomatch: no fix exists; changing the audit policy (NFR-U1-26) is the user's decision; stopped and asked."
+**Context**: CONSTRUCTION — U1 Code Generation G1, blocked on a decision
+
+---
+## U1 Code Generation — picomatch decision
+**Timestamp**: 2026-11-18T08:52:29Z
+**User Input**: "picomatch: A, a narrow recorded exception, with two refinements:
+
+Narrow: ignore only GHSA-fc5q-39xc-vjpf, using pnpm's audit settings in pnpm-workspace.yaml (by advisory ID, not by package or severity). Every other advisory at moderate or above still fails CI.
+Recorded: add an entry in DEPENDENCIES.md (or the register you mirror from soorma-core) with:
+the advisory, severity and affected range (<= 4.0.7, no fix);
+the paths it arrives through (vitest, typescript-eslint);
+the scope: development only, matching only globs that live in this repository, never untrusted input;
+the removal condition.
+Self-expiring: a check fails when a picomatch version outside the affected range has been published, or when no installed package matches the range any more. Then the exception is removed in a recorded change, not left behind. Test both triggers with recorded advisory and registry data.
+minimatch: Step 1a as proposed. The override to 11.0.3 mirrors soorma-core, recorded with its removal condition, along with soorma-core's pnpm settings (7-day minimum release age, exact saves, strict engines, no install scripts).
+
+Accepted: Step 2's declared expected sets (§5.2), including your rule that real cases are never weakened to shrink a set.
+
+Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit signed off, push, and wait for CI before G2."
+**AI Response**: "Finishing Step 1a as directed, then the G1 gate, commit, push and CI."
+**Context**: CONSTRUCTION — U1 Code Generation G1, decision received
+
+---
+## U1 Code Generation — G1 gate green; commit and push
+**Timestamp**: 2026-11-18T08:54:30Z
+**User Input**: (none)
+**AI Response**: "Step 1a done: pnpm-workspace.yaml gains pmOnFail ignore, minimumReleaseAge 10080, saveExact, engineStrict, strictDepBuilds with no allowed builds, the minimatch override to 11.0.3, and auditConfig.ignoreGhsas [GHSA-fc5q-39xc-vjpf] (by advisory id only). The lockfile was re-resolved from scratch because the first one held transitive releases younger than 7 days (@eslint/config-array 0.23.6, @jridgewell/resolve-uri 3.1.3, brace-expansion 5.0.13, ignore 7.0.16, minimatch 11.0.9), which the new minimumReleaseAge refused. DEPENDENCIES.md records the override and the audit exception (advisory, severity, range <= 4.0.7 with no fix, paths vitest and typescript-eslint, scope, removal condition). tools/audit-exceptions/ (register.json, check.ts, check.test.ts) makes the exception self-expiring: it fails when a release outside the range is published, when no installed version matches, when the ignore list and the register disagree, and closed without registry data; both triggers tested with recorded advisory and registry data. The tests caught a parser bug (only the first ignored id was read), fixed before commit. ci.yml runs the check after the audit. G1 gate: install frozen, typecheck, lint, format, 7 tests, pnpm audit (1 ignored: high), audit-exceptions check: all pass. Steps 1, 1a, 2, 3, 4, 5 marked done."
+**Context**: CONSTRUCTION — U1 Code Generation G1
+
+---
+## U1 Code Generation — G1 CI green; G2 gate green
+**Timestamp**: 2026-11-18T08:57:07Z
+**User Input**: (none)
+**AI Response**: "G1 pushed as 34d6f76; CI run 44271040027 green (unit job; dependency review skipped on a push). G2 written: tools/dco/check.ts (pure check: a matching Signed-off-by, else exempt only if the commit API reports author.login dependabot[bot] and verification.verified true; a failed lookup or missing field fails closed), tools/dco/git.ts (non-merge commits base..head), tools/dco/action.ts (the github-script wrapper using the action's own client), tools/dco/check.test.ts (a local test git repository and recorded API responses: fails for another author's unsigned commit, an unverified [bot]-email commit (and a dependabot login that is not verified), a human commit in a Dependabot PR, a lookup error and a response without verification; passes for a verified Dependabot commit on its own PR and on the dev -> main range with a merge commit and signed work; the wrapper tested with a fake client), and .github/workflows/dco.yml rewritten (ubuntu-24.04; checkout v7.0.1 and github-script v9.0.0 pinned by SHA with tag comments; contents: read; the [bot] email exemption removed; the job name 'Check sign-off' kept). action.ts imports under plain Node 24 type stripping, as github-script's node24 runtime will. G2 gate: frozen install, typecheck, lint, format, 16 tests, audit (1 ignored), audit-exceptions: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G2
+
+---
+## U1 Code Generation — G2 CI green; G3 gate green
+**Timestamp**: 2026-11-18T09:02:12Z
+**User Input**: (none)
+**AI Response**: "G2 pushed as cbd0a4a; CI run 44271420822 green. G3 written: contract/ vendored by git archive from the local soorma-core clone at c1e3d7f3 (read only); all 234 blob ids match the tag; the tag peels to c1e3d7f3 (git ls-remote); contract/ tree 38900083586024a832c05af04789fc0639dc9e2f. Plan note: the pin is contract.pin.json at the root beside contract.md (not contract/PIN), because the approved design also requires contract/ to stay byte-identical to the tag; .gitattributes marks contract/** -text. tools/: drift (local half; remote half by git ls-remote and a --depth 1 fetch, no token; fails closed; --offline local only, refused in CI) with tests against a file:// stand-in remote (modified, added, removed file; wrong peeled commit; wrong tree; unreachable remote; --offline in and out of CI); spdx with tests; workflows (SHA pins with tag comments, ubuntu-24.04, contents: read at both levels, no upload of the run directory) with tests; generated-types (inert, packages.json empty) with a fixture generator and package; names (inert, drivers.json empty) with a fixture name table: the tests caught the package row being read as an export, fixed; packaging guard (inert) with fixture packages; tools/checks.ts aggregates them (pnpm checks); contract.md; ci.yml gains the checks job. G3 gate: frozen install, typecheck, lint, format, 46 tests, audit (1 ignored), audit-exceptions, pnpm checks online: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G3
+
+---
+## U1 Code Generation — G3 CI green; G4 gate green
+**Timestamp**: 2026-11-18T09:03:51Z
+**User Input**: (none)
+**AI Response**: "G3 pushed as 266347d; CI run 44272174556 green (unit and checks; the drift check's remote half ran from a hosted runner by git with no token). G4 written: spec/behaviour.md transcribed from business-rules.md (sections 0 to 16, 103 statements, ids unchanged; the decisions table as an appendix; a header naming the contract, sources, the name table and the three worked-around gaps); spec/names.md from domain-entities §3; conformance/runner (private workspace package) with src/spec.ts parsing statements, cases and exemptions, and tests: 103 statements in 16 areas, only NEV-05 and SEC-09 exempt, US-Q1 and the SUB-03 and SPN-06 documentation statements present, duplicates refused. G4 gate: frozen install, typecheck, lint, format, 51 tests, pnpm checks, audit: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G4
+
+---
+## U1 Code Generation — G4 CI green; G5 gate green
+**Timestamp**: 2026-11-18T15:14:48Z
+**User Input**: "les ressume" (resume, after an interruption mid-G5)
+**AI Response**: "G4 pushed as 95700f1; CI run 44272417353 green. G5 written: conformance/runner/src/ types, template (placeholders resolved at case start; the plain secret never on a command line), json-span (raw JSON scanner: exact source text at a pointer, compactness, duplicate members), cases (case.schema.json, the loader, and the rules: file name equals id; two-sided timing windows at least twice their named value; timeout covers the latest scripted time plus 2 s), links (two-way statement and case links; fixture coverage), contract (the vendored contract's own validator; fixture-to-schema mapping; negative fixtures proven rejected), evaluate (all ten assertion kinds, failure messages with no secret), driver-host (JSON lines, a process per case), rundir (0700 run directory under the soorma-conformance-run- prefix, two CAs by openssl P-256, case files including FIFOs, devices, symlink chains and foreign-owned files via the CI user only), report (lengths and counts only), run (scheduler: per-case process, per-case timeout, watchdog at twice the budget that also cuts a case in progress, finish then fail over budget naming the slowest, full and reference modes, faults, --local-skip CC-SEC-05 only and refused in CI, no retry). Plan notes added (the contract's validator reused; vitest.config.ts names the root tsconfig because the vendored contract/tsconfig.json extends a soorma-core-only file; the CLI moves to G6 with the stub; a docs protocol command for CC-SPN-08; the watchdog cuts in-progress cases). Tests: 77, with a fake driver and stub: a new process per case, a crash fails one case, reference mode runs only declared cases, over budget fails naming the slowest, the watchdog stops a hung run and the cases after it are not run, full mode fails on cases not run, the flag guards, the run directory's mode and removal, and units for templates, the scanner, the loader rules, links, matchers, every assertion kind and the report. Two test-setup errors fixed on the way (the over-budget test tripped the watchdog; a sample secret 'secret' matched 'secretRetained'). G5 gate: frozen install, typecheck, lint, format, 77 tests, audit, audit-exceptions, pnpm checks: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G5
+
+---
+## U1 Code Generation — G5 CI green; G6 gate green
+**Timestamp**: 2026-11-18T15:17:53Z
+**User Input**: (none)
+**AI Response**: "G5 pushed as 98dc659; CI run 44333400503 green. G6 written: conformance/stub (private package): delivery.ts builds Delivery lines as exact text (raw, fixture with edits, or parts in a chosen order with a deep-payload generator); stub.ts serves S3, S4, UNTRUSTED and STRAY over TLS on 127.0.0.1 only, matches exchanges in order (unmatched answered 500 and marked), records every request byte for byte, answers bodies, Problems, SSE streams (delivery, heartbeat, end, malformed end data, drop, silence, waitFor, hold) or a reset after reading the whole request, refuses the next N connections before the TLS handshake, tracks streams and the most open at once. conformance/runner/src/cli.ts wires 'conformance run' (pnpm conformance) and refuses unknown options, --retry included. Tests: the stub's loopback binding, byte-exact recording, unscripted 500, refuse before sending, reset after reading, SSE in order with exact Delivery text, waitFor, and the untrusted certificate; the CLI parse and refusal. G6 gate: frozen install, typecheck, lint, format, 87 tests, audit, audit-exceptions, pnpm checks: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G6
+
+---
+## U1 Code Generation — G6 CI green; G7 gate green
+**Timestamp**: 2026-11-18T15:27:37Z
+**User Input**: (none)
+**AI Response**: "G6 pushed as 018341a; CI run 44334002163 green. G7: the 90 case files under conformance/cases/{area}/, generated once from the approved catalogue (business-logic-model §6) by a script and committed as data; each case's statements are those spec/behaviour.md lists for it. Loaded through the runner: schema valid, rules pass, links two-way, every one of the 103 agent-side fixtures used; a test now loads the real set in the gate (90 cases, no problem, no code). Plan notes recorded: protocol details fixed while writing the cases (secret kinds, create arguments, the docs command, the done item, error reason codes, error.problem, providerIsNoop), to be documented for U3 and U4 in conformance/README.md; four cases narrowed from the catalogue's wording, each stated in its $comment (CC-PRB-06 bootstrap and subscribe only; CC-PRB-08 without the renewal-after-expiry branch; CC-SEC-03 re-read by a second call; CC-ACQ-01 sample response only); the loader's timeout rule counts only waits and timing assertions; evaluator additions differsFrom, minAfterMs, noBodyContains and pointers into an error. 67 of the 90 cases are first executed by U3's driver (plan 1.4). G7 gate: frozen install, typecheck, lint, format, 90 tests, audit, audit-exceptions, pnpm checks: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G7
+
+---
+## U1 Code Generation — G7 CI green; G8 gate green
+**Timestamp**: 2026-11-18T15:37:48Z
+**User Input**: (none)
+**AI Response**: "G7 pushed as f63ec4e; CI run 44335889222 green. G8 written: conformance/reference-driver (private; test only; @opentelemetry/api 1.9.1 and sdk-trace-base 2.12.0 as its own dependencies): http (TLS verified against the run CA; knows whether a request was sent), secret (fileSecret: non-blocking open, checks on the opened handle, reason codes), heap (CDI-02: forced GC, heap snapshot streamed in memory and searched as bytes for the value and its halves; a count only), tracing (send and receive spans; forwarding spans children of the received context with a link to a differing tenant span; generated identifiers without the SDK), client (bootstrap with the retry rules, renewal from expiresAt, publish and forward with the envelope spliced as received text, the subscription with in-order boundaries, replacement on renewal with W_super, backoff and L_ends), driver (the protocol; declared coverage of 23 cases; faults retain-secret, reorder-forwarded-envelope, retry-publish narrowed skip-boundary). First run: 22 of 23; CC-STR-01 found a stub defect (a stream's headers were not flushed until its first event), fixed in the stub. faults.json holds the declared expected sets of business-logic-model §5.2. conformance/runner/src/self-test.ts (pnpm conformance:self-test) and its tests; ci.yml gains the conformance-self-test job. Local results: reference run 23 passed; retain-secret failed {CC-SEC-01} (3 heap matches); reorder-forwarded-envelope {CC-FWD-02, CC-RCV-06}; retry-publish {CC-PUB-03, CC-PRB-01}; skip-boundary {CC-STR-04}; each as declared; self-test 82 s. G8 gate: frozen install, typecheck, lint, format, 94 tests, audit, audit-exceptions, pnpm checks, the self-test: pass; no run directory left behind."
+**Context**: CONSTRUCTION — U1 Code Generation G8
+
+---
+## U1 Code Generation — G8 CI green; G9 gate green
+**Timestamp**: 2026-11-18T15:42:55Z
+**User Input**: (none)
+**AI Response**: "G8 pushed as f63e652; CI run 44337861952 green, the conformance-self-test job included. G9 written: README.md (early construction; layout; working on it; sign-off and the Dependabot exemption), conformance/README.md (running, budgets, the driver protocol in full for U3 and U4: commands, secret kinds, items, error shapes and reason codes, values and the timing hook, CDI-02 per language, the case format), construction/contract-and-conformance/code/code-summary.md (files, commands, commit groups with their CI runs, done-when locally, changes to earlier units' tests: none, recorded deviations). l1-coverage-matrix.md and invariant-coverage-matrix.md rows updated per plan 1.3 (Verified by the reference run where their cases are declared, Verified by structure otherwise, executed at U3 and U4); the I8 packaging table added (no commercial capability; nothing lands in soorma-core). G9 gate: frozen install, typecheck, lint, format, 94 tests, audit, audit-exceptions, pnpm checks, the self-test: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G9
+
+---
+## U1 Code Generation — code PR #10 opened; one check red (repository setting)
+**Timestamp**: 2026-11-18T15:48:45Z
+**User Input**: (none)
+**AI Response**: "G9 pushed as 7ca7c57; CI run 44338826146 green. Every commit in origin/main..dev (10) carries a Signed-off-by. Opened soorma-ai/soorma-sdk#10 (dev → main). Pull-request runs: CI 44339401082: unit, checks and conformance self-test green; dependency review failed with 'Dependency review is not supported on this repository. Please ensure that Dependency graph is enabled'. The Dependency graph is disabled on soorma-sdk (its SBOM endpoint answers 404) and enabled on soorma-core (338 packages). DCO 44339401604 green: the rewritten dco.yml checked its own PR, all ten commits ok. Enabling a repository setting is the user's decision; stopped and asked. The red run is a repository-setting cause, recorded here; once the setting is enabled the job may be rerun once (code-generation.md Step 12a). Code PR state recorded OPEN in aidlc-state.md."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR, awaiting a decision
+
+---
+
+## U1 Code Generation — code PR #10: dependency graph enabled; three fixes requested
+**Timestamp**: 2026-11-18T17:20:44Z
+**User Input**: "A: I've enabled the Dependency graph in soorma-sdk's settings. (B would have changed nothing: GET /vulnerability-alerts already returns 204, but the SBOM endpoint returned 404 until the graph was switched on.) Before pushing, confirm it with `gh api repos/soorma-ai/soorma-sdk/dependency-graph/sbom`.
+
+Fix these before pushing, in signed-off commits on dev:
+
+1. The audit-exceptions check conflicts with the release cooldown. Right now it fails as soon as a picomatch release outside the affected range is published. But minimumReleaseAge (7 days) stops pnpm installing that release, so every PR would be red for a week with no allowed fix. Change the rule:
+   - A release counts as a fix only once it's older than the cooldown. Use the publish times in the registry's `time` field. Read the cooldown from minimumReleaseAge in pnpm-workspace.yaml; don't copy the number.
+   - While a fix is younger than the cooldown, the check passes and prints a notice naming the version and the date it becomes installable.
+   - If a version's publish time is missing, fail closed.
+   - Add tests: a fix 1 day old passes with the notice; one 8 days old fails; a missing time fails.
+   - Update DEPENDENCIES.md's \"Remove when\" text and register.json's removeWhen to match.
+
+2. aidlc-state.md: the U1 line in the Units section ends with a garbled fragment, \"…(user decision).md), awaiting answers.md), awaiting answers.\" It first appeared in 811c427 and went to main with #9; c8db581 didn't remove it. Remove it, and check for any other leftover text from that edit.
+
+3. Record a follow-up in aidlc-state.md. Don't do it in this PR. dco.yml imports tools/dco/action.ts from the PR's own checkout, so a pull request from a fork could change the code that judges it. Once #10 is merged, main has tools/dco, so the check can run main's copy: check out the base commit for the tools and read the PR's commits separately.
+
+Log this message word for word in audit.md. Then push c012a48 and the fixes, wait for every check on PR #10 including dependency review, record CHECKS_GREEN with the run IDs, and stop. Step 38 stays open until I tell you #10 is merged."
+**AI Response**: "Logged. Confirmed the dependency graph: GET repos/soorma-ai/soorma-sdk/dependency-graph/sbom now answers 200 (it answered 404 before; the package list is still being populated, 2 packages at this time). Starting fix 1 (the audit-exceptions cooldown rule), then fix 2 (the garbled U1 line), then fix 3 (the dco.yml follow-up, recorded only)."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR #10, fixes before push
+
+---
+
+## U1 Code Generation — code PR #10: three fixes made
+**Timestamp**: 2026-11-18T17:23:15Z
+**User Input**: (none)
+**AI Response**: "Fix 1 (5314abe): the audit-exceptions check reads minimumReleaseAge from pnpm-workspace.yaml and publish times from the registry's `time` field (full document; the abbreviated one carries none). A release outside the affected range counts as a fix only once it is older than the cooldown; a younger one passes with a NOTICE naming the version and when it becomes installable; a fix without a parseable publish time, or a missing cooldown, fails closed. Tests added: 1 day old passes with the notice; 8 days old fails; missing time fails; unparseable time fails; missing cooldown fails (98 tests pass). DEPENDENCIES.md, register.json removeWhen and the pnpm-workspace.yaml comment updated. Live run passes against the registry. Fix 2 (cb84234): removed '.md), awaiting answers.md), awaiting answers' from the U1 line under Stage Progress (CONSTRUCTION PHASE). History: the first copy came in a639efa (after 'awaiting approval'), 811c427 doubled it, both reached main with #9. No other leftover text found: every table's rows match their header; the only repeated lines are the two PRDs' Kind and Status fields. Fix 3: OBL-03 recorded under Open Obligations (dco.yml to run the base commit's tools/dco and read the PR's commits separately, after #10 merges; not done in #10), with an observation that under pull_request the workflow file itself also comes from the PR."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR #10
+
+---
+
+## U1 Code Generation — code PR #10: CHECKS_GREEN
+**Timestamp**: 2026-11-18T17:25:53Z
+**User Input**: (none)
+**AI Response**: "Pushed c012a48, 5314abe, cb84234, 2b8c135 to dev (every commit in origin/main..dev signed off). PR #10 at head 2b8c135: CI run 44358181296 (pull request) green: unit, repository checks, conformance self-test, dependency review; DCO run 44358181249 green; CI run 44358169366 (push) green, dependency review skipped on push by design. Recorded CHECKS_GREEN in aidlc-state.md. Stopped: the user merges #10; it is not recorded as merged until GitHub shows it, and plan Step 38 stays open until the user says #10 is merged."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR #10, awaiting the user's merge
+
+---

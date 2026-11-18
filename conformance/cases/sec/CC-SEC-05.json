@@ -1,0 +1,49 @@
+{
+  "id": "CC-SEC-05",
+  "title": "A foreign owner is refused",
+  "statements": ["SEC-05"],
+  "$comment": "Owned by a second local user, group the runner's (so it is readable): the owner check refuses it. CI creates the user; locally, --local-skip CC-SEC-05 skips it and says so.",
+  "timeoutMs": 15000,
+  "requires": {
+    "foreignOwner": true
+  },
+  "setup": {
+    "files": [
+      {
+        "name": "foreign",
+        "type": "file",
+        "content": "${SECRET}",
+        "mode": "0640",
+        "owner": "foreign"
+      }
+    ]
+  },
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:foreign}",
+        "timeoutMs": 2000
+      },
+      "label": "f"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "f",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "owned-by-another-user"
+      }
+    },
+    {
+      "kind": "absence",
+      "noSecretAnywhere": true
+    }
+  ]
+}

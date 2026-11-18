@@ -1,0 +1,135 @@
+{
+  "id": "CC-ACQ-07",
+  "title": "Values are sent as given",
+  "statements": ["ACQ-09"],
+  "$comment": "The invalid values come from the bad-agent and secret-bad-character fixtures; the other-type material from material-of-another-type. secret-too-long is the same rule at a length the platform refuses.",
+  "fixtures": [
+    "data-gateway/BootstrapRequest/invalid/bad-agent.json",
+    "data-gateway/BootstrapRequest/invalid/secret-bad-character.json",
+    "data-gateway/BootstrapRequest/invalid/secret-too-long.json",
+    "data-gateway/BootstrapRequest/valid/material-of-another-type.json"
+  ],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "b1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 400,
+          "json": {
+            "type": "urn:soorma:problem:malformed_request",
+            "title": "malformed_request",
+            "status": 400,
+            "code": "malformed_request"
+          }
+        }
+      },
+      {
+        "label": "b2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "host:a-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "a/b",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "literal",
+          "value": "soorma_rs_ AAAA"
+        }
+      },
+      "label": "c1"
+    },
+    {
+      "op": "start",
+      "label": "s1"
+    },
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "a",
+        "instance": "host:a-1",
+        "secret": {
+          "kind": "literal",
+          "value": "soorma_em_AAAAAAAAAAAAAAAAAAAAAA"
+        }
+      },
+      "label": "c2"
+    },
+    {
+      "op": "start",
+      "label": "s2"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/agent-credentials",
+        "nth": 1
+      },
+      "bodyAt": {
+        "/agent": "a/b",
+        "/secret": "soorma_rs_ AAAA"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "s1",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 400,
+        "code": "malformed_request"
+      }
+    },
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/agent-credentials",
+        "nth": 2
+      },
+      "bodyAt": {
+        "/instance": "host:a-1",
+        "/secret": "soorma_em_AAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "s2",
+      "ok": true
+    }
+  ]
+}

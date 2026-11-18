@@ -1,0 +1,9 @@
+{
+  "name": "@soorma/sdk-fixture",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@opentelemetry/api": "1.9.1"
+  }
+}

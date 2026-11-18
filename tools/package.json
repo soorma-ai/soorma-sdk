@@ -1,0 +1,10 @@
+{
+  "name": "@soorma-sdk/tools",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Repository checks for soorma-sdk. Never published.",
+  "dependencies": {
+    "yaml": "2.9.1"
+  }
+}

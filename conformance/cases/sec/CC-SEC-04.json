@@ -1,0 +1,93 @@
+{
+  "id": "CC-SEC-04",
+  "title": "Unsafe modes are refused without reading",
+  "statements": ["SEC-05", "SEC-08"],
+  "timeoutMs": 15000,
+  "setup": {
+    "files": [
+      {
+        "name": "other-read",
+        "type": "file",
+        "content": "${SECRET}",
+        "mode": "0604"
+      },
+      {
+        "name": "group-write",
+        "type": "file",
+        "content": "${SECRET}",
+        "mode": "0620"
+      },
+      {
+        "name": "other-write",
+        "type": "file",
+        "content": "${SECRET}",
+        "mode": "0602"
+      }
+    ]
+  },
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:other-read}",
+        "timeoutMs": 2000
+      },
+      "label": "or"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:group-write}",
+        "timeoutMs": 2000
+      },
+      "label": "gw"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:other-write}",
+        "timeoutMs": 2000
+      },
+      "label": "ow"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "or",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "readable-by-others",
+        "path": {
+          "includes": "other-read"
+        }
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "gw",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "writable-by-group"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "ow",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "writable-by-others"
+      }
+    },
+    {
+      "kind": "absence",
+      "noSecretAnywhere": true
+    }
+  ]
+}

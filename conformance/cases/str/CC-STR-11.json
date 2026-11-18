@@ -1,0 +1,232 @@
+{
+  "id": "CC-STR-11",
+  "title": "A duplicate in the renewal overlap is yielded, not suppressed",
+  "statements": ["STR-05"],
+  "$comment": "The same Delivery text is written to both streams in the overlap: both copies are yielded (DEC-U1-12).",
+  "timeoutMs": 15000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+3000}"
+          }
+        }
+      },
+      {
+        "label": "renew",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.two",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "waitFor": {
+                "match": {
+                  "path": "/subscriptions"
+                },
+                "count": 2,
+                "timeoutMs": 5000
+              }
+            },
+            {
+              "delivery": {
+                "label": "dup-old",
+                "raw": "{\"envelope\":{\"envelopeVersion\":1,\"scope\":{\"organization\":\"o1\",\"project\":\"p1\",\"environment\":\"e1\"},\"originMode\":\"autonomous\",\"actorChain\":[{\"agent\":\"agent-a\",\"instance\":\"host-1:4100\"}],\"traceContext\":{\"traceparent\":\"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01\"}},\"seal\":\"dup\",\"payload\":{\"k\":\"v\"}}"
+              }
+            },
+            {
+              "end": "superseded"
+            }
+          ]
+        }
+      },
+      {
+        "label": "s2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "dup-new",
+                "raw": "{\"envelope\":{\"envelopeVersion\":1,\"scope\":{\"organization\":\"o1\",\"project\":\"p1\",\"environment\":\"e1\"},\"originMode\":\"autonomous\",\"actorChain\":[{\"agent\":\"agent-a\",\"instance\":\"host-1:4100\"}],\"traceContext\":{\"traceparent\":\"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01\"}},\"seal\":\"dup\",\"payload\":{\"k\":\"v\"}}"
+              }
+            },
+            {
+              "delivery": {
+                "label": "d3",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "dup-old",
+          "sealOf": "dup-old",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "streamEnded",
+          "code": "superseded",
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "dup-new",
+          "sealOf": "dup-new",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d3",
+          "sealOf": "d3"
+        }
+      ]
+    }
+  ]
+}

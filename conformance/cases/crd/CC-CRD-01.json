@@ -1,0 +1,77 @@
+{
+  "id": "CC-CRD-01",
+  "title": "Credential details are read only; the credential string is unreachable",
+  "statements": ["CRD-03"],
+  "$comment": "The environment reference is reported exactly as the credential says, an unknown member included.",
+  "fixtures": ["data-gateway/AgentCredential/valid/unknown-field.json"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "fixture": "data-gateway/AgentCredential/valid/unknown-field.json",
+          "set": {
+            "/expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "credential",
+      "label": "cred"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "cred",
+      "result": {
+        "/credential/agent": "a",
+        "/credential/instance": "a-1",
+        "/credential/environment": {
+          "organization": "o",
+          "project": "p",
+          "environment": "e",
+          "region": "r"
+        },
+        "/credential/expiresAt": {
+          "exists": true
+        },
+        "/credential/credential": {
+          "exists": false
+        }
+      }
+    },
+    {
+      "kind": "absence",
+      "noCredentialIn": "soorma_ac_eyJhbGciOiJFZDI1NTE5In0.e30.c2ln"
+    }
+  ]
+}

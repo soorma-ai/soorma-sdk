@@ -1,0 +1,31 @@
+{
+  "id": "CC-NEV-01",
+  "title": "No human-side operation or type",
+  "statements": ["CRD-05", "NEV-01"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "names",
+      "label": "n"
+    },
+    {
+      "op": "surface",
+      "label": "s"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "surface",
+      "command": "n",
+      "excludesMatching": "(sign.?in|signin|human|delegat|environment.?credential|password)"
+    },
+    {
+      "kind": "surface",
+      "command": "s",
+      "excludesMatching": "(sign.?in|signin|human|delegat|environment.?credential|password)"
+    }
+  ]
+}

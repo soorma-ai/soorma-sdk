@@ -1,0 +1,220 @@
+{
+  "id": "CC-STR-10",
+  "title": "At most one stream per lineage",
+  "statements": ["STR-09"],
+  "$comment": "Two renewals: never more than two streams open at once (the moment a replacement supersedes).",
+  "timeoutMs": 15000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+3000}"
+          }
+        }
+      },
+      {
+        "label": "r1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.two",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+5000}"
+          }
+        }
+      },
+      {
+        "label": "r2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.three",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "waitFor": {
+                "match": {
+                  "path": "/subscriptions"
+                },
+                "count": 2,
+                "timeoutMs": 5000
+              }
+            },
+            {
+              "end": "superseded"
+            }
+          ]
+        }
+      },
+      {
+        "label": "s2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "waitFor": {
+                "match": {
+                  "path": "/subscriptions"
+                },
+                "count": 3,
+                "timeoutMs": 6000
+              }
+            },
+            {
+              "end": "superseded"
+            }
+          ]
+        }
+      },
+      {
+        "label": "s3",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "absence",
+      "maxConcurrentStreams": 2
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/subscriptions"
+      },
+      "count": 3
+    }
+  ]
+}

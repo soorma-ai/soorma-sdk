@@ -1,0 +1,109 @@
+{
+  "id": "CC-ACQ-04",
+  "title": "A failed start can be retried by tenant code",
+  "statements": ["ACQ-06"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 403,
+          "json": {
+            "type": "urn:soorma:problem:authentication_failed",
+            "title": "authentication_failed",
+            "status": 403,
+            "code": "authentication_failed"
+          }
+        }
+      },
+      {
+        "label": "boot2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "s1"
+    },
+    {
+      "op": "start",
+      "label": "s2"
+    },
+    {
+      "op": "inspect",
+      "args": {
+        "checks": ["providerCalls"]
+      },
+      "label": "insp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "s1",
+      "ok": false,
+      "error": {
+        "code": "authentication_failed"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "s2",
+      "ok": true
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 2
+    },
+    {
+      "kind": "observation",
+      "command": "insp",
+      "result": {
+        "/providerCalls": 2
+      }
+    }
+  ]
+}

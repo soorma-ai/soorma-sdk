@@ -1,0 +1,4 @@
+contract/
+aidlc-docs/
+pnpm-lock.yaml
+.e2e/

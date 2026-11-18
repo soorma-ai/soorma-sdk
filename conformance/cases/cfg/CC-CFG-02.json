@@ -1,0 +1,22 @@
+{
+  "id": "CC-CFG-02",
+  "title": "No environment option exists",
+  "statements": ["CFG-02"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "surface",
+      "label": "surf"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "surface",
+      "command": "surf",
+      "excludesMatching": "(^|_)(environment|env|scope|organization|organisation|project)($|_|[A-Z])"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "CC-SEC-02",
+  "title": "One provider, none reading an environment variable",
+  "statements": ["SEC-03"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "env",
+      "args": {
+        "set": {
+          "SOORMA_SECRET": "env-secret",
+          "SECRET": "env-secret"
+        }
+      }
+    },
+    {
+      "op": "names",
+      "label": "n"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "surface",
+      "command": "n",
+      "excludesMatching": "(env|Env|ENV).*(secret|Secret)|(secret|Secret).*(env|Env|ENV)"
+    }
+  ]
+}
