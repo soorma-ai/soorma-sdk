@@ -68,7 +68,7 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 
 | ID | Question | Deferred To | Reason | Source | Status |
 |---|---|---|---|---|---|
-| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | Functional Design of the unit that owns trace emission | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | Open |
+| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | Functional Design of the unit that owns trace emission (component C-19, Tracing; the unit set at Units Generation) | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | Open |
 
 ## Extension Configuration
 
@@ -112,7 +112,7 @@ the first published release.
 - [x] Requirements Analysis — APPROVED 2026-11-18T02:47:34Z, with the user's correction to Q1 (Node.js 24 or later; CI Node 24 and 26; Python 3.11+, CI 3.11 and newest). Questions answered 2026-11-18T02:37:58Z (Q1 X two languages, TypeScript first; Q2–Q10 A; Q11 A2; Q12 A; Q13 A; Q14 A3; Q15 B)
 - [x] User Stories — APPROVED 2026-11-18T03:05:37Z. Plan answered 2026-11-18T02:55:43Z (Q1–Q6 A); 2 personas, 14 stories, 80 criteria; gap pass: no new gap; US-Q1 carried to Functional Design
 - [x] Workflow Planning — APPROVED 2026-11-18T05:13:20Z (with two items for Application Design: the examples' secret source; how CI runs soorma-core)
-- [ ] Application Design — plan and questions written (inception/working/application-design-plan.md); awaiting answers
+- [ ] Application Design — answers 2026-11-18T05:32:10Z (Q1, Q3–Q6, Q8 A; Q2, Q7, Q9 X); design generated (inception/application-design/); awaiting approval
 - [ ] Units Generation — EXECUTE
 - [ ] Tickets (extension) — EXECUTE
 - [ ] QA test specs, inception pass (extension) — EXECUTE

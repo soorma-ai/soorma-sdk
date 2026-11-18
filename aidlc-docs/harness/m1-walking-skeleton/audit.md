@@ -281,3 +281,33 @@ Log this word for word in audit.md, then start Application Design."
 **Context**: INCEPTION — Application Design, questions presented
 
 ---
+## Application Design — answers
+**Timestamp**: 2026-11-18T05:32:10Z
+**User Input**: "Answers: Q1 A, Q3 A, Q4 A, Q5 A, Q6 A, Q8 A. Q2, Q7 and Q9 are X:
+
+Q2 X: TypeScript @soorma/sdk, under the soorma npm organisation, which I've now created (it has no packages yet). Python is distributed as soorma and imported as soorma. Both PyPI names are already mine as 0.0.0 placeholders: soorma is described as the Python client harness, and soorma-sdk points to it ("Install this instead"). Record that soorma-sdk on PyPI is a redirect, not this package's name. Nothing is published in M1 (D-05).
+
+Q7 X: As proposed, except for what fileSecret checks before reading:
+
+Refuse if the file is writable by group or others, readable by others, or owned by anyone other than the process's user or root.
+Allow a group read, so Kubernetes secret volumes with fsGroup work, and follow symlinks, checking the final file, so Kubernetes' ..data links work.
+When refusing, name the path and the reason, never the contents.
+Document the matching Kubernetes setting (defaultMode: 0440 with fsGroup) and Docker setting in the README. Windows behaviour stays with Functional Design. A tenant using a secrets manager writes their own provider; the SDK still ships none that reads an environment variable.
+
+Q9 X: As A, but with soorma-core's CI triggers (#26):
+
+Run the end-to-end jobs on PRs and on pushes to dev, not on pushes to main. The PR run already tests the merge result.
+Skip them with a job-level condition when every changed file is under aidlc-docs/.
+Every run uses a fresh stack (stack:init from a clean clone, down -v at the end). The first sign-in from the handover file works only once, so e2e/setup must never run against an old stack.
+Log this word for word in audit.md, then generate the Application Design."
+**AI Response**: "Answers recorded in the plan. Step 8 analysis: no ambiguity; no follow-up needed. Read soorma-core's #26 pattern at origin/main (read only): a `changes` job computes the diff (pull request: base to test merge; push: before to head) and outputs false only when the diff is computable, non-empty, and every path is under aidlc-docs/; anything else runs the dependent job. The end-to-end jobs follow it. Generating the Application Design."
+**Context**: INCEPTION — Application Design, answers received
+
+---
+## Application Design — design generated; approval requested
+**Timestamp**: 2026-11-18T05:38:01Z
+**User Input**: (none since the answers at 2026-11-18T05:32:10Z)
+**AI Response**: "Generated inception/application-design/: components.md (layout per Q1 A; package names per Q2 X, recording that PyPI soorma-sdk is a redirect to soorma, not this package's name; C-01 to C-06 language-neutral, C-10 to C-22 per language), component-methods.md (initial name table; public interface in TypeScript and Python; conformance driver protocol; e2e commands), services.md (client lifecycle, credentials, streams across renewal, publish and forward, conformance, end-to-end, CI with triggers per Q9 X and expected time), component-dependency.md (matrix, patterns, Mermaid component diagram and done-when 2/3/5 sequence, each with a text alternative), application-design.md (decisions AD-01 to AD-14, traceability FR and story to component, what is left out per FR-16, misuse cases, extension compliance, gap pass). fileSecret per Q7 X: follows symlinks and checks the final file on the opened handle; refuses non-regular, group- or other-writable, other-readable, or foreign-owned (other than the process's user or root); group read allowed; README to document Kubernetes defaultMode 0440 with fsGroup and Docker; Windows to Functional Design; no environment-variable provider. CI per Q9 X: end-to-end jobs on pull requests and pushes to dev, not main; skipped only when every changed file is provably under aidlc-docs/; a fresh stack every run, with a single-use marker so e2e/setup never runs against an old stack. Expected CI time added: about 3 to 5 minutes per end-to-end job, measured at the first code PR. US-Q1 carried to the Functional Design of the unit holding C-19. Gap pass: no new specification gap. Extension compliance: security-baseline compliant or N/A (hosted clauses carried); invariants I1 to I10 compliant, I11 N/A for this stage. Presenting the Application Design approval gate; next stage Units Generation."
+**Context**: INCEPTION — Application Design, approval gate presented
+
+---
