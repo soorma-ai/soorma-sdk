@@ -39,7 +39,7 @@ SDK acting as enforcement.
 
 | ID | Decision | Source |
 |---|---|---|
-| D-01 | **Two languages, one behaviour.** TypeScript on **Node.js 22 LTS** first, needed for example apps; **Python 3.11+** second | RA Q1 X |
+| D-01 | **Two languages, one behaviour.** TypeScript on **Node.js 24 or later** (the oldest maintained LTS; Node 22 reaches end of life in April 2027) first, needed for example apps; **Python 3.11+** second | RA Q1 X, **as corrected by the user** (audit 2026-11-18T02:47:34Z) |
 | D-02 | **Language-neutral, defined once**: the contract copy, the harness behaviour specification, and the conformance suite | RA Q1 X |
 | D-03 | **Per language**: types generated from the copied contract; an idiomatic public interface with the same semantics and names under **one stated naming convention**; the same end-to-end scenario | RA Q1 X |
 | D-04 | **Repository layout** leaves room for further languages, for example `contract/`, `conformance/`, `typescript/`, `python/`. Proposed at Application Design | RA Q1 X |
@@ -275,7 +275,7 @@ work-around). *Traces*: PF §8a *Subscribe*, §6; contract `envelope.md` *The st
 language, under one convention stated in the behaviour specification (FR-02), with each
 language's idiomatic casing. The convention is proposed at Application Design.
 
-**FR-18 — The language packages.** A TypeScript package for **Node.js 22 LTS**, built first,
+**FR-18 — The language packages.** A TypeScript package for **Node.js 24 or later**, built first,
 and a Python package for **Python 3.11+**, built second. Each has an idiomatic public interface
 over FR-04 to FR-15, its types generated from the vendored contract (FR-01), and passes the
 conformance suite (FR-03). Both are buildable and installable from this repository; **neither
@@ -317,7 +317,7 @@ property.
 | NFR-05 | **Compatibility, as a consumer**: declares `clientContractVersion` `0.1.0` exactly; tolerates unknown fields, enumerated values, Problem codes and `end` codes; preserves and forwards unknown envelope fields | PF FR-004, FR-005, §14; I7 | Functional Design |
 | NFR-06 | **Secret and credential hygiene**: no secret, credential or payload content in logs, error messages, exception text, or string representations | OB-9; SECURITY-03, SECURITY-12 | Functional Design |
 | NFR-07 | **Supply chain**: lock files committed; exact dependency versions; a vulnerability scan in CI; pinned CI tool and action versions; dependencies from official registries only | SECURITY-10 | NFR Requirements |
-| NFR-08 | **Runtimes**: Node.js 22 LTS; Python 3.11+ | D-01 | — |
+| NFR-08 | **Runtimes**: **Node.js 24 or later**, the oldest maintained LTS; CI tests on **Node 24 and Node 26** (soorma-core runs on 26). **Python 3.11+**; CI tests on **3.11 and the newest release** | D-01, as corrected by the user (audit 2026-11-18T02:47:34Z) | — |
 | NFR-09 | **Licence**: Apache 2.0, with SPDX headers in source files | PF §22 | Code Generation |
 | NFR-10 | **Testability**: every FR has a conformance case or an end-to-end assertion; both run in CI | D-12; FR-03 | Build and Test |
 | NFR-11 | **DCO**: every commit carries a `Signed-off-by` matching its author | `.github/workflows/dco.yml` | Every commit |

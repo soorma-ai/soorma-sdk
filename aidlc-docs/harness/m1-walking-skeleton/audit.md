@@ -175,3 +175,26 @@ Log the answers in audit.md word for word, then write the requirements and prese
 **Context**: INCEPTION — Requirements Analysis, approval gate presented
 
 ---
+## Requirements Analysis — user's correction and approval
+**Timestamp**: 2026-11-18T02:47:34Z
+**User Input**: "One change, then approved.
+
+NFR-08 and D-01: change Node 22 LTS to Node.js 24 or later, the oldest maintained LTS. Node 22 reaches end of life in April 2027. CI tests on Node 24 and Node 26; soorma-core runs on 26. Python stays 3.11+, tested on 3.11 and the newest release. This corrects my earlier answer; record it in audit.md as my correction.
+
+Reviewed and accepted:
+
+the DCO fix: three signed commits, links repaired and resolving;
+FR-01 to FR-03, the language-neutral layer;
+FR-12's extraction regardless of member order, and the raw-text fallback;
+exact forwarding;
+FR-13's reading that 429 too_many_attempts goes to tenant code and is never retried;
+the amended unit shapes, to be confirmed at Units Generation.
+With NFR-08 corrected, I approve Requirements Analysis. Log this word for word, make the change, commit with sign-off, and continue to the next stage."
+
+**Answers Recorded** (correction to requirement-verification-questions.md):
+- Q1 — Language and runtime, **corrected by the user**: TypeScript on "Node.js 24 or later, the oldest maintained LTS" (was "Node 22 LTS"); "CI tests on Node 24 and Node 26; soorma-core runs on 26". Python unchanged at 3.11+, "tested on 3.11 and the newest release". The earlier answer (2026-11-18T02:37:58Z) stands in the log as given; this entry supersedes its Node version.
+
+**AI Response**: "Recorded the user's correction. Updated requirements.md: D-01, FR-18, NFR-08 and the done criteria now read Node.js 24 or later (oldest maintained LTS), CI matrix Node 24 and Node 26; Python 3.11+, CI matrix 3.11 and the newest release. Requirements Analysis APPROVED. Next stage: User Stories."
+**Context**: INCEPTION — Requirements Analysis approved, with the user's correction to RA Q1
+
+---
