@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Construction Design PR gate
+- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Code Generation (Part 1: plan)
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -118,12 +118,12 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Approved**: 2026-11-18T06:47:24Z
 
 ### Construction Design PR Gate — contract-and-conformance
-- **Status**: PENDING
+- **Status**: APPROVED (merged)
 - **Branch**: dev (the user's standing instruction)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/contract-and-conformance-design-pr-checkpoint-instructions.md
-- **PR**: soorma-ai/soorma-sdk#9 (dev → main), opened 2026-11-18T08:28:30Z; checks green 2026-11-18T08:28:55Z (Check sign-off: pass). Merge is the user's; recorded only when GitHub shows it
+- **PR**: soorma-ai/soorma-sdk#9 (dev → main), opened 2026-11-18T08:28:30Z; checks green 2026-11-18T08:28:55Z (Check sign-off: pass). Merged 2026-11-18T08:38:48Z, merge commit `c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6` (confirmed on GitHub 2026-11-18T08:40:41Z)
 - **Created**: 2026-11-18T08:28:18Z
-- **Approved**: —
+- **Approved**: 2026-11-18T08:40:41Z
 
 ## Extension Configuration
 
@@ -183,7 +183,7 @@ the first published release.
 ### CONSTRUCTION PHASE
 - [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR gate PENDING.md), awaiting answers.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan written 2026-11-18T08:43:07Z (construction/working/contract-and-conformance-code-generation-plan.md: 38 steps, 9 commit groups), awaiting approval.md), awaiting answers.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE

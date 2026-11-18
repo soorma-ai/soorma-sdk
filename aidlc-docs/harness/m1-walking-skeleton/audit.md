@@ -676,3 +676,33 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 Construction Design PR gate, awaiting merge
 
 ---
+## U1 Construction Design PR — merged; Code Generation begins
+**Timestamp**: 2026-11-18T08:40:41Z
+**User Input**: "soorma-ai/soorma-sdk#9 is merged: merge commit c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6 on main, 2026-11-18T08:38:48Z. Confirm it on GitHub, then record U1's Construction Design PR gate as approved and merged.
+
+Sync dev: git fetch origin && git merge --ff-only origin/main on dev, then push. Fast-forward only.
+
+Accepted: P-04's heap-snapshot rule, plus your addition that the workflow check fails on an upload step naming the run directory; the QA enrichment (13 updated, 21 added, 45 total, IDs unchanged).
+
+Then start U1's Code Generation, Part 1 (the plan) first, and stop for approval. The plan must show:
+
+Commit groups and CI. Each group is pushed and CI is waited on before the next starts (F40). Every commit is signed off.
+U1's "done when" in CI on the code PR:
+the reference driver passes its 23 declared cases in reference mode;
+each of the four faulted runs fails on exactly its named case: CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04. The self-test job is green only when all four fail as expected;
+the drift, generated-types, names, SPDX, workflow and packaging checks each have a test proving they catch the defect they look for;
+the DCO tests (NFR-U1-32) run in CI.
+The new dco.yml checks its own PR. Record the run ID that shows it.
+The code PR (dev → main) is opened before the completion message, every check green, DCO included. Stop and tell me the PR number; don't record it as merged until GitHub shows it.
+Log this word for word in audit.md."
+**AI Response**: "Confirmed on GitHub: PR #9 MERGED at 2026-11-18T08:38:48Z, merge commit c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6. Recorded U1's Construction Design PR gate APPROVED and merged. Synced dev: git fetch origin; git merge --ff-only origin/main (f712c20..c8ebb7a, fast-forward); pushed; origin/dev = origin/main = c8ebb7a. Starting U1 Code Generation, Part 1 (the plan)."
+**Context**: CONSTRUCTION — U1 design gate merged; Code Generation Part 1 begins
+
+---
+## U1 Code Generation — Part 1 plan; approval requested
+**Timestamp**: 2026-11-18T08:43:07Z
+**User Input**: (see the entry at 2026-11-18T08:40:41Z)
+**AI Response**: "Loaded construction/code-generation.md. L1 matrix has no Missing rows. Wrote construction/working/contract-and-conformance-code-generation-plan.md (git-ignored): 38 steps in 9 commit groups (G1 workspace and CI skeleton; G2 the DCO check rewritten with its tests; G3 the contract copy, PIN and the six repository checks, each with a test proving it catches its defect; G4 the specification and name table; G5 the runner; G6 the stub; G7 the 90 case files; G8 the reference driver, the four faults and the self-test job; G9 documentation, coverage rows, and the code PR with the dco.yml self-check run ID). Every group: gate (install frozen, typecheck, lint, format, tests, checks, and from G8 the self-test), signed-off commit, push, CI waited on before the next group. Points for approval: 1.1 the user's 'fails on exactly its named case' conflicts with the Functional Design's faults: as designed, reorder-forwarded-envelope would also fail CC-RCV-06, retry-publish CC-PRB-01, and skip-boundary CC-STR-05 and CC-STR-01; proposed: CC-RCV-06's envelope text in sorted compact form, CC-PRB-01 without a 503, and skip-boundary dropping only a superseded stream's ended item, so each faulted run's failed set equals exactly its named case (Step 2 aligns business-logic-model §5.2 and §6); 1.2 ESLint with typescript-eslint and Prettier; 1.3 'Verified' for U1's L1 and invariant rows: case validated, and for the 23 reference cases a passing reference run; others executed at U3 and U4; 1.4 the foreseen risk that U3 finds defects in cases it first executes, handled as changes to an earlier unit's tests by class. Changes to earlier units' tests: none (U1 is first)."
+**Context**: CONSTRUCTION — U1 Code Generation Part 1, approval requested
+
+---
