@@ -864,3 +864,16 @@ Log this message word for word in audit.md. Then push c012a48 and the fixes, wai
 **Context**: CONSTRUCTION — U1 Code Generation, code PR #10, awaiting the user's merge
 
 ---
+
+## U1 Code Generation — code PR #10 merged; Code Generation complete
+**Timestamp**: 2026-11-18T17:32:21Z
+**User Input**: "soorma-ai/soorma-sdk#10 is merged: merge commit 91d09106c9d5e323a6a47cd67d074a5b1adc9e88 on main, 2026-11-18T17:30:33Z, with parents c8ebb7a (main) and a57f6d5 (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only, since GitHub's merge commit has no sign-off: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me; don't create a merge commit.
+2. Record U1's code PR as MERGED in aidlc-state.md. Use the merge commit and time above, and the runs at the final head a57f6d5: CI (pull request) 44358647204, DCO 44358647419, CI (push) 44358636704. Mark Step 38 [x], and mark U1's Code Generation complete in Stage Progress.
+3. Log this message word for word in audit.md, then commit signed off and push.
+4. Present U1's Code Generation completion message, the standard two options, with the per-group CI table. The next stage is the next unit, U2 e2e-stack. Stop for my approval before starting U2."
+**AI Response**: "Confirmed on GitHub: PR #10 state MERGED, mergedAt 2026-11-18T17:30:33Z, merge commit 91d09106c9d5e323a6a47cd67d074a5b1adc9e88, parents c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6 and a57f6d5d26a9c81431195e30f8cf14bd5a97a4bb (the PR head). dev fast-forwarded a57f6d5..91d0910; no merge commit created. aidlc-state.md: Code PR — contract-and-conformance MERGED with the merge commit, time and the final-head runs (CI 44358647204, DCO 44358647419, push CI 44358636704); U1 marked [x] with Code Generation COMPLETE; Current Stage updated. Plan Step 38 marked [x] (every plan step now done). Presenting U1's Code Generation completion message; next stage: the next unit, U2 e2e-stack. Stopped for approval before U2."
+**Context**: CONSTRUCTION — U1 Code Generation complete; awaiting approval to start U2
+
+---
