@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: INCEPTION - PRD Intake (awaiting approval)
+- **Current Stage**: INCEPTION - Requirements Analysis
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -26,8 +26,8 @@
 - **Coverage map**: inception/prd-intake/prd-coverage-map.md
 - **Specification gaps**: inception/prd-intake/specification-gaps.md
 - **Stages satisfied**: none (Requirements Analysis, User Stories, Units Generation Partial; Application Design Not addressed)
-- **Unit shapes**: harness only, trace emission included; no contract, plane face or ordinary unit (confirmed: intake Q1 A, audit 2026-11-18T02:07:55Z)
-- **Intake approval**: pending
+- **Unit shapes**: **amended at Requirements Analysis** (RA Q1 X, audit 2026-11-18T02:37:58Z): the conformance suite is an **ordinary** unit (F45's rule); every other unit is **harness**. No contract or plane face. *To confirm at Units Generation.* Superseded: harness only, trace emission included (intake Q1 A, 2026-11-18T02:07:55Z)
+- **Intake approval**: 2026-11-18T02:14:55Z (audit: PRD Intake — approval)
 
 ### PRD: PF — platform-foundations
 
@@ -71,14 +71,38 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 
 ## Extension Configuration
 
-*(Opt-ins presented at Requirements Analysis.)*
+| Extension | Enabled | Decided At | Notes |
+|---|---|---|---|
+| security-baseline | Yes | Requirements Analysis (Q11) | Opted in — deployment: local-only. *(hosted)* clauses listed under `## Carried Security Obligations` |
+| soorma-platform-invariants | Yes | Requirements Analysis (Q12) | Scope inherited from PF §15 and ID §15: I1 to I11 all Addressed in both, none N/A. Invariants read at `prd-platform-foundations-v1.3` and `prd-identity-v1.0`; text identical at both tags (SHA-256 c66c0170…) |
+| pr-checkpoint | Yes | Requirements Analysis (Q13) | Gates on `dev` → `main` PRs (the user's git instruction) |
+| qa-test-cases | Yes | Requirements Analysis (Q14) | Opted in — scope: comprehensive |
+| tickets | Yes | Requirements Analysis (Q15) | Opted in — target: GitHub issues: soorma-ai/soorma-sdk; initiative ticket → tracking issue; unit ticket → sub-issue |
+
+Full rules loaded at opt-in: security-baseline.md, soorma-platform-invariants.md, pr-checkpoint.md, qa-test-cases.md, tickets.md.
+
+## Carried Security Obligations
+
+Deployment context `local-only`: each *(hosted)* clause is N/A for the milestone and owed by the
+first hosted deployment. A client library deploys no infrastructure of its own; most rows are
+expected to stay N/A for this repository, and SECURITY-10's SBOM is the one likely to apply, at
+the first published release.
+
+| Rule | Clause | Owed by |
+|---|---|---|
+| SECURITY-01 | Encryption at rest using a managed key service or customer-managed keys (and its three verification items: storage encryption-at-rest block, object storage, database instances) | The first hosted deployment |
+| SECURITY-02 | Load balancer access logs to a persistent store; API gateway logs to a centralized log service | The first hosted deployment |
+| SECURITY-03 | Log output directed to a centralized log service | The first hosted deployment |
+| SECURITY-07 | Private subnets without direct internet gateway routes (through a NAT gateway); private endpoints for cloud service access | The first hosted deployment |
+| SECURITY-10 | SBOM for production deployments | The first hosted deployment, or the first published release |
+| SECURITY-14 | Security event alerting; log integrity (append-only, not deletable by the application); log retention (90 days minimum) | The first hosted deployment |
 
 ## Stage Progress
 
 ### INCEPTION PHASE
 - [x] Workspace Detection — 2026-11-17T07:29:06Z (greenfield; entry point: slice brief)
-- [ ] PRD Intake — artifacts written 2026-11-17T07:33:14Z; questions answered 2026-11-18T02:07:55Z (Q1 A, Q2 A, Q3 A); awaiting Step 7 approval
-- [ ] Requirements Analysis
+- [x] PRD Intake — APPROVED 2026-11-18T02:14:55Z. Questions answered 2026-11-18T02:07:55Z (Q1 A harness only; Q2 A raised soorma-prd#37 and worked around; Q3 A commented on #13)
+- [ ] Requirements Analysis — questions answered 2026-11-18T02:37:58Z (Q1 X two languages, TypeScript first; Q2–Q10 A; Q11 A2; Q12 A; Q13 A; Q14 A3; Q15 B); requirements.md written; awaiting approval
 - [ ] User Stories
 - [ ] Workflow Planning
 - [ ] Application Design

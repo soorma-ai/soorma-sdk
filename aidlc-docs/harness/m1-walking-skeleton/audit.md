@@ -83,3 +83,95 @@ present the intake approval gate."
 **Context**: INCEPTION — PRD Intake, gaps routed; approval gate presented
 
 ---
+## PRD Intake — approval
+**Timestamp**: 2026-11-18T02:14:55Z
+**User Input**: "B: Continue to Requirements Analysis.
+
+Intake reviewed and accepted:
+
+soorma-prd#37 and the #13 comment, both naming their repository, with links pinned to d1e0306;
+the done when 5 check that the span's trace ID matches the traceparent on the envelope B receives;
+committing on dev before approval, so the links could be fixed.
+Log my approval in audit.md word for word, then start Requirements Analysis.
+
+Carry T-2's constraint, that a payload too deep to parse never loses the envelope and seal, as a requirement.
+Carry GAP-INT-002's workaround as stated.
+When you present the extension opt-ins, include the security baseline's deployment choice (hosted or local-only), with your recommendation for a client library."
+**AI Response**: "PRD Intake approved (option B). Recorded the intake approval in aidlc-state.md (prd-intake.md Step 8). prd-gap-classification.md loaded and kept active for every later stage (spine, PRD Intake step 15). Starting Requirements Analysis."
+**Context**: INCEPTION — PRD Intake complete; Requirements Analysis begins
+
+---
+## Requirements Analysis — verification questions
+**Timestamp**: 2026-11-18T02:16:51Z
+**User Input**: (none since the intake approval)
+**AI Response**: "Loaded requirements-analysis.md. Step 0: loaded the coverage map and PF @ prd-platform-foundations-v1.3, ID @ prd-identity-v1.0. Intent: new project (greenfield client library), clear request, multiple components, moderate complexity; depth Standard, with traceability to PF FR-005, FR-023, §11 and done when 2, 3, 5. Carried into requirements without asking, per the user's instruction: T-2's constraint (a too-deep payload never loses the envelope and seal) and GAP-INT-002's work-around as stated, including the done when 5 proof by a test-installed exporter matching the traceparent B receives. Read the security baseline's deployment-context section only (full rules not loaded before opt-in) to make the deployment recommendation. Created inception/requirements/requirement-verification-questions.md with 15 questions: Part 1 (technology and delivery, confirming T-1 to T-4) Q1 language and runtime, Q2 packaging, Q3 how the contract is taken, Q4 too-deep payload surface, Q5 payload numbers, Q6 registration secret and re-bootstrap, Q7 subscriptions across renewal and stream ends, Q8 retries, Q9 where done when 2/3/5 are proven, Q10 runnable example; Part 2 (extension opt-ins) Q11 security baseline with deployment context (recommended A2 local-only), Q12 platform invariants, Q13 PR checkpoint, Q14 QA test cases, Q15 tickets."
+**Context**: INCEPTION — Requirements Analysis, Step 6 gate: awaiting answers
+
+---
+## Requirements Analysis — answers received
+**Timestamp**: 2026-11-18T02:37:58Z
+**User Input**: "Answers: Q1 X: both TypeScript and Python in this initiative, TypeScript first (details below), Q2 A for both packages, Q3 A, Q4 A, Q5 A, Q6 A, Q7 A, Q8 A, Q9 A (per language), Q10 A (a runnable example per language), Q11 A with A2 (local-only), Q12 A, Q13 A, Q14 A3, Q15 B (GitHub issues on soorma-ai/soorma-sdk: one tracking issue with a sub-issue per unit).
+
+Q1 in detail: two languages, one behaviour.
+
+Language-neutral, defined once:
+the contract, copied once at contract-v0.1.0;
+a harness behaviour specification: what each PF §11 operation does, which Problem codes surface, the retry rules, how stream ends and new streams appear, the deep-payload fallback, forwarding the exact JSON, and the span rules;
+a shared conformance suite of language-neutral case files that every language must pass.
+Per language:
+types generated from the copied contract;
+an idiomatic public interface, with the same semantics and names under one stated naming convention;
+the same e2e scenario for done when 2, 3 and 5 against a running soorma-core.
+Order: TypeScript first (Node 22 LTS), which I need for example apps; Python 3.11+ second.
+M1's done when 2, 3 and 5 need one language. This initiative's Build and Test requires both.
+The repository layout has room for further languages, e.g. typescript/, python/, contract/, conformance/. Propose it at Application Design.
+Unit shapes: this amends intake's \"harness only\". The conformance suite is an ordinary unit by F45's rule; the rest are harness units. Record the amended list and confirm it with me at Units Generation.
+Q4's depth bound is sized per language at NFR Requirements. The conformance suite tests the fallback behaviour, not the number.
+Two additions to the requirements:
+
+Q4: the code that pulls out the envelope and seal from a Delivery must not depend on the order of its members. The contract doesn't promise an order.
+Q5 / PF FR-005: forwarding inbound context sends the envelope's JSON exactly as received, never re-serialized from the parsed object. Keep the received envelope's text with each Delivery, in both languages.
+A blocker to fix first: DCO sign-off.
+
+soorma-sdk's .github/workflows/dco.yml fails any PR with a commit that lacks Signed-off-by:. Your commits d1e0306 and f210493 lack it.
+I authorise you to sign off commits in my name (Amit Bhadoria <gnulib@gmail.com>), on these two and on every later commit in this repository. Use git commit -s, and keep the Co-Authored-By line as well.
+Run git rebase --signoff origin/main on dev, check every commit in origin/main..dev carries the sign-off, then force-push dev. Force-pushing is allowed only on dev, only this once.
+Then repair the links: edit soorma-prd#37's body and your comment on #13 so every link to d1e0306 points to the new commit ID. Check both links resolve.
+Record the change and the new commit IDs in audit.md.
+Log the answers in audit.md word for word, then write the requirements and present the approval gate."
+
+**Answers Recorded** (inception/requirements/requirement-verification-questions.md):
+- Q1 — Language and runtime: X — "both TypeScript and Python in this initiative, TypeScript first (details below)", with the detail above ("Q1 in detail: two languages, one behaviour" ... "Propose it at Application Design.")
+- Q2 — Packaging in M1: A — "Buildable package, not published", "for both packages"
+- Q3 — How the SDK takes the contract: A — vendor contract/ at contract-v0.1.0 with a check against the tag; types generated from the copy; fixtures as conformance tests
+- Q4 — Too-deep payload: A — raw-text fallback; envelope and seal parsed and forwardable; bound sized at NFR Requirements ("sized per language at NFR Requirements. The conformance suite tests the fallback behaviour, not the number.")
+- Q5 — Payload numbers: A — native parsing, with the raw text available
+- Q6 — Registration secret: A — a secret provider called for each bootstrap; the secret kept only for that call
+- Q7 — Subscriptions: A — re-subscribe, and surface every boundary
+- Q8 — Retries: A — retry where repeating is harmless (bootstrap, renewal, subscribe on 503, honouring Retry-After, bounded); never retry publish
+- Q9 — Where done when 2, 3, 5 are proven: A — "per language": in CI and locally, against soorma-core at contract-v0.1.0
+- Q10 — Runnable example: A — "a runnable example per language"
+- Q11 — Security baseline: A with A2 — enforced; deployment context local-only
+- Q12 — soorma Platform Invariants: A — enforced
+- Q13 — Team review gates (PR checkpoint): A — enabled
+- Q14 — QA test cases: A3 — comprehensive
+- Q15 — Tickets: B — "GitHub issues on soorma-ai/soorma-sdk: one tracking issue with a sub-issue per unit"
+
+**AI Response**: "Fixed the DCO blocker first (below), then recorded the answers. Unit shapes amended from intake's 'harness only': the conformance suite is an ordinary unit; every other unit is harness; the amended list is confirmed at Units Generation. Loading the full rules of the five extensions opted in, writing requirements.md, and presenting the approval gate."
+**Context**: INCEPTION — Requirements Analysis, answers recorded
+
+---
+## DCO sign-off repair (user-authorised force-push of dev, once)
+**Timestamp**: 2026-11-18T02:37:58Z
+**User Input**: (the instruction above, 'A blocker to fix first: DCO sign-off ...')
+**AI Response**: "Stashed the uncommitted stage edits; ran git rebase --signoff origin/main on dev; checked every commit in origin/main..dev against dco.yml's rule (author name and email match a Signed-off-by line exactly): both ok, and both keep the Co-Authored-By line. Trees unchanged: d1e030696c0cb612757071522368af3cf857d21d -> 2c9f972a087f00769c6012644368cf6dc77ce86e (tree a5cb5ab2), f2104935 -> c3b20fc0f85b37b28d2d15b3e0d53b7edcba922c (tree ffd15322). Force-pushed dev once, with lease on f210493 (f210493...c3b20fc). Restored the stash. Repaired the links: soorma-prd#37's body (2 links) and the comment https://github.com/soorma-ai/soorma-prd/issues/13#issuecomment-6966876924 (1 link) now point to 2c9f972a087f00769c6012644368cf6dc77ce86e; no link to d1e0306 remains. All three URLs return HTTP 200, and the two anchors match the gap headings at 2c9f972. Earlier audit entries that cite d1e0306 are left as written: they record what was true then. From now on every commit in soorma-sdk is made with git commit -s, keeping the Co-Authored-By line."
+**Context**: Git — DCO compliance for soorma-sdk dev
+
+---
+## Requirements Analysis — extensions loaded; requirements written; approval requested
+**Timestamp**: 2026-11-18T02:40:40Z
+**User Input**: (none since the answers at 2026-11-18T02:37:58Z)
+**AI Response**: "Step 5.1: recorded the five opt-ins under Extension Configuration and loaded each full rules file: security-baseline.md, soorma-platform-invariants.md, pr-checkpoint.md, qa-test-cases.md, tickets.md. Security baseline local-only: wrote ## Carried Security Obligations (SECURITY-01, -02, -03, -07, -10 SBOM, -14 hosted clauses). Platform invariants: read references/platform/invariants.md at prd-platform-foundations-v1.3 and prd-identity-v1.0; identical (SHA-256 c66c017052310db17b5c9868b069f322a851191962a92003426bf9120f98d3ec); scope inherited from PF §15 and ID §15, I1 to I11 Addressed, none N/A. Unit shapes amended per RA Q1 X: conformance suite ordinary, every other unit harness; to confirm at Units Generation. Wrote inception/requirements/requirements.md: decisions D-01 to D-14; FR-01 to FR-20 (language-neutral layer FR-01 to FR-03; the six PF §11 operations FR-04 to FR-09; publish FR-10; subscribe FR-11; receiving FR-12 with order-independent extraction, the received envelope text kept, and T-2's constraint as a requirement; Problems and retries FR-13; trace emission FR-14 as GAP-INT-002's work-around, stated; configuration FR-15; boundaries FR-16; naming FR-17; packages FR-18; e2e per language FR-19; examples FR-20); NFR-01 to NFR-11. One reading flagged to the user: D-11 retries only 503, so 429 too_many_attempts is surfaced and not retried. Presenting the Requirements Analysis approval gate; User Stories is the next stage."
+**Context**: INCEPTION — Requirements Analysis, approval gate presented
+
+---
