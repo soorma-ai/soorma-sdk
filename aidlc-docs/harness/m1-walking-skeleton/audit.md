@@ -529,3 +529,10 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 Functional Design approved; NFR Requirements begins
 
 ---
+## U1 NFR Requirements — plan and questions
+**Timestamp**: 2026-11-18T07:26:29Z
+**User Input**: (none since the Functional Design approval)
+**AI Response**: "Loaded construction/nfr-requirements.md. U1 is ordinary: no shape profile to seed (Step 1.5 N/A). Read soorma-core at the tag for alignment only (pnpm 12.18.0 without Corepack; ajv 2020-12; openssl CLI for the local CA; Vitest; Dependabot with a 7-day cooldown). Wrote construction/working/contract-and-conformance-nfr-requirements-plan.md (git-ignored) with seven questions: Q1 toolchain (A: Node 24 LTS pinned, pnpm exact without Corepack, one workspace); Q2 libraries (A: Node built-ins, ajv, yaml, openssl CLI, OpenTelemetry test SDK in the reference driver only, Vitest); Q3 time budget (A: 5 minutes per driver per runtime; 8 minutes for the self-test job); Q4 flaky timing cases (A: no automatic retries; margins of at least twice the value); Q5 remote drift check (A: fail closed in CI; --offline locally); Q6 where the suite runs (A: Linux CI authoritative, second user via sudo; local macOS and Linux; CC-SEC-05 fails rather than skips without sudo); Q7 dependency updates and scanning (A: as soorma-core). The SDK's named values stay with U3 and U4. Awaiting answers."
+**Context**: CONSTRUCTION — U1 NFR Requirements, questions presented
+
+---
