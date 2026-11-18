@@ -951,3 +951,25 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: CONSTRUCTION — U2 e2e-stack, Functional Design complete, awaiting approval
 
 ---
+
+## U2 Functional Design — Request Changes: setup must not leave a sign-in open
+**Timestamp**: 2026-11-18T19:20:00Z
+**User Input**: "Request Changes, one change: setup must not leave a sign-in open.
+
+The contract's firstAuthenticate answers 200 with a sign-in when the organization requires no second factor (org-gateway.openapi.yaml at contract-v0.1.0), and ST-06 already requires that sign-in. setup ignores it, signs in again with authenticate (call 2), and ST-09 ends only the second sign-in. The first stays live until it expires, so \"ends the environment credential and the sign-in\" isn't true. soorma-core's smoke.ts makes the same two calls, but it doesn't claim to end every sign-in.
+
+Drop call 2. Use the sign-in that firstAuthenticate returns for issueEnvironmentCredential and for endSignIn. K is then used once, in firstAuthenticate's newSecret, and still never leaves memory. Update ST-05, ST-06, ST-09, the call table in business-logic-model §3 (renumber it), the domain entities, and the L1 and invariant matrices wherever they cite call 2. Record the reading of S-6: its \"sign-in\" is satisfied by the sign-in first authentication returns. Add to TC-ES-006 or TC-ES-020: after a successful setup, and after a failure past first authentication, no sign-in or environment credential setup opened is left live. Test it by checking that the ended credentials are refused, not by assuming.
+
+Log this message word for word in audit.md, commit signed off, push, wait for CI, then present the completion message again."
+**AI Response**: "Accepted. Changing ST-05, ST-06, ST-09 (and adding the refusal check), the call table in business-logic-model §3 (call 2 dropped, renumbered), §7 (TC-ES-006 and TC-ES-020 extended), the domain entities (E-02, E-05), and the L1 matrix's L1-28 row; the invariant matrix cites no call 2 and needs no change. S-6's reading recorded."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design, Request Changes
+
+---
+
+## U2 Functional Design — changes applied; completion message again
+**Timestamp**: 2026-11-18T19:21:01Z
+**User Input**: (none)
+**AI Response**: "Applied: business-rules.md: S-6's reading recorded (its sign-in is the one firstAuthenticate returns); ST-05 (K used once, as firstAuthenticate's newSecret); ST-06 (no authenticate call; issueEnvironmentCredential presents call 1's sign-in); ST-09 (end each, then present each again with its end call and require 401; the environment credential checked before the sign-in is ended; on a failure past first authentication the same for whichever exist, original failure reported, a still-live credential adds a line naming which). business-logic-model.md §3: call table renumbered 1 to 9 (authenticate dropped; calls 7 and 9 are the refusal checks); the failure path; §7: TC-ES-006 extended (refusal on the real stack after success), TC-ES-020 extended (after a failure past first authentication, against a local fake of S1 and S2 following the contract's end semantics, since no failure past first authentication is reachable on the real stack without a fault hook in setup, which the design refuses; the fake also shows no authenticate call). domain-entities.md E-02, E-05. l1-coverage-matrix.md L1-28. invariant-coverage-matrix.md cites no call 2: unchanged."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design complete (revised), awaiting approval
+
+---

@@ -41,22 +41,30 @@ secrets directory. A failure here leaves the marker, so a corrected `setup` may 
 
 | # | Operation | Port | Credential presented | Body (secrets in **bold** never leave memory except as shown) | Expect |
 |---|---|---|---|---|---|
-| 1 | `firstAuthenticate` `POST /first-authentication` | 8441 (S1) | none | `principal {o1, h@example.com}`, **enrollment material** (handover file), **K** (new) | `200`, `signIn` present |
-| 2 | `authenticate` `POST /sign-ins` | 8441 | none | `principal`, **K** | `200` |
-| 3 | `issueEnvironmentCredential` `POST /environment-credentials` | 8442 (E's S2) | **sign-in** | none | `200` |
-| 4 | `grantToHuman` `POST /grants` | 8442 | **environment credential** | `target {o1, h@example.com}`, `permissions [agent:register, event:publish, event:subscribe]` | `200` |
-| 5n | `registerAgent` `POST /registrations` | 8442 | **environment credential** | `agent`, `standingPermissions [event:publish, event:subscribe]`, `autonomyDeclared: true` | `200` |
-| 6n | `issueRegistrationSecret` `POST /registration-secrets` | 8442 | **environment credential** | `registration: agent` | `200`; **secret** written to `<dir>/<agent>.secret` (`0600`, exclusive create), then dropped |
-| 7 | `endEnvironmentCredential` `POST /environment-credentials/current/end` | 8442 | **environment credential** | none | `204` |
-| 8 | `endSignIn` `POST /sign-ins/current/end` | 8441 | **sign-in** | none | `204` |
+| 1 | `firstAuthenticate` `POST /first-authentication` | 8441 (S1) | none | `principal {o1, h@example.com}`, **enrollment material** (handover file), **K** (new; its only use) | `200`, `signIn` present: **the sign-in** for calls 2 and 8 |
+| 2 | `issueEnvironmentCredential` `POST /environment-credentials` | 8442 (E's S2) | **sign-in** (from call 1) | none | `200` |
+| 3 | `grantToHuman` `POST /grants` | 8442 | **environment credential** | `target {o1, h@example.com}`, `permissions [agent:register, event:publish, event:subscribe]` | `200` |
+| 4n | `registerAgent` `POST /registrations` | 8442 | **environment credential** | `agent`, `standingPermissions [event:publish, event:subscribe]`, `autonomyDeclared: true` | `200` |
+| 5n | `issueRegistrationSecret` `POST /registration-secrets` | 8442 | **environment credential** | `registration: agent` | `200`; **secret** written to `<dir>/<agent>.secret` (`0600`, exclusive create), then dropped |
+| 6 | `endEnvironmentCredential` `POST /environment-credentials/current/end` | 8442 | **environment credential** | none | `204` |
+| 7 | `endEnvironmentCredential` again: **the refusal check** | 8442 | **environment credential** | none | `401` (refused) |
+| 8 | `endSignIn` `POST /sign-ins/current/end` | 8441 | **sign-in** (from call 1) | none | `204` |
+| 9 | `endSignIn` again: **the refusal check** | 8441 | **sign-in** | none | `401` (refused) |
 
-Steps 5n and 6n run once per agent, in the order given. Call 1's response may not ask for a second
+Calls 4n and 5n run once per agent, in the order given. There is **no `authenticate` call**: the
+sign-in is the one call 1 returns (S-6, read; ST-06), so `setup` opens exactly one sign-in and one
+environment credential, and calls 6 to 9 end both and check that each is refused (ST-09). Call 7
+comes before call 8 so that the environment credential's refusal is its own end's, not a
+consequence of the sign-in ending. A repeated end call is the check because on a credential that
+is somehow still live it ends it, never extends it. Call 1's response may not ask for a second
 factor: the stack is configured with `secondFactorRequired: false`, so a response with
 `secondFactorEnrollmentRequired` and no sign-in is a failure (ST-06).
 
 **On a failure** (ST-12): stop; print `setup: <step> failed: <status> <Problem code> (request
-<Soorma-Request-Id>)`; then end the environment credential and the sign-in if they exist, best
-effort, without reporting their outcome over the original failure (ST-09); exit non-zero. No
+<Soorma-Request-Id>)`. If the failure is past call 1, run calls 6 to 9 for whichever of the
+environment credential and the sign-in exist (ST-09); the original failure stays the reported
+one, and a credential found still live after its end adds a line naming which (never its value);
+exit non-zero. No
 retry; the next run is `core-down`, `core-up`.
 
 **On success**: write `.e2e/stack.json` (`0600`, E-07) last (ST-10); print the values as plain
@@ -141,7 +149,20 @@ them with these numbers:
 | TC-ES-017 | The prefixes come from the vendored contract; none readable fails closed | LS-01, LS-02 |
 | TC-ES-018 | `core-down` without an ownership record removes nothing and exits `0` | CD-01 |
 | TC-ES-019 | `setup` refuses a bad agent identifier or secrets directory before consuming the marker | ST-01, ST-02 |
-| TC-ES-020 | `setup` stops at the first failed call, printing step, status, Problem code and request id, nothing else | ST-12, ST-09, GEN-06 |
+| TC-ES-020 | `setup` stops at the first failed call, printing step, status, Problem code and request id, nothing else; **after a failure past first authentication, no sign-in or environment credential `setup` opened is left live**, shown by each being refused when presented again (calls 7 and 9) | ST-12, ST-09, GEN-06 |
+
+**TC-ES-006, extended at QA enrichment** (the user, 2026-11-18T19:20:00Z): after a **successful**
+`setup`, no sign-in or environment credential `setup` opened is left live, shown by each being
+refused when presented again (calls 7 and 9 return `401`), on the real stack in the `e2e` job.
+The check is the refusal, never an assumption that an end call worked. That `setup` makes no
+`authenticate` call is shown by TC-ES-020's fake, which records every call it receives.
+
+**TC-ES-020's failure path** needs a failure past first authentication. On the real stack nothing
+reachable from `setup`'s arguments fails there without a fault hook in `setup`, which this design
+refuses (test-only code in the command). So TC-ES-020 runs `setup` against a **local fake of S1
+and S2** that follows the contract's end semantics (an ended credential is refused with `401`) and
+fails `registerAgent` with `503`. It asserts that no `authenticate` call is made, that calls 6 to 9 are made, and that the fake holds no
+live sign-in or environment credential at the end. The real-stack refusal is TC-ES-006's.
 
 TC-ES-013 to 017 run against recorded log text and the vendored contract, without a stack, so
 they run in `unit` on every PR; the end-to-end job exercises the search for real only when a job

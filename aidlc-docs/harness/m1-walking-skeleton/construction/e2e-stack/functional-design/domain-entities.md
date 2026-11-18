@@ -37,7 +37,7 @@ The `soorma-local` Compose project (`compose.yaml`: `name: soorma-local`) starte
 
 | Edge | Address | Used by |
 |---|---|---|
-| S1 org-gateway | `https://localhost:8441` | `setup` (first authentication, sign-in, end sign-in) |
+| S1 org-gateway | `https://localhost:8441` | `setup` (first authentication, which returns the sign-in; end sign-in) |
 | E's S2 control-gateway | `https://localhost:8442` | `setup` (environment credential, grant, registrations, secrets, end) |
 | E's S3 data-gateway | `https://localhost:8444` | `prove-stack`; U3's and U4's scenarios |
 | E's S4 event-ingest | `https://localhost:8446` | U3's and U4's scenarios |
@@ -56,11 +56,14 @@ Single use: `setup` removes it before its first call (U2-FD-Q1). Holds no secret
 ### E-05 Human session (memory only)
 The first Admin `h@example.com` of organization `o1` (soorma-core's `tenancy.yaml`), acting
 through raw calls:
-- **K**, the human secret: generated in memory for this run, set at first authentication;
-  never written, printed or passed to another process
-- **the sign-in** (`soorma_si_…`) and **E's environment credential** (`soorma_ec_…`): held in
-  memory for the calls that need them, then ended (`endEnvironmentCredential`,
-  `endSignIn`) and dropped
+- **K**, the human secret: generated in memory for this run and used **once**, as
+  `firstAuthenticate`'s `newSecret`; never written, printed or passed to another process
+- **the sign-in** (`soorma_si_…`): **the one `firstAuthenticate` returns**. `setup` makes no other
+  sign-in (no `authenticate` call), so it opens exactly one
+- **E's environment credential** (`soorma_ec_…`): issued from that sign-in
+- Both are held in memory for the calls that need them, then ended (`endEnvironmentCredential`,
+  `endSignIn`), **checked to be refused**, and dropped (ST-09). After `setup`, success or
+  failure, no sign-in or environment credential it opened is left live
 - **the enrollment material** (`soorma_em_…`): read from the clone's handover file into the
   request body only
 
