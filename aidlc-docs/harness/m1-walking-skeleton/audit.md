@@ -916,3 +916,38 @@ Log this message word for word in audit.md, commit signed off, push, and wait fo
 **Context**: CONSTRUCTION — U2 e2e-stack, L1 gate; Functional Design questions
 
 ---
+
+## U2 Functional Design — answers
+**Timestamp**: 2026-11-18T18:51:06Z
+**User Input**: "Answers for U2's Functional Design: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q8 A.
+
+Q6 A: I checked two things. The contract's exchangeBootstrap needs only an active secret, so the proof's bootstrap doesn't use the secret up. soorma-core's attempt limit counts only failed bootstraps (FailedBootstrapAttemptWriter). So the proof can't affect U3's scenario. Say both in the business rules.
+
+Q7: X. A, with three changes:
+1. Also search the logs for a typed-prefix pattern, not only for the exact values. Every secret and credential the contract defines has a typed prefix: soorma_rs_, soorma_em_, soorma_ac_, soorma_ec_, soorma_si_, soorma_dc_ (conventions/credentials.md: the prefixes exist so scanners find them). A prefix followed by token characters counts as a hit: the environment credential, the sign-in and the agent credentials, which never touch disk, are then searched for too. Take the prefix list from the vendored contract, not a copy of it. Only the human secret stays unsearchable; say so.
+2. Also search for the exact enrollment material from the clone's deploy/local/.secrets/handover/ file, alongside the agent secrets.
+3. A hit means a soorma-core logging defect. core-down fails without printing the logs, names the service and which kind of secret or credential it found (never the value), and still tears the stack down. The business rules say to raise it as a soorma-core issue naming the service and the tag.
+Give the search its own test cases: a log holding each prefix, a log holding the exact enrollment material, a clean log, and an unreadable log (refuse to print, fail closed).
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the Functional Design artifacts and the L1 traceability, and present the completion message."
+**Answers by question ID** (word for word):
+- **U2-FD-Q1**: "A"
+- **U2-FD-Q2**: "A"
+- **U2-FD-Q3**: "A"
+- **U2-FD-Q4**: "A"
+- **U2-FD-Q5**: "A"
+- **U2-FD-Q6**: "A" — "Q6 A: I checked two things. The contract's exchangeBootstrap needs only an active secret, so the proof's bootstrap doesn't use the secret up. soorma-core's attempt limit counts only failed bootstraps (FailedBootstrapAttemptWriter). So the proof can't affect U3's scenario. Say both in the business rules."
+- **U2-FD-Q7**: "X. A, with three changes: 1. Also search the logs for a typed-prefix pattern, not only for the exact values. Every secret and credential the contract defines has a typed prefix: soorma_rs_, soorma_em_, soorma_ac_, soorma_ec_, soorma_si_, soorma_dc_ (conventions/credentials.md: the prefixes exist so scanners find them). A prefix followed by token characters counts as a hit: the environment credential, the sign-in and the agent credentials, which never touch disk, are then searched for too. Take the prefix list from the vendored contract, not a copy of it. Only the human secret stays unsearchable; say so. 2. Also search for the exact enrollment material from the clone's deploy/local/.secrets/handover/ file, alongside the agent secrets. 3. A hit means a soorma-core logging defect. core-down fails without printing the logs, names the service and which kind of secret or credential it found (never the value), and still tears the stack down. The business rules say to raise it as a soorma-core issue naming the service and the tag. Give the search its own test cases: a log holding each prefix, a log holding the exact enrollment material, a clean log, and an unreadable log (refuse to print, fail closed)."
+- **U2-FD-Q8**: "A"
+**AI Response**: "Answers recorded; no ambiguity, no follow-up. Q6's two facts checked at soorma-core contract-v0.1.0 (read only): data-gateway.openapi.yaml exchangeBootstrap requires 'an active secret of that agent's registration' and consumes nothing; packages/abuse-bound/src/slot-bound.ts: 'A failure keeps the entry; a success removes exactly its own', and FailedBootstrapAttemptWriter records failures only. Q7's prefix list confirmed in the vendored contract/conventions/credentials.md (soorma_ac_, soorma_ec_, soorma_si_, soorma_dc_ in the typed-prefix table; soorma_rs_, soorma_em_ under 'Material is not a credential'; token syntax: RFC 6750 b64token). Generating the Functional Design artifacts."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design answers
+
+---
+
+## U2 Functional Design — artifacts generated; completion message
+**Timestamp**: 2026-11-18T18:56:16Z
+**User Input**: (none)
+**AI Response**: "Generated construction/e2e-stack/functional-design/: domain-entities.md (E-01 to E-10: clone, stack, ownership record, fresh-stack marker, human session in memory only, agents, stack description, proof result, log search, end-to-end job); business-rules.md (GEN-01 to 06, CU-01 to 10, ST-01 to 12, PS-01 to 06 with the user's two Q6 facts as PS-04 and PS-05, CD-01 to 06, LS-01 to 11 for the Q7 log search, JOB-01 to 07, misuse table); business-logic-model.md (each command's flow, the S1 and S2 call table, core-down and the log search, the packaging guard extended to e2e/, TC-ES-013 to 020 planned for QA enrichment); l1-coverage-matrix.md (L1-12, L1-25, L1-26, L1-27, L1-28 Covered; the rest N/A for U2 with reasons; 0 Missing); invariant-coverage-matrix.md (9 Covered, I4 N/A for this unit, I11 N/A by design, 0 Missing; I8 packaging table). Gap classification pass: no specification gap; U2 inherits none. Security: compliant (summary in the completion message). Presenting the completion message; next stage NFR Requirements (U2)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design complete, awaiting approval
+
+---
