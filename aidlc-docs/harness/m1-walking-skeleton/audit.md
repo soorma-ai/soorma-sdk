@@ -362,3 +362,39 @@ Log this word for word in audit.md, then generate the units."
 **Context**: INCEPTION — Units Generation, approval gate presented
 
 ---
+## Units Generation — approval
+**Timestamp**: 2026-11-18T06:14:40Z
+**User Input**: "Approve & Continue: Units Generation approved. Proceed to Tickets, then the QA test specs' inception pass, then the Inception PR gate.
+
+Q1a: confirmed, 200. "201" in my addition was my error. The contract at contract-v0.1.0 defines exchangeBootstrap's success as 200, and U2 expects that. Record Q1a as answered: 200, per the contract.
+
+Accepted: the four units and their order (U1, U2, U3, U4); the shapes, with U2 ordinary at my direction; the "done when" items and proof points; the gap and carried-item assignments, including US-Q1 to U1; the story map; the I6 check.
+
+When the Inception PR is open and its checks are green, stop and tell me the PR number. I'll merge it; don't record it as merged until GitHub shows it.
+
+Log this word for word in audit.md, then start Tickets."
+**AI Response**: "Units Generation APPROVED. Q1a recorded as answered: 200, per the contract (exchangeBootstrap at contract-v0.1.0); the user's 201 was their error. Starting Tickets, then the QA test specs' inception pass, then the Inception PR gate; will stop with the PR number once its checks are green, and not record it as merged until GitHub shows it."
+**Context**: INCEPTION — Units Generation approved; Tickets begins
+
+---
+## Tickets (extension)
+**Timestamp**: 2026-11-18T06:20:15Z
+**User Input**: (none since the Units Generation approval)
+**AI Response**: "Generated tickets per tickets.md on GitHub issues, soorma-ai/soorma-sdk: initiative ticket #3 (tracking issue, harness — m1-walking-skeleton); unit tickets as sub-issues of #3 in build order: #4 contract-and-conformance, #5 e2e-stack, #6 typescript-harness, #7 python-harness. Each carries the required fields only (no points, sprint, priority, labels, assignee); dependencies from unit-of-work-dependency.md; a resolved Start Construction prompt. Prohibited-field scan: none found. Recorded under ## Tickets in aidlc-state.md (Status: Complete)."
+**Context**: INCEPTION — Tickets complete
+
+---
+## QA test specs, inception pass (extension)
+**Timestamp**: 2026-11-18T06:20:15Z
+**User Input**: (none)
+**AI Response**: "Generated inception test specifications at scope comprehensive, from unit-of-work.md and requirements.md only (stories and tickets not used): inception/test-cases/{contract-and-conformance (CAC, 24), e2e-stack (ES, 12), typescript-harness (TH, 66), python-harness (PH, 66)}/test-specs-narrative.md and test-case-index.md. Each case has context, preconditions, steps, expected outcome, scope, priority, backward traceability (unit / FR) and forward traceability (construction/{unit-name}/). U1's cases include the reference driver and the four negative controls; U2's include the raw bootstrap expecting 200 per the contract."
+**Context**: INCEPTION — QA test specs inception pass complete
+
+---
+## Inception PR gate (extension) — instructions; PR to open
+**Timestamp**: 2026-11-18T06:20:15Z
+**User Input**: (none; branch dev per the user's standing instruction; the user asked to be told the PR number once its checks are green, and that merge is recorded only when GitHub shows it)
+**AI Response**: "Validated the always-expected artifacts. Wrote inception/working/pr-checkpoint-instructions.md (git-ignored). Recorded ## PR Checkpoint State: Inception PR Gate PENDING, branch dev. Committing with sign-off, pushing dev, and opening the PR dev → main."
+**Context**: INCEPTION — Inception PR gate
+
+---

@@ -1,8 +1,8 @@
 # Units of Work — soorma-sdk, M1
 
 **Answers**: Q1 A, Q2 A, Q3 A, with the user's additions to U1's and U2's *done when* (audit
-2026-11-18T06:05:15Z). Follow-up Q1a (U2's expected bootstrap status) is confirmed at this
-stage's gate.
+2026-11-18T06:05:15Z). Follow-up Q1a answered at approval (2026-11-18T06:14:40Z): U2 expects `200`, per the
+contract.
 
 **Build order**: U1 → U2 → U3 → U4. The language-neutral layer first, then TypeScript, then
 Python (D-01). Each unit is designed and built in full (design stages, then code) before the
@@ -108,15 +108,13 @@ human secret or credential written; `down -v` at the end, always.
 **Done when** (the user's addition, Q1 A):
 - **U2 proves the stack before U3 uses it.** U2's CI job runs `core-up`, then `setup`, then
   **one raw `POST /agent-credentials` per agent** using the secret file `setup` wrote,
-  expecting **the contract's success response, `200`** (see Q1a), then `core-down`
+  expecting **the contract's success response, `200`** (Q1a, answered), then `core-down`
 - the raw calls stay **outside both packages**; the job **prints no secret or credential**
 - **AD-13's CI time is first measured on U2's code PR**, with the **run ID recorded** in this
   initiative
 
-**Q1a, to confirm at the gate**: the user's addition says "expecting 201". The contract at
-`contract-v0.1.0` defines `exchangeBootstrap`'s success as `200` (`data-gateway.openapi.yaml`),
-and soorma-core's `smoke.ts` checks `200`. The contract is not adapted locally; this unit
-expects `200` unless the user directs otherwise.
+**Q1a, answered**: `200`, per the contract (`exchangeBootstrap` at `contract-v0.1.0`,
+`data-gateway.openapi.yaml`). The user confirmed that "201" in their addition was their error.
 
 **Carried items**: none. **Inherited gaps**: none: the stack is soorma-core's, used as built.
 

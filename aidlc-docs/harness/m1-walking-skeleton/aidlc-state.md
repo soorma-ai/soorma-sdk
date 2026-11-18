@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: INCEPTION - Units Generation
+- **Current Stage**: INCEPTION - Inception PR gate (extension)
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -75,7 +75,7 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 | Unit | Name | Shape | Depends on | Proves |
 |---|---|---|---|---|
 | U1 | `contract-and-conformance` | ordinary | — | Its own runner: a test-only reference driver passes; negative controls (secret retained; forwarded envelope text reordered; publish retried; boundary item skipped) fail on their named cases, in CI on its code PR |
-| U2 | `e2e-stack` | ordinary | — | core-up, setup, one raw `POST /agent-credentials` per agent (expects `200`, Q1a), core-down; no secret printed; CI time first measured, run ID recorded |
+| U2 | `e2e-stack` | ordinary | — | core-up, setup, one raw `POST /agent-credentials` per agent (expects `200`, per the contract; Q1a answered), core-down; no secret printed; CI time first measured, run ID recorded |
 | U3 | `typescript-harness` | harness | U1, U2 | Every case on Node 24 and 26; *done when* 2, 3, 5: M1's proof |
 | U4 | `python-harness` | harness | U1, U2 (after U3) | Every case on 3.11 and newest; *done when* 2, 3, 5 |
 
@@ -91,6 +91,29 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 | CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | U1 (specification); U3, U4 | Decision (recorded) | Settled |
 | CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | Open: to Functional Design |
 | CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | Open: to Functional Design |
+
+## Tickets
+- **Status**: Complete
+- **Target**: GitHub issues: soorma-ai/soorma-sdk
+- **Kinds**: initiative ticket → tracking issue; unit ticket → sub-issue
+- **Initiative ticket**: soorma-ai/soorma-sdk#3
+
+| Unit | Ticket |
+|---|---|
+| contract-and-conformance | soorma-ai/soorma-sdk#4 |
+| e2e-stack | soorma-ai/soorma-sdk#5 |
+| typescript-harness | soorma-ai/soorma-sdk#6 |
+| python-harness | soorma-ai/soorma-sdk#7 |
+
+## PR Checkpoint State
+
+### Inception PR Gate
+- **Status**: PENDING
+- **Branch**: dev (confirmed by the user's standing instruction: work on dev, PR dev to main)
+- **Instructions**: aidlc-docs/harness/m1-walking-skeleton/inception/working/pr-checkpoint-instructions.md
+- **PR**: (set when opened)
+- **Created**: 2026-11-18T06:20:15Z
+- **Approved**: —
 
 ## Extension Configuration
 
@@ -135,10 +158,10 @@ the first published release.
 - [x] User Stories — APPROVED 2026-11-18T03:05:37Z. Plan answered 2026-11-18T02:55:43Z (Q1–Q6 A); 2 personas, 14 stories, 80 criteria; gap pass: no new gap; US-Q1 carried to Functional Design
 - [x] Workflow Planning — APPROVED 2026-11-18T05:13:20Z (with two items for Application Design: the examples' secret source; how CI runs soorma-core)
 - [x] Application Design — APPROVED 2026-11-18T05:51:30Z. Answers 2026-11-18T05:32:10Z (Q1, Q3–Q6, Q8 A; Q2, Q7, Q9 X); AD-01 to AD-15; carried CDI-01 to CDI-03
-- [ ] Units Generation — answers 2026-11-18T06:05:15Z (Q1 A with U1 and U2 done-when additions; Q2 A; Q3 A); units generated; follow-up Q1a (U2 expects 200, the contract's success) to confirm at the gate; awaiting approval
-- [ ] Tickets (extension) — EXECUTE
-- [ ] QA test specs, inception pass (extension) — EXECUTE
-- [ ] Inception PR gate (extension) — EXECUTE
+- [x] Units Generation — APPROVED 2026-11-18T06:14:40Z. Answers 2026-11-18T06:05:15Z (Q1 A with U1 and U2 done-when additions; Q2 A; Q3 A); Q1a answered: 200, per the contract
+- [x] Tickets (extension) — Complete: tracking issue #3; sub-issues #4 to #7
+- [x] QA test specs, inception pass (extension) — 2026-11-18T06:20:15Z: comprehensive; contract-and-conformance 24 (CAC), e2e-stack 12 (ES), typescript-harness 66 (TH), python-harness 66 (PH); inception/test-cases/
+- [ ] Inception PR gate (extension) — PENDING: PR dev → main opened; awaiting checks and the user's merge
 
 ### CONSTRUCTION PHASE
 - [ ] Construction Phase Initialization — EXECUTE
