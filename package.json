@@ -14,7 +14,8 @@
     "format": "prettier --write \"**/*.{ts,js,json,yml,yaml}\"",
     "test": "vitest run --passWithNoTests",
     "check:audit-exceptions": "node tools/audit-exceptions/check.ts",
-    "checks": "node tools/checks.ts"
+    "checks": "node tools/checks.ts",
+    "conformance": "node conformance/runner/src/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

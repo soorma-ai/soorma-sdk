@@ -790,3 +790,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G5
 
 ---
+## U1 Code Generation — G5 CI green; G6 gate green
+**Timestamp**: 2026-11-18T15:17:53Z
+**User Input**: (none)
+**AI Response**: "G5 pushed as 98dc659; CI run 44333400503 green. G6 written: conformance/stub (private package): delivery.ts builds Delivery lines as exact text (raw, fixture with edits, or parts in a chosen order with a deep-payload generator); stub.ts serves S3, S4, UNTRUSTED and STRAY over TLS on 127.0.0.1 only, matches exchanges in order (unmatched answered 500 and marked), records every request byte for byte, answers bodies, Problems, SSE streams (delivery, heartbeat, end, malformed end data, drop, silence, waitFor, hold) or a reset after reading the whole request, refuses the next N connections before the TLS handshake, tracks streams and the most open at once. conformance/runner/src/cli.ts wires 'conformance run' (pnpm conformance) and refuses unknown options, --retry included. Tests: the stub's loopback binding, byte-exact recording, unscripted 500, refuse before sending, reset after reading, SSE in order with exact Delivery text, waitFor, and the untrusted certificate; the CLI parse and refusal. G6 gate: frozen install, typecheck, lint, format, 87 tests, audit, audit-exceptions, pnpm checks: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G6
+
+---
