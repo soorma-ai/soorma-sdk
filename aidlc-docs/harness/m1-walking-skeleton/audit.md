@@ -993,3 +993,35 @@ Log this message word for word in audit.md, then start U2's NFR Requirements."
 **Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements questions
 
 ---
+
+## U2 NFR Requirements — answers
+**Timestamp**: 2026-11-18T20:01:38Z
+**User Input**: "Answers for U2's NFR Requirements: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, with Q6's reasons corrected as below.
+
+Q6: A, but one reason is wrong. soorma-core's CI audits soorma-core's latest code, not the frozen lock file at contract-v0.1.0. An advisory published after the tag is never fixed in it; the fix reaches this repository only with a new contract tag. The tag's lock file already holds a known-vulnerable package: picomatch@4.0.7 (GHSA-fc5q-39xc-vjpf, soorma-core#35). That advisory also fails soorma-core's own audit today, so its CI isn't a green check for the tag either. Record these reasons instead:
+- At the tag, soorma-core's pnpm-workspace.yaml has strictDepBuilds: true and allowBuilds: {}, so installing the clone runs no dependency install scripts. Add a check that the clone's pnpm-workspace.yaml still has both settings; if either is missing, core-up refuses. CU-05's commit check makes that true for this tag, but the explicit check explains the trust and survives a new tag.
+- The clone only runs as a short-lived stack, in a job with contents: read and no repository secrets, torn down by core-down.
+- Its packages never enter this repository's packages, lock file or audit.
+- The tag is frozen. An advisory against it is soorma-core's to fix, and reaches this repository only through a new contract tag. Don't chase it here.
+Put these reasons in DEPENDENCIES.md, with picomatch named as a known instance.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Requirements artifacts, decide whether U2's NFR Design stage comes back, and present the completion message."
+**Answers by question ID** (word for word):
+- **U2-NFR-Q1**: "A"
+- **U2-NFR-Q2**: "A"
+- **U2-NFR-Q3**: "A"
+- **U2-NFR-Q4**: "A"
+- **U2-NFR-Q5**: "A"
+- **U2-NFR-Q6**: "A, with Q6's reasons corrected as below. Q6: A, but one reason is wrong. soorma-core's CI audits soorma-core's latest code, not the frozen lock file at contract-v0.1.0. An advisory published after the tag is never fixed in it; the fix reaches this repository only with a new contract tag. The tag's lock file already holds a known-vulnerable package: picomatch@4.0.7 (GHSA-fc5q-39xc-vjpf, soorma-core#35). That advisory also fails soorma-core's own audit today, so its CI isn't a green check for the tag either. Record these reasons instead: - At the tag, soorma-core's pnpm-workspace.yaml has strictDepBuilds: true and allowBuilds: {}, so installing the clone runs no dependency install scripts. Add a check that the clone's pnpm-workspace.yaml still has both settings; if either is missing, core-up refuses. CU-05's commit check makes that true for this tag, but the explicit check explains the trust and survives a new tag. - The clone only runs as a short-lived stack, in a job with contents: read and no repository secrets, torn down by core-down. - Its packages never enter this repository's packages, lock file or audit. - The tag is frozen. An advisory against it is soorma-core's to fix, and reaches this repository only through a new contract tag. Don't chase it here. Put these reasons in DEPENDENCIES.md, with picomatch named as a known instance."
+**AI Response**: "Answers recorded; no ambiguity. Q6's facts checked at soorma-core contract-v0.1.0 (read only): pnpm-workspace.yaml lines 32-33 strictDepBuilds: true, allowBuilds: {}; pnpm-lock.yaml holds picomatch@4.0.7; soorma-core#35 is open. The withdrawn reason ('soorma-core's own CI audits it') is not used anywhere. Generating the NFR Requirements artifacts."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements answers
+
+---
+
+## U2 NFR Requirements — artifacts generated; NFR Design decision; completion message
+**Timestamp**: 2026-11-18T20:03:44Z
+**User Input**: (none)
+**AI Response**: "Generated construction/e2e-stack/nfr-requirements/: nfr-requirements.md (NFR-U2-01 to 24: time and the 20-minute timeout, measure first with no cache, reopen over 8 minutes; core-down always; no retry; prerequisites before the ownership record; secret handling; one sign-in, checked refused; supply chain: clone pinned by commit, no install scripts checked (strictDepBuilds: true, allowBuilds: {}), soorma-core's exact toolchain via --core-node, the clone not audited here with the user's corrected reasons and the DEPENDENCIES.md text to add at Code Generation, picomatch@4.0.7 named; no new npm dependency; Vitest in unit for TC-ES-002, 003, 013 to 021; the validating fake; Linux and macOS, Docker Engine 26+, Compose 2.26.0+; the README) and tech-stack-decisions.md (TS-U2-01 to 10; the changes and e2e jobs, unit extended). Functional Design amended for traceability with rules the answers add: CU-11 (prerequisites, Q5), CU-12 (no install scripts, Q6), CU-13 (exact toolchain, Q2), and planned TC-ES-021. NFR Design decision: stays SKIPPED (Units Generation Q3 A), because every pattern is specified to code level (LS, the ownership and marker lifecycle, the refusal check, the validating fake); NFR-U2-02 can reopen it if the measured time calls for caching. Next stage: QA enrichment (qa-test-cases), then the Construction Design PR gate."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements complete, awaiting approval
+
+---

@@ -10,7 +10,7 @@ requires no second factor (`org-gateway.openapi.yaml` at `contract-v0.1.0`); `se
 separate `authenticate` call. A second sign-in would be one more live sign-in for `setup` to end,
 and S-6's "ends the environment credential and the sign-in" could not then hold for both.
 
-**Verification column**: `TC-ES-001` to `012` are the inception test cases; `TC-ES-013` to `020`
+**Verification column**: `TC-ES-001` to `012` are the inception test cases; `TC-ES-013` to `021`
 are **planned here** and added at QA enrichment, with these numbers and titles (business-logic-model
 §7). Entities are in `domain-entities.md`.
 
@@ -39,6 +39,9 @@ are **planned here** and added at QA enrichment, with these numbers and titles (
 | CU-08 | Runs `pnpm stack:init`, then `pnpm stack:up`, in the clone | AD-10 | TC-ES-001 |
 | CU-09 | Writes the fresh-stack marker **last**, and only when every step succeeded | AD-11; U2-FD-Q1 | TC-ES-001, TC-ES-005 |
 | CU-10 | On a failure at any step, exits non-zero and leaves the ownership record, so `core-down` removes whatever was created | U2-FD-Q2 | TC-ES-008 |
+| CU-11 | **Prerequisites, before the ownership record**: Docker Engine 26 or later, Docker Compose 2.26.0 or later, `git`, and the `--core-node` executable present; otherwise refuses, leaving nothing to tear down. *Added at NFR Requirements* | U2-NFR-Q5; NFR-U2-06 | TC-ES-021 |
+| CU-12 | **No install scripts**: after the clone, refuses unless the clone's `pnpm-workspace.yaml` has `strictDepBuilds: true` and `allowBuilds: {}`. True at `contract-v0.1.0` by CU-05; checked explicitly so the trust is stated and survives a new tag. *Added at NFR Requirements* | U2-NFR-Q6 (the user); NFR-U2-15 | TC-ES-021 |
+| CU-13 | **soorma-core's toolchain, exactly**: after the clone, refuses unless `--core-node`'s version equals the clone's `.node-version` and this repository's pnpm equals the clone's `packageManager`. *Added at NFR Requirements* | U2-NFR-Q2; NFR-U2-16 | TC-ES-021 |
 
 ## ST — `e2e/setup --agents <a,b> [--secrets-dir <dir>]`
 

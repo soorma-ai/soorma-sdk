@@ -21,9 +21,11 @@ failed. A failed step ends the run early; `core-down` still runs. One run, one s
 |---|---|---|
 | 1 | `.e2e/owner.json` exists? Refuse (CU-01) | exit non-zero; nothing created |
 | 2 | A `soorma-local` project or volume exists? Refuse (CU-02) | exit non-zero; nothing created |
+| 2a | Prerequisites: Docker Engine 26+, Compose 2.26.0+, `git`, the `--core-node` executable (CU-11; added at NFR Requirements) | exit non-zero; nothing created |
 | 3 | Write `.e2e/owner.json` (`0600`): `startedAt`, `tag`, `commit` from `contract.pin.json` (CU-03) | exit non-zero |
 | 4 | Remove `.e2e/soorma-core/` if present; clone the pin's `repository` at its `tag`, depth 1 (CU-04) | exit non-zero; record stays (CU-10) |
 | 5 | `git rev-parse HEAD` must equal the pin's `commit` (CU-05) | exit non-zero, naming expected and actual commit |
+| 5a | The clone's `pnpm-workspace.yaml` has `strictDepBuilds: true` and `allowBuilds: {}` (CU-12); `--core-node`'s version equals its `.node-version`, and pnpm equals its `packageManager` (CU-13) (both added at NFR Requirements) | exit non-zero |
 | 6 | Install soorma-core's workspace, frozen lockfile, its own Node and pnpm (CU-06) | exit non-zero |
 | 7 | Build the four images, soorma-core's CI's `docker build` lines (CU-07) | exit non-zero |
 | 8 | `pnpm stack:init`; `pnpm stack:up` (CU-08) | exit non-zero |
@@ -137,8 +139,8 @@ U1's packaging guard (`tools/packaging/`) checks that neither package's file lis
 
 ## 7. Test Cases Planned for QA Enrichment
 
-The inception cases TC-ES-001 to 012 stand. Functional Design adds these; QA enrichment writes
-them with these numbers:
+The inception cases TC-ES-001 to 012 stand. Functional Design adds these (TC-ES-021 added at NFR Requirements); QA enrichment
+writes them with these numbers:
 
 | TC | Title | Rules |
 |---|---|---|
@@ -150,6 +152,7 @@ them with these numbers:
 | TC-ES-018 | `core-down` without an ownership record removes nothing and exits `0` | CD-01 |
 | TC-ES-019 | `setup` refuses a bad agent identifier or secrets directory before consuming the marker | ST-01, ST-02 |
 | TC-ES-020 | `setup` stops at the first failed call, printing step, status, Problem code and request id, nothing else; **after a failure past first authentication, no sign-in or environment credential `setup` opened is left live**, shown by each being refused when presented again (calls 7 and 9) | ST-12, ST-09, GEN-06 |
+| TC-ES-021 | `core-up` refuses, before installing anything, a missing prerequisite (before the ownership record), a clone whose `pnpm-workspace.yaml` lacks `strictDepBuilds: true` or `allowBuilds: {}`, a `--core-node` whose version is not the clone's `.node-version`, and a pnpm that is not the clone's `packageManager` (added at NFR Requirements) | CU-11, CU-12, CU-13 |
 
 **TC-ES-006, extended at QA enrichment** (the user, 2026-11-18T19:20:00Z): after a **successful**
 `setup`, no sign-in or environment credential `setup` opened is left live, shown by each being
