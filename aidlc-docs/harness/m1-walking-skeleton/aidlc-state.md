@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Code Generation (Part 1: plan)
+- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Code Generation (Part 2)
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -183,7 +183,7 @@ the first published release.
 ### CONSTRUCTION PHASE
 - [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan written 2026-11-18T08:43:07Z (construction/working/contract-and-conformance-code-generation-plan.md: 38 steps, 9 commit groups), awaiting approval.md), awaiting answers.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan APPROVED 2026-11-18T08:46:28Z (1.1 changed: declared-set rule). Part 2 in progress: G1 gate green.md), awaiting answers.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE

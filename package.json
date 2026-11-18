@@ -1,0 +1,27 @@
+{
+  "name": "soorma-sdk-workspace",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24.22.3 <25"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "format:check": "prettier --check \"**/*.{ts,js,json,yml,yaml}\"",
+    "format": "prettier --write \"**/*.{ts,js,json,yml,yaml}\"",
+    "test": "vitest run --passWithNoTests",
+    "check:audit-exceptions": "node tools/audit-exceptions/check.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "eslint": "10.14.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "exceptions": [
+    {
+      "ghsa": "GHSA-fc5q-39xc-vjpf",
+      "package": "picomatch",
+      "severity": "high",
+      "affectedRange": "<=4.0.7",
+      "fixedIn": null,
+      "paths": ["vitest", "typescript-eslint"],
+      "scope": "Development only: the test runner and the linter match globs that live in this repository, never untrusted input",
+      "removeWhen": "A picomatch version outside the affected range is published, or no installed picomatch matches the range"
+    }
+  ]
+}

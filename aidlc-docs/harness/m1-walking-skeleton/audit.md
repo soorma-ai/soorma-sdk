@@ -706,3 +706,59 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 Code Generation Part 1, approval requested
 
 ---
+## U1 Code Generation — plan approval
+**Timestamp**: 2026-11-18T08:46:28Z
+**User Input**: "Approve the plan, with 1.1 changed. \"Fails on exactly its named case\" was too strict on my part. Don't weaken real cases to satisfy the self-test:
+
+CC-RCV-06 keeps its envelope with unusual member order and spacing. Its forward after the deep-payload fallback (FWD-06) must still catch a reordered envelope on that path.
+CC-PRB-01 keeps 503. It's the only check of Retry-After in a Problem returned to publish.
+The self-test rule instead:
+
+Each faulted run must fail its named case (CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04).
+Its full set of failures must equal a declared expected set: the named case plus any knock-on cases, listed per fault in the business logic model §5.2. For example, reorder-forwarded-envelope fails {CC-FWD-02, CC-RCV-06}, and retry-publish fails {CC-PUB-03, CC-PRB-01}.
+A failure outside the declared set, or a missing named failure, fails the self-test. The report prints each fault's expected and actual sets.
+skip-boundary: your narrowing is accepted (it drops only the superseded stream's stream ended). That changes the fault, not a case; if it still fails more than CC-STR-04, declare those cases too.
+
+Step 2 updates the Functional Design to the declared-set rule, with no change to CC-RCV-06 or CC-PRB-01. Steps 33 and 34 and the \"done when\" table follow.
+
+1.2, 1.3, 1.4: approved as proposed.
+
+Log this word for word in audit.md, then start G1."
+**AI Response**: "Plan APPROVED with 1.1 changed: the declared-set rule (each faulted run fails its named case, and its failed set equals the declared expected set in business-logic-model §5.2; anything else fails the self-test; the report prints expected and actual sets). CC-RCV-06 and CC-PRB-01 unchanged. skip-boundary narrowed to the superseded stream's stream ended. Plan updated (1.1, Steps 2, 33, 34, the done-when table); 1.2 to 1.4 approved. Starting G1."
+**Context**: CONSTRUCTION — U1 Code Generation, plan approved; Part 2 begins
+
+---
+## U1 Code Generation — G1 gate blocked by pnpm audit
+**Timestamp**: 2026-11-18T08:49:10Z
+**User Input**: (none)
+**AI Response**: "G1 written locally, not committed: root package.json (pnpm 12.18.0, Node >=24.22.3 <25, exact devDependencies chosen past the 7-day cooldown and within peer ranges: typescript 6.0.3, vitest 5.1.0, eslint 10.14.0, @eslint/js 10.0.1, typescript-eslint 8.72.1, prettier 3.9.10, @types/node 24.19.2), pnpm-workspace.yaml, .node-version 24.22.3 (installed locally with nvm), tsconfig.json, eslint.config.js, Prettier configuration, vitest.config.ts, .gitignore, .github/dependabot.yml (npm and github-actions, weekly, cooldown 7, target-branch dev), .github/workflows/ci.yml skeleton (unit and dependency-review jobs; actions pinned by SHA as soorma-core pins them). Step 2 done: business-logic-model §5.2 and §5.3 now state the declared-set rule; §6 marks CC-RCV-06 and CC-PRB-01 as knock-ons; CC-RCV-06 and CC-PRB-01 unchanged in substance; skip-boundary narrowed. Gate: typecheck, lint, format, tests pass; pnpm audit fails: minimatch GHSA-g3hv-75wg-m249 (moderate, via eslint and typescript-eslint, fixed in 11.0.1+) and picomatch GHSA-fc5q-39xc-vjpf (high, via vitest and typescript-eslint, published 2026-10-19, no patched version; 4.0.7 newest). Plan Step 1a added. minimatch: an override to 11.0.3 as soorma-core records it. picomatch: no fix exists; changing the audit policy (NFR-U1-26) is the user's decision; stopped and asked."
+**Context**: CONSTRUCTION — U1 Code Generation G1, blocked on a decision
+
+---
+## U1 Code Generation — picomatch decision
+**Timestamp**: 2026-11-18T08:52:29Z
+**User Input**: "picomatch: A, a narrow recorded exception, with two refinements:
+
+Narrow: ignore only GHSA-fc5q-39xc-vjpf, using pnpm's audit settings in pnpm-workspace.yaml (by advisory ID, not by package or severity). Every other advisory at moderate or above still fails CI.
+Recorded: add an entry in DEPENDENCIES.md (or the register you mirror from soorma-core) with:
+the advisory, severity and affected range (<= 4.0.7, no fix);
+the paths it arrives through (vitest, typescript-eslint);
+the scope: development only, matching only globs that live in this repository, never untrusted input;
+the removal condition.
+Self-expiring: a check fails when a picomatch version outside the affected range has been published, or when no installed package matches the range any more. Then the exception is removed in a recorded change, not left behind. Test both triggers with recorded advisory and registry data.
+minimatch: Step 1a as proposed. The override to 11.0.3 mirrors soorma-core, recorded with its removal condition, along with soorma-core's pnpm settings (7-day minimum release age, exact saves, strict engines, no install scripts).
+
+Accepted: Step 2's declared expected sets (§5.2), including your rule that real cases are never weakened to shrink a set.
+
+Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit signed off, push, and wait for CI before G2."
+**AI Response**: "Finishing Step 1a as directed, then the G1 gate, commit, push and CI."
+**Context**: CONSTRUCTION — U1 Code Generation G1, decision received
+
+---
+## U1 Code Generation — G1 gate green; commit and push
+**Timestamp**: 2026-11-18T08:54:30Z
+**User Input**: (none)
+**AI Response**: "Step 1a done: pnpm-workspace.yaml gains pmOnFail ignore, minimumReleaseAge 10080, saveExact, engineStrict, strictDepBuilds with no allowed builds, the minimatch override to 11.0.3, and auditConfig.ignoreGhsas [GHSA-fc5q-39xc-vjpf] (by advisory id only). The lockfile was re-resolved from scratch because the first one held transitive releases younger than 7 days (@eslint/config-array 0.23.6, @jridgewell/resolve-uri 3.1.3, brace-expansion 5.0.13, ignore 7.0.16, minimatch 11.0.9), which the new minimumReleaseAge refused. DEPENDENCIES.md records the override and the audit exception (advisory, severity, range <= 4.0.7 with no fix, paths vitest and typescript-eslint, scope, removal condition). tools/audit-exceptions/ (register.json, check.ts, check.test.ts) makes the exception self-expiring: it fails when a release outside the range is published, when no installed version matches, when the ignore list and the register disagree, and closed without registry data; both triggers tested with recorded advisory and registry data. The tests caught a parser bug (only the first ignored id was read), fixed before commit. ci.yml runs the check after the audit. G1 gate: install frozen, typecheck, lint, format, 7 tests, pnpm audit (1 ignored: high), audit-exceptions check: all pass. Steps 1, 1a, 2, 3, 4, 5 marked done."
+**Context**: CONSTRUCTION — U1 Code Generation G1
+
+---
