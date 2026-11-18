@@ -68,7 +68,7 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 
 | ID | Question | Deferred To | Reason | Source | Status |
 |---|---|---|---|---|---|
-| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | **U1 `contract-and-conformance` Functional Design**, where the span rules are written (Units Generation Q2 A, at the user's direction; was: the unit holding C-19). U3 and U4 implement the rule in C-19 | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | Open |
+| US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | **U1 `contract-and-conformance` Functional Design**, where the span rules are written (Units Generation Q2 A, at the user's direction; was: the unit holding C-19). U3 and U4 implement the rule in C-19 | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | **Discharged** 2026-11-18T07:05:50Z: DEC-U1-01, child of the received context; no link to it as parent; a link to tenant code's active span when that is not the received context; the deviation from ambient-context parenting documented in the unstable span shape (SPN-03, SPN-06; construction/contract-and-conformance/functional-design/business-rules.md) |
 
 ## Units
 
@@ -88,9 +88,9 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 
 | ID | Input | Owning component | Unit | Kind | Status |
 |---|---|---|---|---|---|
-| CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | U1 (specification); U3, U4 | Decision (recorded) | Settled |
-| CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | Open: to Functional Design |
-| CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | Open: to Functional Design |
+| CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | U1 (specification); U3, U4 | Decision (recorded) | Settled; stated as CRD-03 in U1's specification |
+| CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | **Defined** 2026-11-18T07:05:50Z in U1's Functional Design (business-logic-model.md §4; case CC-SEC-01) |
+| CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | **Stated** 2026-11-18T07:05:50Z as SEC-04, SEC-05 (cases CC-SEC-03, CC-SEC-07); Windows open to U3 and U4 Functional Design (SEC-09) |
 
 ## Tickets
 - **Status**: Complete
@@ -166,7 +166,7 @@ the first published release.
 ### CONSTRUCTION PHASE
 - [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design questions written (construction/working/contract-and-conformance-functional-design-plan.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design generated 2026-11-18T07:05:50Z (answers 2026-11-18T06:57:33Z), awaiting approval. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE

@@ -439,3 +439,39 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 Functional Design, questions presented
 
 ---
+## U1 Functional Design — answers
+**Timestamp**: 2026-11-18T06:57:33Z
+**User Input**: "Answers: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q7 A, Q8 A, with three additions:
+
+Q1 (US-Q1), child, as A, except the links:
+
+When the parent is the received context, don't link it as well. A link to your own parent adds nothing.
+When tenant code has an active span that isn't the received context, link that one.
+Document the deviation. Choosing the received context over the tenant's active span departs from OpenTelemetry's usual ambient-context parenting. State this in the unstable span shape documentation (GAP-INT-002's work-around), with the reason: one trace follows the event across hops.
+Record the result as the US-Q1 decision and discharge US-Q1.
+
+Q3 A, with a bounded wait. If the old stream's end hasn't arrived within a bounded time after the new stream opens, the SDK:
+
+closes the old stream itself;
+yields its stream ended with no code received;
+then yields stream started and the held Deliveries.
+The held Deliveries count against the bounded buffer from Q6. Name the wait's value for NFR Requirements; don't invent it.
+
+Q4 A, with a guard against reconnect loops:
+
+Re-subscribing after any non-terminal end, including an unknown code, uses backoff, with Retry-After taking precedence.
+Consecutive ends with no Delivery received in between count against the retry limit. When the limit is reached, the subscription yields a terminal stream ended and finishes.
+Name the backoff and limit values for NFR Requirements.
+Give each rule a conformance case: one where the stub ends every stream at once, and one where the old stream never sends end.
+Log this word for word in audit.md, then generate the Functional Design."
+**AI Response**: "Answers recorded in the plan; no ambiguity found (Step 5). Generating U1's Functional Design: US-Q1 decided (child of the received context; no link to the parent; a link to tenant code's active span when it differs; the deviation from ambient-context parenting documented in the unstable span shape, with its reason) and discharged; Q3's bounded wait and Q4's backoff and consecutive-end limit specified, their values named for NFR Requirements, each with its conformance case."
+**Context**: CONSTRUCTION — U1 Functional Design, answers received
+
+---
+## U1 Functional Design — generated; approval requested
+**Timestamp**: 2026-11-18T07:05:50Z
+**User Input**: (none since the answers at 2026-11-18T06:57:33Z)
+**AI Response**: "Generated construction/contract-and-conformance/functional-design/: business-rules.md (the behaviour specification: 100 statements in 16 areas, each sourced and linked to cases; nine values named for NFR Requirements: H_renew, R_max/W_max, B_init/B_factor/B_cap, L_ends, W_super, N_buf, D_lang, T_idle, T_req; decisions DEC-U1-01 to DEC-U1-14), domain-entities.md (conformance domain, SDK concepts, the complete name table), business-logic-model.md (contract copy, PIN and the four repository checks; stub, runner, modes, negative fixtures; the driver protocol in full; CDI-02's runtime checks: TypeScript heap snapshot after forced GC, searching every string for the value and its halves; Python sys.getrefcount on the returned string against its pre-bootstrap baseline, with its stated limit; the reference driver, test only, in neither package, 23 declared cases across all 16 areas and all ten assertion kinds; four negative controls as single faults with target cases CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04; the catalogue of 88 cases, every agent-side fixture used), l1-coverage-matrix.md (30 rows: 25 Covered, 5 N/A, 0 Missing), invariant-coverage-matrix.md (10 Covered, I11 N/A, 0 Missing). US-Q1 decided as DEC-U1-01 (child of the received context; no link to the parent; a link to tenant code's active span when it is not the received context; the deviation documented in the unstable span shape) and discharged in aidlc-state.md. CDI-02 defined; CDI-01 stated as CRD-03; CDI-03 stated as SEC-04 and SEC-05. The user's additions specified: Q3's bounded wait W_super (STR-05; case CC-STR-05, the old stream never sends end); Q4's backoff with Retry-After first and the L_ends limit on consecutive ends (STR-06; case CC-STR-07, the stub ends every stream at once). Flagged for the user at the gate, as decisions made here: DEC-U1-09 (no schema validation of received envelopes), DEC-U1-10 (connection failures retried like 503; TLS never), DEC-U1-11 (messaging.system = soorma), DEC-U1-12 (lineage change: open new, close old; no duplicate suppression). Gap pass: no new specification gap. L1 Domain Coverage Gate result: covered (25), non-applicable (5), missing (0). Presenting the U1 Functional Design approval gate; next stage NFR Requirements (U1)."
+**Context**: CONSTRUCTION — U1 Functional Design, approval gate presented
+
+---
