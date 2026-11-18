@@ -620,3 +620,30 @@ Then proceed to NFR Design for U1. Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 NFR Design, questions presented
 
 ---
+## U1 NFR Design — state-file fix; answers
+**Timestamp**: 2026-11-18T08:13:23Z
+**User Input**: "First, fix aidlc-state.md. Your last edit inserted ## Open Obligations before the first match of \"## Carried Security Obligations\". That match is inside the security-baseline row of ## Extension Configuration, not the section heading.
+
+The damage: the row is split at line 124, the obligations table sits inside the extension table, and the soorma-platform-invariants row and the ones after it now follow a stray \"## Carried Security Obligations` |\" line.
+The fix: restore the security-baseline row to one line, ending \"(hosted) clauses listed under ## Carried Security Obligations |\". Move ## Open Obligations with OBL-01 and OBL-02 to just before the real ## Carried Security Obligations heading.
+Check:
+the extension table has exactly five rows, each with Enabled Yes;
+the file has exactly one ## Open Obligations heading and one ## Carried Security Obligations heading.
+When editing this file from now on, anchor each insertion on a whole heading line (\n## Heading\n), never on text that can also appear inside a row.
+Commit the fix on its own, signed off.
+Then the NFR Design answers: Q1 A, Q2 A.
+
+Q1: a new driver process per case, because the CDI-02 runtime checks need a clean heap and clean reference counts.
+Q2: finish the run, then fail if it went over the budget, naming the slowest cases. Keep the per-case timeout and the watchdog at twice the budget.
+Log this word for word in audit.md, then generate the NFR Design."
+**AI Response**: "Fixed aidlc-state.md: the security-baseline row restored to one line ending '*(hosted)* clauses listed under `## Carried Security Obligations` |'; ## Open Obligations (OBL-01, OBL-02) moved to just before the real ## Carried Security Obligations heading. Checked: the extension table has exactly five rows, each Enabled Yes; exactly one ## Open Obligations heading and one ## Carried Security Obligations heading. Committed on its own, signed off: c8db581. Insertions into this file now anchor on a whole heading line, asserted unique (saved as a standing memory). NFR Design answers recorded (Q1 A, Q2 A); generating the NFR Design."
+**Context**: CONSTRUCTION — U1 NFR Design, answers received
+
+---
+## U1 NFR Design — generated; approval requested
+**Timestamp**: 2026-11-18T08:14:41Z
+**User Input**: (none since the answers at 2026-11-18T08:13:23Z)
+**AI Response**: "Generated construction/contract-and-conformance/nfr-design/: nfr-design-patterns.md (P-01 a new driver process per case; P-02 budgets: finish then judge, per-case timeouts, watchdog at twice the budget, slowest cases named; P-03 timing windows, no retries; P-04 per-run secrets and CAs in a 0700 run directory, removed at the end; P-05 loopback-only stub with refuse and reset faults; P-06 fail closed; P-07 the CI guard for --offline and --local-skip CC-SEC-05; P-08 the DCO check as a pure function with injected git and API readers, wrapped by actions/github-script with its default github-token input, tested with a local git repository and recorded responses, live confirmation OBL-01; P-09 the drift check by git; P-10 supply-chain guards: frozen install, workflow check, audit, dependency review, Dependabot, packaging guard) and logical-components.md (data components; runner, stub, reference driver, repository checks and CI components, each with the NFRs it carries; every NFR-U1 requirement covered). Security: no findings; invariants unchanged; no new gap. Presenting the U1 NFR Design gate; next stage QA test specs, construction enrichment (U1), then the Construction Design PR gate."
+**Context**: CONSTRUCTION — U1 NFR Design, approval gate presented
+
+---
