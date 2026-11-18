@@ -508,3 +508,24 @@ Log this word for word in audit.md, then make the changes and present the Functi
 **Context**: CONSTRUCTION — U1 Functional Design, gate presented again with GAP-CAC-001 routing
 
 ---
+## U1 Functional Design — GAP-CAC-001 routing and approval
+**Timestamp**: 2026-11-18T07:24:45Z
+**User Input**: "GAP-CAC-001: A. Raise it against soorma-core, keeping the work-around (a credential_refused that answers a retried renewal is terminal; fail closed).
+
+Open the issue on soorma-ai/soorma-core, citing contract-v0.1.0. Link the gap entry by a permalink pinned to 1449f09, and list the three options. Qualify the ID as soorma-sdk GAP-CAC-001.
+You may note, labelled as an observation and not the contract, that soorma-core's implementation at the tag appears to match option 1: renewal moves the lineage record's expiry forward, and each token keeps its own exp. The ask is for the contract to state the behaviour, whichever it is.
+Status: set it to Open with the issue link, in the gap entry and in the register in aidlc-state.md.
+Then Continue to Next Stage: U1 Functional Design approved, with the two corrections as made: DEC-U1-12, STR-05, SUB-03 and CC-STR-11; DEC-U1-10 split into PRB-05, 08, 09 and 10, with CC-PRB-06 and CC-PRB-08. CDI-04 is carried to U3 and U4. Proceed to NFR Requirements for U1.
+
+Log this word for word in audit.md."
+**AI Response**: "Opening the issue on soorma-ai/soorma-core for soorma-sdk GAP-CAC-001, then recording it Open with the link, approving U1 Functional Design, and starting NFR Requirements for U1."
+**Context**: CONSTRUCTION — U1 Functional Design approved; GAP-CAC-001 routed (A)
+
+---
+## U1 Functional Design — GAP-CAC-001 raised; approved
+**Timestamp**: 2026-11-18T07:25:27Z
+**User Input**: (see the entry at 2026-11-18T07:24:45Z)
+**AI Response**: "Checked soorma-core for an existing open issue on renewal tokens: none. Verified the observation at the tag (packages/credentials/src/sql.ts renewAgentCredential: expires_at = GREATEST(expires_at, $7); agent-token.ts: renewal mints a new jti for the same cid, each token with its own exp). Opened soorma-ai/soorma-core#34, 'Contract gap from build: does a renewal leave the previous agent token valid? (soorma-sdk GAP-CAC-001)', citing contract-v0.1.0, the gap entry by permalink pinned to 1449f09e3b5002da20caf23702c0759f9da6efd7 (resolves, HTTP 200), the three options, the implementation observation labelled as not the contract, the ask (the contract to state the behaviour), and the fail-closed work-around. No spec-gap label exists on soorma-core; none was created. GAP-CAC-001 set to Open with the issue link in the gap entry and the register. U1 Functional Design APPROVED with the corrections as made; CDI-04 carried to U3 and U4. Starting NFR Requirements for U1."
+**Context**: CONSTRUCTION — U1 Functional Design approved; NFR Requirements begins
+
+---

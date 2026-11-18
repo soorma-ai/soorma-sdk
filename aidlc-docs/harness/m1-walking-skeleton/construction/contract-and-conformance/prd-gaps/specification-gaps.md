@@ -11,7 +11,7 @@ Gaps found while building U1, qualified by repository whenever they leave this i
 **PRD section**: PF §14 (the renewal precondition, a still-valid credential, "is part of the contract"); no section addresses the previous token's validity after a renewal
 **Owner**: the soorma-core initiative (the wire contract); the Identity and Platform Foundations PRDs if it is a PRD-level rule
 **Unit**: contract-and-conformance (U1); implemented in typescript-harness (U3), python-harness (U4)
-**Issue**: — (pending the user's routing choice)
+**Issue**: soorma-ai/soorma-core#34: https://github.com/soorma-ai/soorma-core/issues/34 (opened 2026-11-18T07:25:27Z; routing A, the user, 2026-11-18T07:24:45Z)
 **Resolved by**: —
 
 ### What the build needs
@@ -65,4 +65,4 @@ bootstrapping around a possible revocation). The cost, if option 2 or 3 turns ou
 platform's behaviour, is a rare false stop after a lost renewal response, which tenant code
 sees as a terminal `ClientStateError` and a terminal *stream ended*.
 
-**Status**: Open (routing pending)
+**Status**: Open: raised against soorma-core's wire contract (soorma-ai/soorma-core#34); worked around (a `credential_refused` answering a retried renewal is terminal; fail closed)

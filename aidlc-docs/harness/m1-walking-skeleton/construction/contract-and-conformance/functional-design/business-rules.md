@@ -244,7 +244,7 @@ marked). No statement below fixes a number for them; every case reads them from 
 ## Specification-Gap Pass
 
 **One new specification gap, GAP-CAC-001** (DEC-U1-10): whether a renewal leaves the previous
-agent token valid. Recorded in `../prd-gaps/specification-gaps.md`; routed at the gate.
+agent token valid. Recorded in `../prd-gaps/specification-gaps.md`; raised against soorma-core's wire contract as soorma-ai/soorma-core#34 (routing A, the user); worked around, fail closed.
 Otherwise no new specification gap. Every decision above passes the Step 1 test as technology or design
 inside an existing work-around: two competent engineers could choose differently and neither
 would contradict PF, ID or the contract. DEC-U1-01 and DEC-U1-11 sit inside soorma-sdk

@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Functional Design
+- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, NFR Requirements
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -63,7 +63,7 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 |---|---|---|---|---|---|---|
 | GAP-INT-001 | U1, U3, U4 | Event delivery guarantees, as the SDK's subscriber sees them | Awaiting PRD: Event; worked around (contract-v0.1.0 live-only) | PF @ `prd-platform-foundations-v1.3` | — | soorma-prd#13 (existing; soorma-core GAP-INT-003); comment: https://github.com/soorma-ai/soorma-prd/issues/13#issuecomment-6966876924 |
 | GAP-INT-002 | U1, U3, U4 | Span semantics for the trace the SDK emits (OB-8) | Awaiting PRD: Observability; worked around (OpenTelemetry API only; no SDK exporter; proof by a test-installed exporter) | PF @ `prd-platform-foundations-v1.3` | — | soorma-prd#37: https://github.com/soorma-ai/soorma-prd/issues/37 |
-| GAP-CAC-001 | U1 (U3, U4 implement) | Whether a renewal leaves the previous agent token valid (decides whether `credential_refused` on a retried renewal is terminal) | Open: routing pending; worked around (refused on a retried renewal treated as terminal, fail closed) | soorma-core wire contract @ `contract-v0.1.0` (PF §11, §14 context) | — | — |
+| GAP-CAC-001 | U1 (U3, U4 implement) | Whether a renewal leaves the previous agent token valid (decides whether `credential_refused` on a retried renewal is terminal) | Open; worked around (refused on a retried renewal treated as terminal, fail closed) | soorma-core wire contract @ `contract-v0.1.0` (PF §11, §14 context) | — | soorma-ai/soorma-core#34: https://github.com/soorma-ai/soorma-core/issues/34 |
 
 ## Deferred Questions
 
@@ -168,7 +168,7 @@ the first published release.
 ### CONSTRUCTION PHASE
 - [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design generated 2026-11-18T07:05:50Z (answers 2026-11-18T06:57:33Z), awaiting approval. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements in progress. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
