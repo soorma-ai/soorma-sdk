@@ -121,20 +121,20 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 
 | Extension | Enabled | Decided At | Notes |
 |---|---|---|---|
-| security-baseline | Yes | Requirements Analysis (Q11) | Opted in — deployment: local-only. *(hosted)* clauses listed under `## Open Obligations
-
-| ID | Obligation | Source | Status |
-|---|---|---|---|
-| OBL-01 | **Live confirmation of the DCO exemption**: the first real Dependabot PR into `dev`, and the `dev` → `main` PR after it; record both CI run IDs here | U1 NFR-U1-32 (the user, 2026-11-18T08:05:52Z) | Open: awaiting the first Dependabot PR |
-| OBL-02 | **AD-13's CI time**, first measured on U2's code PR, with the run ID recorded | Units Generation (U2 *done when*) | Open: at U2 Code Generation |
-
-## Carried Security Obligations` |
+| security-baseline | Yes | Requirements Analysis (Q11) | Opted in — deployment: local-only. *(hosted)* clauses listed under `## Carried Security Obligations` |
 | soorma-platform-invariants | Yes | Requirements Analysis (Q12) | Scope inherited from PF §15 and ID §15: I1 to I11 all Addressed in both, none N/A. Invariants read at `prd-platform-foundations-v1.3` and `prd-identity-v1.0`; text identical at both tags (SHA-256 c66c0170…) |
 | pr-checkpoint | Yes | Requirements Analysis (Q13) | Gates on `dev` → `main` PRs (the user's git instruction) |
 | qa-test-cases | Yes | Requirements Analysis (Q14) | Opted in — scope: comprehensive |
 | tickets | Yes | Requirements Analysis (Q15) | Opted in — target: GitHub issues: soorma-ai/soorma-sdk; initiative ticket → tracking issue; unit ticket → sub-issue |
 
 Full rules loaded at opt-in: security-baseline.md, soorma-platform-invariants.md, pr-checkpoint.md, qa-test-cases.md, tickets.md.
+
+## Open Obligations
+
+| ID | Obligation | Source | Status |
+|---|---|---|---|
+| OBL-01 | **Live confirmation of the DCO exemption**: the first real Dependabot PR into `dev`, and the `dev` → `main` PR after it; record both CI run IDs here | U1 NFR-U1-32 (the user, 2026-11-18T08:05:52Z) | Open: awaiting the first Dependabot PR |
+| OBL-02 | **AD-13's CI time**, first measured on U2's code PR, with the run ID recorded | Units Generation (U2 *done when*) | Open: at U2 Code Generation |
 
 ## Carried Security Obligations
 
