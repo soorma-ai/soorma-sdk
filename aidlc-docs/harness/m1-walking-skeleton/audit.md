@@ -598,3 +598,25 @@ Record target-branch: dev as before. Log this word for word in audit.md, then ge
 **Context**: CONSTRUCTION — U1 NFR Requirements, approval gate presented
 
 ---
+## U1 NFR Requirements — approval
+**Timestamp**: 2026-11-18T08:05:52Z
+**User Input**: "Continue to Next Stage: U1 NFR Requirements approved, including NFR-U1-31's added test (an API lookup that errors fails the check). One clarification to record in NFR-U1-32 before NFR Design:
+
+How the DCO tests run. The check's logic is a script that can be tested apart from the workflow. Its tests run in CI against:
+
+a local test git repository holding the commit shapes;
+recorded or stubbed responses from GitHub's commit API, covering a verified Dependabot commit, an unverified commit with a [bot] email, a human commit, and a lookup error.
+They don't depend on real PRs. The live confirmation is the first real Dependabot PR into dev, plus the dev → main PR after it. Record both run IDs in this initiative when they happen, as an open obligation tracked in aidlc-state.md until then.
+
+Then proceed to NFR Design for U1. Log this word for word in audit.md."
+**AI Response**: "U1 NFR Requirements APPROVED. Recorded the clarification in NFR-U1-32 and an open obligation (OBL-01: the first real Dependabot PR into dev and the dev → main PR after it, run IDs to record) in aidlc-state.md. Starting NFR Design for U1."
+**Context**: CONSTRUCTION — U1 NFR Requirements approved; NFR Design begins
+
+---
+## U1 NFR Design — plan and questions
+**Timestamp**: 2026-11-18T08:06:24Z
+**User Input**: (none)
+**AI Response**: "Loaded construction/nfr-design.md. Also recorded OBL-02 (AD-13's CI time, first measured on U2's code PR, run ID recorded) beside OBL-01 under ## Open Obligations, since it is the same kind of pending record. Wrote construction/working/contract-and-conformance-nfr-design-plan.md (git-ignored) with two questions: Q1 driver process lifetime (A: a new driver process per case); Q2 enforcing the time budgets (A: finish then judge, per-case timeouts, a watchdog at twice the budget). Other patterns follow from the approved requirements. Awaiting answers."
+**Context**: CONSTRUCTION — U1 NFR Design, questions presented
+
+---
