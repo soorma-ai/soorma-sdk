@@ -111,7 +111,7 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Status**: PENDING
 - **Branch**: dev (confirmed by the user's standing instruction: work on dev, PR dev to main)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/inception/working/pr-checkpoint-instructions.md
-- **PR**: (set when opened)
+- **PR**: soorma-ai/soorma-sdk#8 (dev → main), opened 2026-11-18T06:20:40Z; checks green 2026-11-18T06:21:08Z (Check sign-off: pass). Merge is the user's; recorded only when GitHub shows it
 - **Created**: 2026-11-18T06:20:15Z
 - **Approved**: —
 
@@ -161,7 +161,7 @@ the first published release.
 - [x] Units Generation — APPROVED 2026-11-18T06:14:40Z. Answers 2026-11-18T06:05:15Z (Q1 A with U1 and U2 done-when additions; Q2 A; Q3 A); Q1a answered: 200, per the contract
 - [x] Tickets (extension) — Complete: tracking issue #3; sub-issues #4 to #7
 - [x] QA test specs, inception pass (extension) — 2026-11-18T06:20:15Z: comprehensive; contract-and-conformance 24 (CAC), e2e-stack 12 (ES), typescript-harness 66 (TH), python-harness 66 (PH); inception/test-cases/
-- [ ] Inception PR gate (extension) — PENDING: PR dev → main opened; awaiting checks and the user's merge
+- [ ] Inception PR gate (extension) — PENDING: PR #8 open, checks green; awaiting the user's merge
 
 ### CONSTRUCTION PHASE
 - [ ] Construction Phase Initialization — EXECUTE
