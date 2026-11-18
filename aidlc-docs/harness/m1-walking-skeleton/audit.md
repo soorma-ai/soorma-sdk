@@ -669,3 +669,10 @@ Log this word for word in audit.md."
 **Context**: CONSTRUCTION — U1 QA enrichment; design PR gate
 
 ---
+## U1 Construction Design PR — open, checks green
+**Timestamp**: 2026-11-18T08:28:55Z
+**User Input**: (none)
+**AI Response**: "Opened soorma-ai/soorma-sdk#9 (dev → main), 'feat(construction): harness/m1-walking-skeleton — contract-and-conformance design', with the unit summary and the design artifact list per pr-checkpoint.md §5.3. Every commit in origin/main..dev carries a Signed-off-by. Checks: Check sign-off pass; mergeable clean. Stopping for the user to merge; the gate stays PENDING and nothing is recorded as merged until GitHub shows it."
+**Context**: CONSTRUCTION — U1 Construction Design PR gate, awaiting merge
+
+---

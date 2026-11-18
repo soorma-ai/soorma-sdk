@@ -121,7 +121,7 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Status**: PENDING
 - **Branch**: dev (the user's standing instruction)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/contract-and-conformance-design-pr-checkpoint-instructions.md
-- **PR**: (set when opened)
+- **PR**: soorma-ai/soorma-sdk#9 (dev → main), opened 2026-11-18T08:28:30Z; checks green 2026-11-18T08:28:55Z (Check sign-off: pass). Merge is the user's; recorded only when GitHub shows it
 - **Created**: 2026-11-18T08:28:18Z
 - **Approved**: —
 
