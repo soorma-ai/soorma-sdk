@@ -150,6 +150,7 @@ Full rules loaded at opt-in: security-baseline.md, soorma-platform-invariants.md
 |---|---|---|---|
 | OBL-01 | **Live confirmation of the DCO exemption**: the first real Dependabot PR into `dev`, and the `dev` → `main` PR after it; record both CI run IDs here | U1 NFR-U1-32 (the user, 2026-11-18T08:05:52Z) | Open: awaiting the first Dependabot PR |
 | OBL-02 | **AD-13's CI time**, first measured on U2's code PR, with the run ID recorded | Units Generation (U2 *done when*) | Open: at U2 Code Generation |
+| OBL-03 | **DCO check runs the base branch's code, not the PR's**: `.github/workflows/dco.yml` checks out the PR's merge commit and imports `tools/dco/action.ts` from it, so a pull request from a fork could change the code that judges it. Once #10 is merged and `main` has `tools/dco`, check out the base commit (`github.event.pull_request.base.sha`) for the tools and read the PR's commits separately (the API or a fetch of the head), never executing the PR's own `tools/`. Observation, to settle then: under `pull_request` the workflow file itself also comes from the PR, so the fix closes the `tools/` path; the workflow file's own path needs a separate answer (for example review required on `.github/`) | The user, on PR #10 (2026-11-18T17:20:44Z); recorded only, not done in #10 | Open: after #10 merges, in a later PR |
 
 ## Carried Security Obligations
 

@@ -825,3 +825,34 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation, code PR, awaiting a decision
 
 ---
+
+## U1 Code Generation — code PR #10: dependency graph enabled; three fixes requested
+**Timestamp**: 2026-11-18T17:20:44Z
+**User Input**: "A: I've enabled the Dependency graph in soorma-sdk's settings. (B would have changed nothing: GET /vulnerability-alerts already returns 204, but the SBOM endpoint returned 404 until the graph was switched on.) Before pushing, confirm it with `gh api repos/soorma-ai/soorma-sdk/dependency-graph/sbom`.
+
+Fix these before pushing, in signed-off commits on dev:
+
+1. The audit-exceptions check conflicts with the release cooldown. Right now it fails as soon as a picomatch release outside the affected range is published. But minimumReleaseAge (7 days) stops pnpm installing that release, so every PR would be red for a week with no allowed fix. Change the rule:
+   - A release counts as a fix only once it's older than the cooldown. Use the publish times in the registry's `time` field. Read the cooldown from minimumReleaseAge in pnpm-workspace.yaml; don't copy the number.
+   - While a fix is younger than the cooldown, the check passes and prints a notice naming the version and the date it becomes installable.
+   - If a version's publish time is missing, fail closed.
+   - Add tests: a fix 1 day old passes with the notice; one 8 days old fails; a missing time fails.
+   - Update DEPENDENCIES.md's \"Remove when\" text and register.json's removeWhen to match.
+
+2. aidlc-state.md: the U1 line in the Units section ends with a garbled fragment, \"…(user decision).md), awaiting answers.md), awaiting answers.\" It first appeared in 811c427 and went to main with #9; c8db581 didn't remove it. Remove it, and check for any other leftover text from that edit.
+
+3. Record a follow-up in aidlc-state.md. Don't do it in this PR. dco.yml imports tools/dco/action.ts from the PR's own checkout, so a pull request from a fork could change the code that judges it. Once #10 is merged, main has tools/dco, so the check can run main's copy: check out the base commit for the tools and read the PR's commits separately.
+
+Log this message word for word in audit.md. Then push c012a48 and the fixes, wait for every check on PR #10 including dependency review, record CHECKS_GREEN with the run IDs, and stop. Step 38 stays open until I tell you #10 is merged."
+**AI Response**: "Logged. Confirmed the dependency graph: GET repos/soorma-ai/soorma-sdk/dependency-graph/sbom now answers 200 (it answered 404 before; the package list is still being populated, 2 packages at this time). Starting fix 1 (the audit-exceptions cooldown rule), then fix 2 (the garbled U1 line), then fix 3 (the dco.yml follow-up, recorded only)."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR #10, fixes before push
+
+---
+
+## U1 Code Generation — code PR #10: three fixes made
+**Timestamp**: 2026-11-18T17:23:15Z
+**User Input**: (none)
+**AI Response**: "Fix 1 (5314abe): the audit-exceptions check reads minimumReleaseAge from pnpm-workspace.yaml and publish times from the registry's `time` field (full document; the abbreviated one carries none). A release outside the affected range counts as a fix only once it is older than the cooldown; a younger one passes with a NOTICE naming the version and when it becomes installable; a fix without a parseable publish time, or a missing cooldown, fails closed. Tests added: 1 day old passes with the notice; 8 days old fails; missing time fails; unparseable time fails; missing cooldown fails (98 tests pass). DEPENDENCIES.md, register.json removeWhen and the pnpm-workspace.yaml comment updated. Live run passes against the registry. Fix 2 (cb84234): removed '.md), awaiting answers.md), awaiting answers' from the U1 line under Stage Progress (CONSTRUCTION PHASE). History: the first copy came in a639efa (after 'awaiting approval'), 811c427 doubled it, both reached main with #9. No other leftover text found: every table's rows match their header; the only repeated lines are the two PRDs' Kind and Status fields. Fix 3: OBL-03 recorded under Open Obligations (dco.yml to run the base commit's tools/dco and read the PR's commits separately, after #10 merges; not done in #10), with an observation that under pull_request the workflow file itself also comes from the PR."
+**Context**: CONSTRUCTION — U1 Code Generation, code PR #10
+
+---
