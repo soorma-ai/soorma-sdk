@@ -1050,3 +1050,11 @@ Update NFR-U2-01, -04 and -07, JOB-03 in business-rules.md, and the planned test
 **Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements approved; QA enrichment next
 
 ---
+
+## U2 QA test specs — construction enrichment
+**Timestamp**: 2026-11-18T20:59:34Z
+**User Input**: (none)
+**AI Response**: "Construction enrichment for e2e-stack (qa-test-cases §2): sources construction/e2e-stack/functional-design/ and nfr-requirements/ (NFR Design skipped; no infrastructure design). test-specs-narrative.md enriched in place: TC-ES-001 to 012 modified (IDs and forward links unchanged), TC-ES-013 to 023 added with forward links to construction/e2e-stack/code/; TC-ES-020 carries the user's requirement that the fake validates every response it sends against the vendored contract's schema for that operation and status; TC-ES-022 the user's never-answering call test; TC-ES-008 the workflow condition. test-case-index.md: 11 rows added, no priority changed. enrichment-delta.md written (git-ignored session artifact). 23 cases. Next: the Construction Design PR gate."
+**Context**: CONSTRUCTION — U2 e2e-stack, QA enrichment complete
+
+---
