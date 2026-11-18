@@ -769,3 +769,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G2
 
 ---
+## U1 Code Generation — G2 CI green; G3 gate green
+**Timestamp**: 2026-11-18T09:02:12Z
+**User Input**: (none)
+**AI Response**: "G2 pushed as cbd0a4a; CI run 44271420822 green. G3 written: contract/ vendored by git archive from the local soorma-core clone at c1e3d7f3 (read only); all 234 blob ids match the tag; the tag peels to c1e3d7f3 (git ls-remote); contract/ tree 38900083586024a832c05af04789fc0639dc9e2f. Plan note: the pin is contract.pin.json at the root beside contract.md (not contract/PIN), because the approved design also requires contract/ to stay byte-identical to the tag; .gitattributes marks contract/** -text. tools/: drift (local half; remote half by git ls-remote and a --depth 1 fetch, no token; fails closed; --offline local only, refused in CI) with tests against a file:// stand-in remote (modified, added, removed file; wrong peeled commit; wrong tree; unreachable remote; --offline in and out of CI); spdx with tests; workflows (SHA pins with tag comments, ubuntu-24.04, contents: read at both levels, no upload of the run directory) with tests; generated-types (inert, packages.json empty) with a fixture generator and package; names (inert, drivers.json empty) with a fixture name table: the tests caught the package row being read as an export, fixed; packaging guard (inert) with fixture packages; tools/checks.ts aggregates them (pnpm checks); contract.md; ci.yml gains the checks job. G3 gate: frozen install, typecheck, lint, format, 46 tests, audit (1 ignored), audit-exceptions, pnpm checks online: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G3
+
+---

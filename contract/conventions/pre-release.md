@@ -1,0 +1,30 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Pre-Release Statements
+
+These hold for contract version `0.1.0`.
+
+1. **This contract is pre-release (`0.y.z`).** The operations, error codes, and credential
+   presentation may change between `0.y` versions. **Envelope v1 does not**: it follows the
+   envelope compatibility policy from this version on
+2. **Event delivery semantics are unspecified at this version.** Delivery reaches **live
+   subscribers only**, with **no durability, ordering, redelivery, or acknowledgement** promised.
+   Do not rely on observed behaviour. **A stream is not resumable**: a Delivery accepted while no
+   stream was open is not delivered later
+3. **The bootstrap exchange and credential renewal carry no envelope**
+4. **The accepted permission identifiers may widen in a compatible version.** In this version,
+   only the plane-declared identifiers are accepted
+5. **A draft never carries origin mode.** Accepting an asserted origin later would be additive
+6. **Delegation-credential presentation will be added without a breaking change.** The
+   `Soorma-Delegation` header and the `soorma_dc_` prefix are reserved
+7. **`maxChainDepth` is 32 for envelope v1**
+8. **The envelope bound is 16 KiB**, measured on the RFC 8785 (JCS) serialization, both for a
+   forwarded envelope and for one the platform would stamp (`envelope_too_large`). **Received
+   identifiers are opaque strings; do not validate their syntax**
+9. **An agent whose registration does not declare autonomy is refused (`forbidden`) on any
+   request whose origin is `autonomous`, including one forwarding an autonomous envelope.**
+   Allowing it later would be additive
+
+**The Delivery payload bound is 64 KiB** (65 536 bytes), measured on the payload's RFC 8785
+(JCS) serialization with each number counted by its source text. Payload numbers are delivered
+exactly as written. See [envelope.md](envelope.md) _The Delivery_ and _The stream_.
