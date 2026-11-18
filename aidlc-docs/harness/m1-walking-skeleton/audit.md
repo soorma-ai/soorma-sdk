@@ -900,3 +900,19 @@ Log this message word for word in audit.md, commit signed off, push, and wait fo
 **Context**: CONSTRUCTION — U1 Code Generation approved; transition to U2 e2e-stack
 
 ---
+
+## U2 Unit Initialization
+**Timestamp**: 2026-11-18T17:46:54Z
+**User Input**: (none; the approval logged at 2026-11-18T17:43:12Z directs the start of U2)
+**AI Response**: "Push CI for 27e1639 (records fixes) green: run 44361973022. Unit Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets] (unit: e2e-stack). prd-gap-classification.md active (## PRD Intake exists). Next: the L1 Domain Coverage Gate for U2, then Functional Design."
+**Context**: CONSTRUCTION — U2 e2e-stack, Unit Initialization
+
+---
+
+## U2 L1 Domain Coverage Gate and Functional Design questions
+**Timestamp**: 2026-11-18T17:49:55Z
+**User Input**: (none)
+**AI Response**: "L1 coverage assessment (U2): L1 sources PF @ prd-platform-foundations-v1.3 (U1's rows); ID @ prd-identity-v1.0 has no L1 source. Applicable to U2: L1-12 (as the stack proof), L1-25, L1-26, L1-27, L1-28 (as a constraint); N/A for U2: L1-01 to L1-11, L1-13 to L1-24, L1-29, L1-30 (SDK behaviour, built in U3 and U4). Covered: targets set at Functional Design; Missing: 0. Functional Design plan written with 8 questions (construction/working/e2e-stack-functional-design-plan.md): Q1 when setup consumes the fresh-stack marker; Q2 which stack core-down may remove; Q3 agent identifiers; Q4 what setup hands to the language jobs; Q5 the secrets directory; Q6 the stack proof and the job after U3; Q7 the stack's logs on a failure; Q8 a failed call in setup, and retries. Settled items (AD-10 to AD-13, S-6, S-7) not re-asked. Gap classification: every question technology or design; no gap raised; U2 inherits none. Grounded in soorma-core at contract-v0.1.0, read only (stack-client.ts, e2e/support.ts, tenancy.yaml, compose.yaml, its CI's stack job). Stopped for answers."
+**Context**: CONSTRUCTION — U2 e2e-stack, L1 gate; Functional Design questions
+
+---
