@@ -63,6 +63,7 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 |---|---|---|---|---|---|---|
 | GAP-INT-001 | U1, U3, U4 | Event delivery guarantees, as the SDK's subscriber sees them | Awaiting PRD: Event; worked around (contract-v0.1.0 live-only) | PF @ `prd-platform-foundations-v1.3` | — | soorma-prd#13 (existing; soorma-core GAP-INT-003); comment: https://github.com/soorma-ai/soorma-prd/issues/13#issuecomment-6966876924 |
 | GAP-INT-002 | U1, U3, U4 | Span semantics for the trace the SDK emits (OB-8) | Awaiting PRD: Observability; worked around (OpenTelemetry API only; no SDK exporter; proof by a test-installed exporter) | PF @ `prd-platform-foundations-v1.3` | — | soorma-prd#37: https://github.com/soorma-ai/soorma-prd/issues/37 |
+| GAP-CAC-001 | U1 (U3, U4 implement) | Whether a renewal leaves the previous agent token valid (decides whether `credential_refused` on a retried renewal is terminal) | Open: routing pending; worked around (refused on a retried renewal treated as terminal, fail closed) | soorma-core wire contract @ `contract-v0.1.0` (PF §11, §14 context) | — | — |
 
 ## Deferred Questions
 
@@ -91,6 +92,7 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 | CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | U1 (specification); U3, U4 | Decision (recorded) | Settled; stated as CRD-03 in U1's specification |
 | CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | **Defined** 2026-11-18T07:05:50Z in U1's Functional Design (business-logic-model.md §4; case CC-SEC-01) |
 | CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | **Stated** 2026-11-18T07:05:50Z as SEC-04, SEC-05 (cases CC-SEC-03, CC-SEC-07); Windows open to U3 and U4 Functional Design (SEC-09) |
+| CDI-04 | **The typed envelope claims no field is present that the SDK did not check** (DEC-U1-09 follow-on): optional types, or documented, per language | C-18 | U3, U4 (each language's Functional Design); stated in U1 as RCV-08 | Design input | Open: to U3 and U4 Functional Design |
 
 ## Tickets
 - **Status**: Complete

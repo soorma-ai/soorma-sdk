@@ -59,6 +59,9 @@ Every source file (`*.ts`, `*.py`, scripts, workflow files) begins with a commen
 - **Scripts**: each case's exchanges are loaded before the case. A request is matched to the
   next exchange whose `match` it meets; a request matching nothing is answered `500` and
   **fails the case**
+- **Connection faults**: `refuse` (the listener refuses the next N connections: nothing is
+  sent) and `reset` (the stub reads the whole request, then resets the connection with no
+  answer: the request was sent), for PRB-08 and PRB-09
 - **Recording**: method, path, headers, body bytes, arrival time, and the connection it came
   on. Bodies are recorded as received bytes, never re-encoded
 - **Streams**: SSE actions are written as text in order. `drop` closes the socket without
@@ -312,6 +315,7 @@ negative fixtures (§2.3).
 | CC-STR-08 | `Retry-After` takes precedence over backoff | STR-06 | — | re-subscribe answered `503`, `Retry-After: 2` | rt | | |
 | CC-STR-09 | `credential_refused` ends terminally | STR-07 | — | `end credential_refused`; then publish | is, ob, ab | | |
 | CC-STR-10 | At most one stream per lineage | STR-09 | — | two renewals; count concurrently open streams | rc | | |
+| CC-STR-11 | **A duplicate in the renewal overlap is yielded, not suppressed** | STR-05, SUB-03 | — | renewal replacement: after the replacement subscribe arrives, the stub sends the same Delivery text D on the old stream and on the new stream, then `end superseded` on the old | is | | |
 | CC-RCV-01 | Extraction does not depend on member order | RCV-01 | `delivery/valid/sample.json` | the same Delivery in all six member orders | is | | |
 | CC-RCV-02 | Parsed envelope, envelope text, seal, payload, payload text | RCV-02 | `delivery/valid/sample.json`; `envelope/valid/sample.json`, `…/delegated.json`, `…/re-broadened.json`, `…/chain-32-entries.json` | one Delivery per envelope | is | R | |
 | CC-RCV-03 | Unknown fields and values kept | RCV-03 | `envelope/valid/unknown-fields-at-every-level.json`, `…/unknown-origin-mode.json`; `delivery/valid/unknown-field.json` | deliveries | is | | |
@@ -325,7 +329,8 @@ negative fixtures (§2.3).
 | CC-PRB-03 | `forbidden` surfaces with no added cause | PRB-04 | — | `403 forbidden` on publish | ob | | |
 | CC-PRB-04 | `503` retried after `Retry-After`, within the bound | PRB-05, ACQ-05 | — | bootstrap `503`, `Retry-After: 1`, twice, then `200` | rc, rt | R | |
 | CC-PRB-05 | Past the bound, the last error surfaces | PRB-05 | — | bootstrap `503` always | rc, ob | | |
-| CC-PRB-06 | Connection failures retried; TLS failures not | PRB-05 | — | S3 refuses connections twice, then serves; separately the untrusted listener | rc, ob | | |
+| CC-PRB-06 | **A refusal before sending** is retried; a TLS failure is not | PRB-08, PRB-10 | — | for bootstrap, renewal and subscribe in turn: the listener refuses connections twice, then serves; separately, the untrusted listener | rc, ob | | |
+| CC-PRB-08 | **A reset after sending**: subscribe, renewal (unexpired) and bootstrap retried; publish not | PRB-09, PRB-10 | — | the stub reads each whole request, then resets the connection once: subscribe, renewal with the credential unexpired, bootstrap, publish; then a renewal reset after `expiresAt` (not retried; the next operation bootstraps) | rc, ob | | |
 | CC-PRB-07 | Error paths release resources | PRB-07 | — | each failure kind; `close`; `inspect openResources` | rk | | |
 | CC-SPN-01 | Spans through the API only, messaging conventions, no soorma names | SPN-01, SPN-02 | — | publish; receive | sp | R | |
 | CC-SPN-02 | A failed operation's span records the error, nothing sensitive | SPN-07, SPN-02 | — | publish `503` | sp | | |
@@ -334,13 +339,13 @@ negative fixtures (§2.3).
 | CC-SPN-05 | An unparseable received `traceparent` gives a root span | SPN-03 | `draft/valid/traceparent-higher-version.json` (parsed, not root); a malformed value (root) | `forward` each | sp | | |
 | CC-SPN-06 | A client publish uses ambient parenting | SPN-04 | — | `publish` with `inSpan` | sp | | |
 | CC-SPN-07 | No exporter, sampler or provider installed | SPN-05 | — | driver without the test SDK; publish; the global provider is still the no-op one | sp, ab | | |
-| CC-SPN-08 | The documentation states the unstable shape and the deviation | SPN-06, SUB-03 | — | the runner reads the package's span and delivery documentation the driver points to | sf | | |
+| CC-SPN-08 | The documentation states the unstable shape, the deviation, live-only delivery and possible duplicates | SPN-06, SUB-03 | — | the runner reads the package's span and delivery documentation the driver points to | sf | | |
 | CC-NEV-01 | No human-side operation or type | NEV-01, CRD-05 | — | `names`; `surface` | sf | R | |
 | CC-NEV-02 | No stamped field can be set | NEV-02, DRF-03 | — | `surface`: no publish option names a stamped field | sf | | |
 | CC-NEV-03 | `Soorma-Delegation` is never sent | NEV-03 | — | every operation; inspect every recorded header | rs | | |
 | CC-NAM-01 | Exported names match the table | NAM-01 | — | `names`; `surface` | sf | R | |
 
-**Totals**: 88 cases. Reference coverage (R): 23 cases, spanning all 16 areas and all ten
+**Totals**: 90 cases. Reference coverage (R): 23 cases, spanning all 16 areas and all ten
 assertion kinds. Fault targets: CC-SEC-01, CC-FWD-02, CC-PUB-03, CC-STR-04 (and CC-STR-05).
 The two loop-guard rules the user named each have a case: **CC-STR-07** (the stub ends every
 stream at once) and **CC-STR-05** (the old stream never sends `end`).

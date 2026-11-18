@@ -475,3 +475,36 @@ Log this word for word in audit.md, then generate the Functional Design."
 **Context**: CONSTRUCTION — U1 Functional Design, approval gate presented
 
 ---
+## U1 Functional Design — changes requested
+**Timestamp**: 2026-11-18T07:15:17Z
+**User Input**: "Request Changes: two corrections to U1's Functional Design, then present the gate again.
+
+1. DEC-U1-12: duplicates at every replacement, not only a lineage change. STR-04 opens the new stream before the platform ends the old one with superseded, so a Delivery accepted in that overlap can be read on both streams on every renewal replacement too.
+
+Restate DEC-U1-12 and STR-05 to cover both cases.
+Add to SUB-03's documentation statement: "a Delivery may be delivered twice around a stream boundary; nothing identifies a duplicate (GAP-INT-001)".
+Make sure a conformance case shows a duplicate in the renewal overlap being yielded, not suppressed.
+2. DEC-U1-10 / PRB-05: split connection failures by whether the request was sent.
+
+Not sent (connection refused, DNS failure, or a timeout before the connection opened): retried for bootstrap, renewal and subscribe, as now.
+Sent, no answer (reset or timeout after the request was written):
+Subscribe: retry; a repeat is harmless.
+Renewal: retry while the current credential is unexpired; the contract describes renewal as a new token for the same credential.
+Bootstrap: retry, recording that a repeat may mint an unused credential. That credential expires within the contract's 15-minute bound, and repeats count toward the too_many_attempts abuse limit.
+Publish is never retried, in either case, as now.
+Record this reasoning in DEC-U1-10. If the contract's silence on repeating bootstrap or renewal turns out to matter, classify it per prd-gap-classification.md; don't assume.
+Add a case for each kind of failure: a refusal before sending, and a reset after sending.
+Accepted as written: DEC-U1-01 (US-Q1); STR-05 and STR-06 with CC-STR-05 and CC-STR-07; DEC-U1-09, with one follow-on: the typed envelope (ReadonlyEnvelope and its Python equivalent) mustn't claim a field is present that the SDK didn't check. Use optional types, or document it, decided in U3 and U4. Also accepted: DEC-U1-11; the CDI-02 checks and their stated Python limit; the reference driver and the four negative controls; the 88-case catalogue; both coverage matrices.
+
+Log this word for word in audit.md, then make the changes and present the Functional Design gate again."
+**AI Response**: "Making the two corrections and recording the DEC-U1-09 follow-on as a carried input to U3 and U4; then presenting the gate again."
+**Context**: CONSTRUCTION — U1 Functional Design, changes requested
+
+---
+## U1 Functional Design — changes made; gate presented again
+**Timestamp**: 2026-11-18T07:17:08Z
+**User Input**: (see "U1 Functional Design — changes requested", 2026-11-18T07:15:17Z)
+**AI Response**: "1. DEC-U1-12 and STR-05 restated: at every replacement, renewal or lineage change, a Delivery accepted while both streams are open may be read on both; both copies are yielded in STR-05's order and neither is suppressed. SUB-03 now states: "a Delivery may be delivered twice around a stream boundary; nothing identifies a duplicate (GAP-INT-001)". New case CC-STR-11: a duplicate in the renewal overlap is yielded, not suppressed. 2. DEC-U1-10 restated with the user's reasoning; PRB-05 split into PRB-05 (503), PRB-08 (not sent: retried for bootstrap, renewal, subscribe), PRB-09 (sent, no answer: subscribe retried; renewal retried while unexpired; bootstrap retried, a repeat possibly minting an unused credential expiring within 15 minutes and counting toward too_many_attempts), PRB-10 (TLS never; publish never). Cases: CC-PRB-06 (a refusal before sending) and new CC-PRB-08 (a reset after sending). Stub gains refuse and reset faults. Classified the contract's silence on repeats per prd-gap-classification.md: subscribe and bootstrap repeats technology (the contract states their consequences); renewal repeats specification: the contract does not say whether a renewal leaves the previous token valid, which decides whether credential_refused on a retried renewal is a revocation. Raised as GAP-CAC-001 (construction/contract-and-conformance/prd-gaps/specification-gaps.md; register in aidlc-state.md), raised against soorma-core's wire contract at contract-v0.1.0; work-around in place: refused on a retried renewal treated as terminal (fail closed). Routing question presented with the gate. DEC-U1-09 follow-on recorded: RCV-08 and CDI-04 (typed envelope claims no unchecked field; optional types or documented; decided in U3 and U4). Catalogue now 90 cases, 103 statements; every case in the rules exists; NEV-05 and SEC-09 exempt as before."
+**Context**: CONSTRUCTION — U1 Functional Design, gate presented again with GAP-CAC-001 routing
+
+---
