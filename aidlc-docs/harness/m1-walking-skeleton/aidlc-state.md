@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Construction Design PR gate PENDING (design PR dev → main); next after merge: Code Generation
+- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Construction Design PR gate: #16 CHECKS_GREEN, awaiting merge; next after merge: Code Generation
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -137,9 +137,11 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Merged**: merge commit `91d09106c9d5e323a6a47cd67d074a5b1adc9e88` on `main`, 2026-11-18T17:30:33Z, parents `c8ebb7a` (main) and `a57f6d5` (PR head); dev fast-forwarded to it
 
 ### Construction Design PR Gate — e2e-stack
-- **Status**: PENDING
+- **Status**: CHECKS_GREEN 2026-11-18T22:29:41Z (awaiting the user's merge; not recorded merged until the user says so and GitHub shows it)
 - **Branch**: dev (the user's standing instruction; confirmed for this gate 2026-11-18T22:26:50Z: dev → main, as for #9)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/e2e-stack-design-pr-checkpoint-instructions.md
+- **PR**: soorma-ai/soorma-sdk#16 (dev → main), opened 2026-11-18T22:27:57Z; head `17a2b21` at CHECKS_GREEN (the run IDs below are for that head; the commit recording this state is bookkeeping only)
+- **Checks at `17a2b21`**: CI run 44411836632 (pull request): unit, repository checks, conformance self-test and **dependency review** green; DCO run 44411836353 (Check sign-off) green; CI run 44411816416 (push to dev) green (dependency review skipped on push by design)
 - **Created**: 2026-11-18T22:27:14Z
 - **Approved**: —
 
