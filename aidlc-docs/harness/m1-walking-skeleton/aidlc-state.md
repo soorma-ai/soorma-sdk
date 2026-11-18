@@ -103,7 +103,7 @@ the first published release.
 - [x] Workspace Detection — 2026-11-17T07:29:06Z (greenfield; entry point: slice brief)
 - [x] PRD Intake — APPROVED 2026-11-18T02:14:55Z. Questions answered 2026-11-18T02:07:55Z (Q1 A harness only; Q2 A raised soorma-prd#37 and worked around; Q3 A commented on #13)
 - [x] Requirements Analysis — APPROVED 2026-11-18T02:47:34Z, with the user's correction to Q1 (Node.js 24 or later; CI Node 24 and 26; Python 3.11+, CI 3.11 and newest). Questions answered 2026-11-18T02:37:58Z (Q1 X two languages, TypeScript first; Q2–Q10 A; Q11 A2; Q12 A; Q13 A; Q14 A3; Q15 B)
-- [ ] User Stories
+- [ ] User Stories — plan approved 2026-11-18T02:55:43Z (Q1–Q6 A); personas.md and stories.md generated (2 personas, 14 stories, 80 criteria; 16 [A] flagged, 1 ⚑ TypeScript-only by request); gap pass: no new specification gap; awaiting approval
 - [ ] Workflow Planning
 - [ ] Application Design
 - [ ] Units Generation

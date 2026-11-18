@@ -198,3 +198,39 @@ With NFR-08 corrected, I approve Requirements Analysis. Log this word for word, 
 **Context**: INCEPTION — Requirements Analysis approved, with the user's correction to RA Q1
 
 ---
+## User Stories — assessment and story plan
+**Timestamp**: 2026-11-18T02:48:45Z
+**User Input**: (none since the Requirements Analysis approval)
+**AI Response**: "Correction to the previous entry: the Node change touched D-01, FR-18 and NFR-08 only. The done criteria in requirements.md name no Node version, so they did not change. Committed the change as de9bf96 (signed off) and pushed. Loaded user-stories.md. Step 1 assessment (working/user-stories-assessment.md): Execute: yes. High-priority criteria: customer-facing API, new user features, complex logic, two personas. Wrote working/story-generation-plan.md: six questions (Q1 personas, Q2 breakdown, Q3 stories and the two languages, Q4 acceptance-criteria format, Q5 failure paths, Q6 deliverables that are not operations) and a ten-step generation checklist, including a gap-classification pass. PRD gap classification stays active."
+**Context**: INCEPTION — User Stories, Part 1 planning: awaiting answers
+
+---
+## User Stories — plan answers
+**Timestamp**: 2026-11-18T02:55:43Z
+**User Input**: "User Stories plan answers: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A.
+
+Noted:
+
+Q3's language-neutral story set is what keeps the two SDKs from drifting apart. Every acceptance criterion must be testable as a conformance case in both languages; flag any that can only be checked in one.
+Q6's example story: write it so a developer can start a new TypeScript agent from it. I'll be building example apps on the TypeScript SDK.
+Log the answers in audit.md word for word, then generate the stories and personas. Run the specification-gap pass, and present the approval gate."
+
+**Answers Recorded** (inception/working/story-generation-plan.md):
+- Q1 — Personas: A — two personas: the agent developer (language-neutral) and the SDK maintainer
+- Q2 — Breakdown approach: A — journey-based, along an agent instance's life; each story names its PF §11 operation
+- Q3 — Stories and the two languages: A — one language-neutral story set; every criterion holds in each language and becomes a conformance case
+- Q4 — Acceptance criteria format: A — Given / When / Then, each citing FR-n and its PRD or contract source, checkable by a conformance case or an e2e assertion
+- Q5 — Failure paths: A — within the story whose operation fails; split past about eight criteria
+- Q6 — Deliverables that are not operations: A — maintainer stories for FR-01 to FR-03; the developer's example story (FR-20); the e2e scenario as the journey stories' acceptance
+
+**AI Response**: "Plan approved with the user's two notes: every acceptance criterion must be checkable as a conformance case in both languages, and any that can only be checked in one is flagged; the example story is written so a developer can start a new TypeScript agent from it. Executing Part 2."
+**Context**: INCEPTION — User Stories, plan approved; Part 2 generation
+
+---
+## User Stories — generated; approval requested
+**Timestamp**: 2026-11-18T02:58:35Z
+**User Input**: (none since the plan answers at 2026-11-18T02:55:43Z)
+**AI Response**: "Executed the ten plan steps, all marked [x]. personas.md: P1 agent developer, P2 SDK maintainer. stories.md: 14 language-neutral journey stories (US-01 to US-11 agent developer; US-12 to US-14 maintainer), 80 Given/When/Then criteria, each citing FR-n and its source, each tagged by check: [C] conformance case, [E] end-to-end, [A] per-language API check. Flagged per the user's note: 16 [A] criteria are checked in both languages but by each language's own test, not a shared case file (US-13 #3, one naming convention, guards them); 1 criterion is TypeScript-only by the user's request (US-11 #2, the TypeScript starter; Python counterpart US-11 #3). GAP-INT-001 carried into US-05 and US-06; GAP-INT-002's work-around as stated into US-09, including the proof by a test-installed exporter. Done when 2, 3, 5 mapped to criteria and e2e steps; 1, 4, 6, 7 noted as soorma-core's. Every FR maps to a story. Specification-gap pass: no new specification gap; T-5 (default instance identifier) and T-6 (exposing the credential's environment reference) technology; A-5 inside soorma-sdk GAP-INT-002; A-6 inherited (soorma-core GAP-INT-008, soorma-prd#27); A-7 answered by the contract; T-7 (clock skew) technology. Presenting the User Stories approval gate; next stage Workflow Planning."
+**Context**: INCEPTION — User Stories, approval gate presented
+
+---
