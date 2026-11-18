@@ -405,3 +405,37 @@ Log this word for word in audit.md, then start Tickets."
 **Context**: INCEPTION — Inception PR gate, awaiting merge
 
 ---
+## Inception PR gate — merged
+**Timestamp**: 2026-11-18T06:47:24Z
+**User Input**: "soorma-ai/soorma-sdk#8 is merged: merge commit c8bffb3020e9474043608e703eb0b77fc549cb54 on main, 2026-11-18T06:34:29Z. Confirm it on GitHub, then record the Inception PR gate as approved and merged.
+
+Sync dev: git fetch origin && git merge --ff-only origin/main on dev, then push. Fast-forward only; no new merge commit. If a merge on dev is ever unavoidable, use git merge --signoff so the DCO check passes on the next PR.
+
+Then start Construction with U1 contract-and-conformance (#4): Construction Phase Initialization (load the five enabled extensions' rules and prd-gap-classification.md), Unit Initialization, the L1 Domain Coverage Gate, then Functional Design. U1's Functional Design writes the whole behaviour specification and settles US-Q1 (child or link) under GAP-INT-002's work-around, consistent with done when 5's trace-ID check, recorded as a decision. It also defines CDI-02's runtime checks, states CDI-01 and CDI-03, and specifies the reference driver and the four negative controls.
+
+Log this word for word in audit.md."
+**AI Response**: "Confirmed on GitHub: PR #8 MERGED at 2026-11-18T06:34:29Z, merge commit c8bffb3020e9474043608e703eb0b77fc549cb54. Recorded the Inception PR gate APPROVED and merged. Synced dev: git fetch origin; git merge --ff-only origin/main (833032f..c8bffb3, fast-forward, no merge commit); pushed; origin/dev = origin/main = c8bffb3. Starting Construction with U1 contract-and-conformance (#4)."
+**Context**: INCEPTION complete; CONSTRUCTION begins
+
+---
+## Construction Phase Initialization
+**Timestamp**: 2026-11-18T06:49:05Z
+**User Input**: (see the entry "Inception PR gate — merged")
+**AI Response**: "Construction Phase Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets]. ## PRD Intake exists: loaded inception/prd-gap-classification.md, active for every construction stage."
+**Context**: CONSTRUCTION — initialization
+
+---
+## Unit Initialization — U1 contract-and-conformance
+**Timestamp**: 2026-11-18T06:49:05Z
+**User Input**: (none)
+**AI Response**: "Unit Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets] (unit: contract-and-conformance). L1 Domain Coverage Gate: L1 sources from ## PRD Intake, PF @ prd-platform-foundations-v1.3: §7b Envelope Fields and Compatibility Policy; FR-004, FR-005, FR-006; §11 What the SDK may not populate; §9 Operations and Failure Modes; §17 Envelope, Namespacing Rules, Recognised Kinds. ID @ prd-identity-v1.0: no L1 source (constraints only). Applicable to U1 as specification statements (implementation target) and conformance cases (verification target); l1-coverage-matrix.md is produced in Functional Design and blocks completion while any row is Missing. Assessment result recorded at Functional Design completion."
+**Context**: CONSTRUCTION — U1 Unit Initialization and L1 gate
+
+---
+## U1 Functional Design — plan and questions
+**Timestamp**: 2026-11-18T06:50:02Z
+**User Input**: (none)
+**AI Response**: "Loaded construction/functional-design.md. Read contract-v0.1.0 conventions/envelope.md on the stamped traceContext of a forwarded call: the draft's traceparent is this hop's assertion; a forwarded traceparent is never carried; the contract does not choose between continuing the received trace and starting a new one. Wrote construction/working/contract-and-conformance-functional-design-plan.md (git-ignored) with eight questions, each classified technology or design under an existing work-around (no new specification gap): Q1 US-Q1 child or link (recommended A: child of the received context, with a link); Q2 which operations emit spans (A: messaging send and receive only); Q3 boundary item order on replacement (A: ended before started); Q4 what follows a non-terminal end (A: re-subscribe; unknown codes non-terminal); Q5 background renewal failures (A: no new API; next operation re-bootstraps after an unrenewed expiry); Q6 back-pressure (A: pull-based); Q7 a second subscribe() (A: ClientStateError); Q8 reference driver coverage (A: declared subset; negative controls as one fault switch each). Awaiting answers."
+**Context**: CONSTRUCTION — U1 Functional Design, questions presented
+
+---

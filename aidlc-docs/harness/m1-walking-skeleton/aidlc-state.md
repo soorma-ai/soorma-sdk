@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: INCEPTION - Inception PR gate (extension)
+- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Functional Design
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -108,12 +108,12 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 ## PR Checkpoint State
 
 ### Inception PR Gate
-- **Status**: PENDING
+- **Status**: APPROVED (merged)
 - **Branch**: dev (confirmed by the user's standing instruction: work on dev, PR dev to main)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/inception/working/pr-checkpoint-instructions.md
-- **PR**: soorma-ai/soorma-sdk#8 (dev → main), opened 2026-11-18T06:20:40Z; checks green 2026-11-18T06:21:08Z (Check sign-off: pass). Merge is the user's; recorded only when GitHub shows it
+- **PR**: soorma-ai/soorma-sdk#8 (dev → main), opened 2026-11-18T06:20:40Z; checks green 2026-11-18T06:21:08Z (Check sign-off: pass). Merged 2026-11-18T06:34:29Z, merge commit `c8bffb3020e9474043608e703eb0b77fc549cb54` (confirmed on GitHub 2026-11-18T06:47:24Z)
 - **Created**: 2026-11-18T06:20:15Z
-- **Approved**: —
+- **Approved**: 2026-11-18T06:47:24Z
 
 ## Extension Configuration
 
@@ -161,12 +161,12 @@ the first published release.
 - [x] Units Generation — APPROVED 2026-11-18T06:14:40Z. Answers 2026-11-18T06:05:15Z (Q1 A with U1 and U2 done-when additions; Q2 A; Q3 A); Q1a answered: 200, per the contract
 - [x] Tickets (extension) — Complete: tracking issue #3; sub-issues #4 to #7
 - [x] QA test specs, inception pass (extension) — 2026-11-18T06:20:15Z: comprehensive; contract-and-conformance 24 (CAC), e2e-stack 12 (ES), typescript-harness 66 (TH), python-harness 66 (PH); inception/test-cases/
-- [ ] Inception PR gate (extension) — PENDING: PR #8 open, checks green; awaiting the user's merge
+- [x] Inception PR gate (extension) — APPROVED: PR #8 merged 2026-11-18T06:34:29Z (`c8bffb3`); dev fast-forwarded to main
 
 ### CONSTRUCTION PHASE
-- [ ] Construction Phase Initialization — EXECUTE
+- [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design questions written (construction/working/contract-and-conformance-functional-design-plan.md), awaiting answers. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
