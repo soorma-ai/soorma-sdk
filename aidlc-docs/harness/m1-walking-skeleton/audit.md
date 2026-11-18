@@ -877,3 +877,26 @@ Log this message word for word in audit.md. Then push c012a48 and the fixes, wai
 **Context**: CONSTRUCTION — U1 Code Generation complete; awaiting approval to start U2
 
 ---
+
+## U1 Code Generation — APPROVED (Continue to Next Stage), records fixed first
+**Timestamp**: 2026-11-18T17:43:12Z
+**User Input**: "Continue to Next Stage: U1 Code Generation approved, once these records are fixed. They're documentation only, in one signed-off commit before U2 starts:
+
+1. CC-SEC-05's second user belongs to U3, not U2. U1's NFR design has a \"CI user helper\" (logical-components.md; NFR-U1-14): in CI only, it creates the second local user with sudo and passes it to the runner through --foreign-user. U1 never built it, and ci.yml has no such step. That's acceptable, because the reference driver doesn't declare CC-SEC-05, so no U1 job runs the case. But record it:
+   - In U1's plan notes and code-summary.md, as a deviation: the helper is deferred to the first CI job that runs a full driver.
+   - In aidlc-state.md's Open Obligations, as OBL-04: U3's TypeScript conformance job (and U4's Python job after it) must create the second user and pass --foreign-user. CC-SEC-05 must run in CI, and --local-skip stays refused there (NFR-U1-14, -16).
+   U2 doesn't run conformance, so nothing here changes U2.
+
+2. The 67 cases no U1 job runs. Add to code-summary.md and to the inputs carried to U3: 67 of the 90 cases are checked only for structure (the schema, links and fixtures) and first run under U3's TypeScript driver. When one fails there, decide first whether the SDK or the case is wrong. Fixing a case is a change to an earlier unit's tests (F42): record it as one, with the reason, in U3's code summary and audit.md. Never edit a case quietly.
+
+3. Bring code-summary.md up to date:
+   - CI run 44339401082 at 7ca7c57 failed on dependency review because the Dependency graph was off; replace \"No failed CI run\" with that.
+   - Fill in G9's row (7ca7c57, CI 44338826146).
+   - Add the PR fixes 5314abe (audit exceptions wait for the release cooldown) and cb84234.
+   - Add PR #10 merged as 91d0910 with the final-head runs.
+
+Log this message word for word in audit.md, commit signed off, push, and wait for the push's CI. Then start U2 e2e-stack: Unit Initialization, the L1 gate, then its stages as planned."
+**AI Response**: "Records fixed in one documentation commit. (1) The CI user helper deferral: a deviation in code-summary.md and in the plan's notes (§6); OBL-04 in Open Obligations (U3's TypeScript conformance job, then U4's, create the second user and pass --foreign-user; CC-SEC-05 runs in CI; --local-skip refused there; NFR-U1-14, -16). (2) The 67 cases: a 'Cases First Run at U3' section in code-summary.md, and CDI-05 in Carried Design Inputs (unit U3, then U4). (3) code-summary.md: the failed run 44339401082 replaces 'No failed CI run'; G9 row filled (7ca7c57, 44338826146); the PR fixes 5314abe and cb84234; PR #10 merged as 91d0910 with the final-head runs (CI 44358647204, DCO 44358647419, push CI 44358636704); test count 94 → 98. U1 marked APPROVED in Stage Progress; Current Stage set to U2 Unit Initialization. Next: commit, push, wait for the push's CI, then start U2."
+**Context**: CONSTRUCTION — U1 Code Generation approved; transition to U2 e2e-stack
+
+---

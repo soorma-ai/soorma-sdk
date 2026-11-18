@@ -20,9 +20,9 @@ Application code is at the repository root; this file is the summary only.
 | Command | What it does |
 | --- | --- |
 | `pnpm typecheck`, `pnpm lint`, `pnpm format:check` | Static checks |
-| `pnpm test` | Vitest: 94 tests across the tools, runner, stub, and the real case set |
+| `pnpm test` | Vitest: 98 tests across the tools, runner, stub, and the real case set |
 | `pnpm checks` (`--offline` locally) | Contract drift (local; remote by git), SPDX, workflows, generated types, names, packaging |
-| `pnpm check:audit-exceptions` | The self-expiring audit exception |
+| `pnpm check:audit-exceptions` | The self-expiring audit exception: fails once a fix is older than the release cooldown (`minimumReleaseAge`), passes with a notice while it is younger |
 | `pnpm conformance run --driver "<cmd>"` | A conformance run (full or reference mode) |
 | `pnpm conformance:self-test` | The reference run and the four negative controls |
 
@@ -38,13 +38,31 @@ Application code is at the repository root; this file is the summary only.
 | G6 stub and `conformance run` | `018341a` | 44334002163 | green |
 | G7 the 90 cases | `f63ec4e` | 44335889222 | green |
 | G8 reference driver, faults, self-test | `f63e652` | 44337861952 | green (self-test job included) |
-| G9 documentation, coverage, code PR | (this commit) | (recorded with the code PR) | |
+| G9 documentation, coverage, code PR | `7ca7c57` | 44338826146 | green |
 
-No failed CI run. Failures found by the gate before commit, and fixed: the audit (G1; the
+**Fixes on the code PR** (the user's review, 2026-11-18T17:20:44Z):
+
+| Commit | Change |
+| --- | --- |
+| `5314abe` | The audit-exceptions check waits for the release cooldown: a fix counts only once it is older than `minimumReleaseAge` (read from `pnpm-workspace.yaml`, by the registry's publish time); while it is younger the check passes with a notice; a missing publish time fails closed |
+| `cb84234` | `aidlc-state.md`: a leftover fragment removed from U1's progress line |
+
+**One failed CI run**: CI run 44339401082 at `7ca7c57` (the code PR's first run) failed on
+dependency review, because the repository's Dependency graph was off. The user enabled it; the
+push of the fixes gave a fresh run, so the failed one was not rerun.
+
+Failures found by the gate before commit, and fixed: the audit (G1; the
 `minimatch` override and the recorded `picomatch` exception), a parser bug caught by the
 audit-exceptions tests (G1), the names check reading the package row (G3), two runner test-setup
 errors (G5), Vite reading the vendored `contract/tsconfig.json` (G5), the loader's timeout rule
 (G7), and a stub that did not flush an idle stream's headers (G8, found by CC-STR-01).
+
+## Code PR
+
+soorma-ai/soorma-sdk#10 (`dev` → `main`), **merged 2026-11-18T17:30:33Z as `91d0910`**
+(parents `c8ebb7a`, `a57f6d5`). Checks at the final head `a57f6d5`, all green: CI (pull request)
+44358647204 (unit, repository checks, conformance self-test, dependency review); DCO 44358647419;
+CI (push) 44358636704. The rewritten `dco.yml` checked its own PR in run 44339401604.
 
 ## U1's *Done When*, Locally
 
@@ -53,6 +71,15 @@ errors (G5), Vite reading the vendored `contract/tsconfig.json` (G5), the loader
   `reorder-forwarded-envelope` {CC-FWD-02, CC-RCV-06}; `retry-publish` {CC-PUB-03, CC-PRB-01};
   `skip-boundary` {CC-STR-04}. Self-test 82 s locally
 - Every repository check has a test proving it catches its defect; the DCO tests run in `unit`
+
+## Cases First Run at U3
+
+**67 of the 90 cases** are not declared by the reference driver, so no U1 job runs them. U1 checks
+them only for structure: the schema, the links to `spec/behaviour.md`, and the fixtures. They are
+first run under U3's TypeScript driver. When one fails there, decide first whether the SDK or the
+case is wrong. Fixing a case is **a change to an earlier unit's tests** (F42): record it as one,
+with the reason, in U3's code summary and in `audit.md`. Never edit a case quietly. (Carried to U3
+as CDI-05.)
 
 ## Changes to Earlier Units' Tests
 
@@ -66,3 +93,11 @@ GitHub's verified Dependabot authorship; actions pinned by SHA; `ubuntu-24.04`).
 moved from G5 to G6; four cases narrowed from the catalogue's wording, each stated in its
 `$comment` (CC-PRB-06, CC-PRB-08, CC-SEC-03, CC-ACQ-01); protocol details fixed while writing
 the cases, documented in `conformance/README.md`. Each is in the plan's notes and in `audit.md`.
+
+**The CI user helper is deferred** (recorded at the U1 Code Generation approval,
+2026-11-18T17:43:12Z). NFR Design's *CI user helper* (`logical-components.md`; NFR-U1-14) creates,
+in CI only, the second local user with `sudo` and passes it to the runner through
+`--foreign-user`. U1 did not build it, and `ci.yml` has no such step. That is acceptable for U1:
+the reference driver does not declare CC-SEC-05, so no U1 job runs the case. The runner already
+accepts `--foreign-user` and refuses `--local-skip` in CI. The helper is deferred to the first CI
+job that runs a full driver: U3's TypeScript conformance job, then U4's Python job (OBL-04).
