@@ -647,3 +647,25 @@ Log this word for word in audit.md, then generate the NFR Design."
 **Context**: CONSTRUCTION — U1 NFR Design, approval gate presented
 
 ---
+## U1 NFR Design — approval
+**Timestamp**: 2026-11-18T08:26:29Z
+**User Input**: "Continue to Next Stage: U1 NFR Design approved (P-01 to P-10 and the logical components), with one addition to P-04:
+
+Heap snapshots stay private. The CDI-02 check's heap snapshot may contain the test secret when a driver fails the check, and the reference driver's retain-secret fault guarantees it does.
+
+Analyse it as a stream in memory, or write it only inside the run's 0700 directory, and delete it at the end of the case, pass or fail.
+Never put it in a report and never upload it as a CI artifact. A failure report names the case and the number of matches, never the content.
+Then proceed to the QA test specs' construction enrichment for U1, then the Construction Design PR gate. When the design PR is open and its checks are green, stop and tell me the PR number; don't record it as merged until GitHub shows it.
+
+Log this word for word in audit.md."
+**AI Response**: "U1 NFR Design APPROVED. Adding the heap-snapshot rule to P-04, then QA enrichment for U1, then the Construction Design PR gate; will stop with the PR number once its checks are green."
+**Context**: CONSTRUCTION — U1 NFR Design approved
+
+---
+## U1 QA enrichment and Construction Design PR gate
+**Timestamp**: 2026-11-18T08:28:18Z
+**User Input**: (see the entry at 2026-11-18T08:26:29Z)
+**AI Response**: "P-04 gained the heap-snapshot rule as directed (stream in memory, or only inside the run's 0700 directory, deleted at the end of the case; never in a report or a CI artifact; failure reports give the case and the number of matches only); to enforce the artifact rule, the workflow check also fails on an upload step naming the run directory. QA construction enrichment for contract-and-conformance, sources: functional-design, nfr-requirements, nfr-design (no user stories, tickets, requirements.md or unit-of-work.md): 13 test cases modified in place (TC-CAC-001, 005, 007, 012 to 021), 21 added (TC-CAC-025 to 045: --offline and --local-skip guards, budgets and watchdog, per-case processes, no retry, timing windows, secrets and heap snapshots never leaving the run, run directory removal, loopback stub, the six DCO cases, the token and pins of dco.yml, the workflow check, Dependabot, frozen install and audit); IDs unchanged; enrichment-delta.md written (a session artifact, git-ignored). Construction Design PR gate: functional-design artifacts present; instructions written to construction/working/contract-and-conformance-design-pr-checkpoint-instructions.md (git-ignored); ## PR Checkpoint State gains 'Construction Design PR Gate — contract-and-conformance' PENDING, branch dev. Committing, pushing and opening the PR dev → main."
+**Context**: CONSTRUCTION — U1 QA enrichment; design PR gate
+
+---

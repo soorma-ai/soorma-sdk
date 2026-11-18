@@ -68,6 +68,14 @@ run end:   remove the run dir (always, also on failure); nothing committed or pr
 - The report shows a secret only as its length
 - The CA's private keys never leave the run directory; the driver receives only the CA
   certificate path
+- **Heap snapshots stay private** (the user, at approval, 2026-11-18T08:26:29Z). CDI-02's heap
+  snapshot may hold the test secret when a driver fails the check, and the reference driver's
+  `retain-secret` fault guarantees it does. The TypeScript driver **analyses the snapshot as a
+  stream in memory**; if a file is ever needed, it is written **only inside the run's `0700`
+  directory** and **deleted at the end of the case, pass or fail**. A snapshot is **never put in
+  a report and never uploaded as a CI artifact**: no CI job uploads the run directory, and the
+  workflow check fails on an upload step that names it. A failure report names **the case and
+  the number of matches, never the content**
 
 ## P-05 Loopback-Only Stub with Connection Faults
 
