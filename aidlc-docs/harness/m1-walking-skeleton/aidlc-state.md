@@ -126,10 +126,12 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Approved**: 2026-11-18T08:40:41Z
 
 ### Code PR — contract-and-conformance
-- **Status**: OPEN (one check red: a repository setting, not the change)
-- **PR**: soorma-ai/soorma-sdk#10 (dev → main), opened 2026-11-18T15:44Z, head `7ca7c57`
-- **Checks**: CI run 44339401082 (pull request): unit, checks, conformance self-test green; **dependency review failed: the repository's Dependency graph is disabled** ("Dependency review is not supported on this repository"); DCO run 44339401604 green
-- **dco.yml checking its own PR**: run 44339401604 (all ten commits signed off; none needed the exemption)
+- **Status**: CHECKS_GREEN 2026-11-18T17:25:53Z (awaiting the user's merge; not recorded as merged until GitHub shows it)
+- **PR**: soorma-ai/soorma-sdk#10 (dev → main), opened 2026-11-18T15:44Z; head `2b8c135` at CHECKS_GREEN (the run IDs below are for that head; the commit recording this state is bookkeeping only)
+- **Checks at `2b8c135`**: CI run 44358181296 (pull request): unit, repository checks, conformance self-test and **dependency review** green; DCO run 44358181249 green; CI run 44358169366 (push to dev) green (dependency review skipped on push by design)
+- **Earlier head `7ca7c57`**: CI run 44339401082 had dependency review red because the Dependency graph was disabled; the user enabled it 2026-11-18T17:20:44Z (no rerun: the fixes' push gave a fresh run)
+- **Fixes on the PR** (the user, 2026-11-18T17:20:44Z): `5314abe` audit exceptions honour the release cooldown; `cb84234` leftover fragment removed from aidlc-state.md; `2b8c135` OBL-03 recorded
+- **dco.yml checking its own PR**: run 44339401604 (first; all ten commits then signed off, none needed the exemption); again in run 44358181249
 - **Merged**: —
 
 ## Extension Configuration
@@ -191,7 +193,7 @@ the first published release.
 ### CONSTRUCTION PHASE
 - [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan APPROVED 2026-11-18T08:46:28Z (1.1 changed: declared-set rule). Part 2 in progress: G1 `34d6f76` (CI 44271040027 green); G2 `cbd0a4a` (CI 44271420822 green); G3 `266347d` (CI 44272174556 green); G4 `95700f1` (CI 44272417353 green); G5 `98dc659` (CI 44333400503 green); G6 `018341a` (CI 44334002163 green); G7 `f63ec4e` (CI 44335889222 green); G8 `f63e652` (CI 44337861952 green, self-test job included); G9 `7ca7c57` (CI 44338826146 green); code PR #10 open 2026-11-18T15:48:45Z: dependency review red until the Dependency graph is enabled (user decision). Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan APPROVED 2026-11-18T08:46:28Z (1.1 changed: declared-set rule). Part 2 in progress: G1 `34d6f76` (CI 44271040027 green); G2 `cbd0a4a` (CI 44271420822 green); G3 `266347d` (CI 44272174556 green); G4 `95700f1` (CI 44272417353 green); G5 `98dc659` (CI 44333400503 green); G6 `018341a` (CI 44334002163 green); G7 `f63ec4e` (CI 44335889222 green); G8 `f63e652` (CI 44337861952 green, self-test job included); G9 `7ca7c57` (CI 44338826146 green); code PR #10 open 2026-11-18T15:48:45Z; fixes `5314abe`, `cb84234`, `2b8c135`; CHECKS_GREEN 2026-11-18T17:25:53Z (CI 44358181296, DCO 44358181249), awaiting the user's merge; Step 38 open. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
