@@ -776,3 +776,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G3
 
 ---
+## U1 Code Generation — G3 CI green; G4 gate green
+**Timestamp**: 2026-11-18T09:03:51Z
+**User Input**: (none)
+**AI Response**: "G3 pushed as 266347d; CI run 44272174556 green (unit and checks; the drift check's remote half ran from a hosted runner by git with no token). G4 written: spec/behaviour.md transcribed from business-rules.md (sections 0 to 16, 103 statements, ids unchanged; the decisions table as an appendix; a header naming the contract, sources, the name table and the three worked-around gaps); spec/names.md from domain-entities §3; conformance/runner (private workspace package) with src/spec.ts parsing statements, cases and exemptions, and tests: 103 statements in 16 areas, only NEV-05 and SEC-09 exempt, US-Q1 and the SUB-03 and SPN-06 documentation statements present, duplicates refused. G4 gate: frozen install, typecheck, lint, format, 51 tests, pnpm checks, audit: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G4
+
+---

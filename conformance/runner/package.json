@@ -1,0 +1,7 @@
+{
+  "name": "@soorma-sdk/conformance-runner",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "The conformance runner: judges a language driver against spec/behaviour.md. Test only; never published."
+}
