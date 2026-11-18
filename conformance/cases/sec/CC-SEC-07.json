@@ -1,0 +1,60 @@
+{
+  "id": "CC-SEC-07",
+  "title": "A named pipe or a device is refused at once",
+  "statements": ["SEC-04", "SEC-05"],
+  "$comment": "Each fileSecret call must answer within its 1 s timeout: a provider that waits on the FIFO fails the case.",
+  "timeoutMs": 15000,
+  "setup": {
+    "files": [
+      {
+        "name": "pipe",
+        "type": "fifo"
+      },
+      {
+        "name": "device",
+        "type": "device"
+      }
+    ]
+  },
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:pipe}",
+        "timeoutMs": 1000
+      },
+      "label": "fifo"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:device}",
+        "timeoutMs": 1000
+      },
+      "label": "dev"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "fifo",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "not-regular-file"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "dev",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "not-regular-file"
+      }
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "id": "CC-ACQ-01",
+  "title": "Bootstrap sends exactly the contract's request",
+  "statements": ["SEC-01", "ACQ-01", "ACQ-02"],
+  "fixtures": [
+    "data-gateway/BootstrapRequest/valid/sample.json",
+    "data-gateway/AgentCredential/valid/sample.json"
+  ],
+  "negativeFixtures": ["data-gateway/BootstrapRequest/invalid/*"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "fixture": "data-gateway/AgentCredential/valid/sample.json",
+          "set": {
+            "/expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "credential",
+      "label": "cred"
+    },
+    {
+      "op": "inspect",
+      "args": {
+        "checks": ["providerCalls"]
+      },
+      "label": "insp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "request-shape",
+      "request": {
+        "listener": "S3",
+        "path": "/agent-credentials"
+      },
+      "headers": {
+        "absent": ["authorization", "soorma-delegation"],
+        "equals": {
+          "soorma-contract-version": "0.1.0"
+        }
+      },
+      "members": {
+        "exactly": ["agent", "secret", "instance"]
+      },
+      "schema": "data-gateway#BootstrapRequest",
+      "positives": ["data-gateway/BootstrapRequest/valid/sample.json"],
+      "negativesFrom": "data-gateway/BootstrapRequest/",
+      "bodyAt": {
+        "/agent": "agent-a",
+        "/instance": "instance-1",
+        "/secret": "${SECRET}"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": true
+    },
+    {
+      "kind": "observation",
+      "command": "cred",
+      "result": {
+        "/credential/agent": "a",
+        "/credential/instance": "a-1"
+      }
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 1
+    },
+    {
+      "kind": "observation",
+      "command": "insp",
+      "result": {
+        "/providerCalls": 1
+      }
+    }
+  ]
+}

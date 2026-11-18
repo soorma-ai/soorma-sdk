@@ -1,0 +1,109 @@
+{
+  "id": "CC-CFG-06",
+  "title": "Nothing comes from the host or environment variables",
+  "statements": ["CFG-05", "CFG-07"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 202
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "env",
+      "args": {
+        "set": {
+          "SOORMA_AGENT": "decoy-agent",
+          "SOORMA_INSTANCE": "decoy-instance",
+          "SOORMA_ENVIRONMENT": "decoy-env",
+          "SOORMA_DATA_GATEWAY_URL": "${STRAY}",
+          "SOORMA_EVENT_INGEST_URL": "${STRAY}",
+          "SOORMA_SECRET": "decoy-secret",
+          "HOSTNAME": "decoy-host"
+        }
+      }
+    },
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": {
+          "k": "v"
+        }
+      },
+      "label": "p"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/agent-credentials"
+      },
+      "bodyAt": {
+        "/agent": "agent-a",
+        "/instance": "instance-1",
+        "/secret": {
+          "notEquals": "decoy-secret"
+        }
+      }
+    },
+    {
+      "kind": "absence",
+      "noRequestsTo": "STRAY"
+    },
+    {
+      "kind": "absence",
+      "noBodyContains": "decoy"
+    }
+  ]
+}

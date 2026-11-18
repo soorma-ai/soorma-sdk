@@ -238,6 +238,11 @@ function evalOne(a: Assertion, c: Case, ev: Evidence): string[] {
         const o = oneRequest(ev.recording, a.afterRequest as RequestMatch);
         if (typeof o === 'string') out.push(o);
         else if (r.at < o.at) out.push('arrived before the request it must follow');
+        else if (typeof a.minAfterMs === 'number' && r.at - o.at < a.minAfterMs) {
+          out.push(
+            `arrived ${r.at - o.at} ms after the request it follows, under ${a.minAfterMs} ms`,
+          );
+        }
       }
       if (a.beforeStreamClose) {
         const s = ev.streams.find((x) => x.label === a.beforeStreamClose);
@@ -256,10 +261,23 @@ function evalOne(a: Assertion, c: Case, ev: Evidence): string[] {
         );
       }
       for (const [p, exp] of Object.entries((a.error ?? {}) as JsonObject)) {
-        if (!matches(o.error?.[p], exp))
-          out.push(`error.${p} is ${JSON.stringify(o.error?.[p] ?? null)}`);
+        // A key starting with '/' is a pointer into the error (`/problem/x-future`).
+        const actual = p.startsWith('/') ? at(o.error, p) : o.error?.[p];
+        if (!matches(actual, exp)) out.push(`error.${p} is ${JSON.stringify(actual ?? null)}`);
       }
       for (const [p, exp] of Object.entries((a.result ?? {}) as JsonObject)) {
+        if (
+          exp &&
+          typeof exp === 'object' &&
+          !Array.isArray(exp) &&
+          typeof exp.differsFrom === 'string'
+        ) {
+          const other = observation(ev, exp.differsFrom);
+          if (isDeepStrictEqual(at(o.result, p), at(other?.result, p))) {
+            out.push(`result at ${p} equals that of ${exp.differsFrom}`);
+          }
+          continue;
+        }
         if (!matches(at(o.result, p), exp))
           out.push(`result at ${p} is ${JSON.stringify(at(o.result, p) ?? null)}`);
       }
@@ -381,6 +399,12 @@ function evalOne(a: Assertion, c: Case, ev: Evidence): string[] {
         const cred = String(a.noCredentialIn);
         if (ev.stderr.includes(cred) || JSON.stringify(ev.observations).includes(cred))
           out.push('the credential appears in the driver output or an observation');
+      }
+      if (typeof a.noBodyContains === 'string') {
+        const needle = a.noBodyContains;
+        if (ev.recording.some((r) => r.body.toString('utf8').includes(needle))) {
+          out.push('a request body contains the forbidden value');
+        }
       }
       if (
         typeof a.maxConcurrentStreams === 'number' &&

@@ -1,0 +1,107 @@
+{
+  "id": "CC-SPN-02",
+  "title": "A failed operation's span records the error, nothing sensitive",
+  "statements": ["SPN-02", "SPN-07"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "1"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        },
+        "otel": true
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 1
+      },
+      "label": "p"
+    },
+    {
+      "op": "spans",
+      "label": "sp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "span",
+      "command": "sp",
+      "spans": [
+        {
+          "kind": "producer",
+          "status": "error",
+          "attributes": {
+            "error.type": "unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "absence",
+      "noSecretAnywhere": true
+    },
+    {
+      "kind": "absence",
+      "noCredentialIn": "soorma_ac_token.one"
+    }
+  ]
+}

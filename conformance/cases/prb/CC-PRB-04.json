@@ -1,0 +1,107 @@
+{
+  "id": "CC-PRB-04",
+  "title": "503 is retried after Retry-After, within the bound",
+  "statements": ["ACQ-05", "PRB-05"],
+  "timeoutMs": 12000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "b1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "1"
+          }
+        },
+        "times": 2
+      },
+      {
+        "label": "b2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": true
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 3
+    },
+    {
+      "kind": "request-timing",
+      "requests": {
+        "path": "/agent-credentials"
+      },
+      "minGapMs": 1000
+    }
+  ]
+}

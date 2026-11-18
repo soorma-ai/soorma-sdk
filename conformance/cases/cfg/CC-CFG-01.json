@@ -1,0 +1,56 @@
+{
+  "id": "CC-CFG-01",
+  "title": "Creating a client contacts nothing",
+  "statements": ["CFG-01"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 500
+      }
+    },
+    {
+      "op": "inspect",
+      "args": {
+        "checks": ["providerCalls"]
+      },
+      "label": "insp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "create",
+      "ok": true
+    },
+    {
+      "kind": "absence",
+      "noRequests": true
+    },
+    {
+      "kind": "observation",
+      "command": "insp",
+      "result": {
+        "/providerCalls": 0
+      }
+    }
+  ]
+}

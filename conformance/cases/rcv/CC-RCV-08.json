@@ -1,0 +1,480 @@
+{
+  "id": "CC-RCV-08",
+  "title": "Envelopes are never schema-validated by the SDK",
+  "statements": ["RCV-08", "NEV-04"],
+  "fixtures": ["delivery/invalid/envelope-missing-actor-chain.json", "envelope/invalid/*"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "x1",
+                "envelope": {
+                  "fixture": "envelope/invalid/actor-missing-instance.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x2",
+                "envelope": {
+                  "fixture": "envelope/invalid/autonomous-with-principal.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x3",
+                "envelope": {
+                  "fixture": "envelope/invalid/chain-33-entries.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x4",
+                "envelope": {
+                  "fixture": "envelope/invalid/delegated-without-principal.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x5",
+                "envelope": {
+                  "fixture": "envelope/invalid/empty-actor-chain.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x6",
+                "envelope": {
+                  "fixture": "envelope/invalid/hop-negative.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x7",
+                "envelope": {
+                  "fixture": "envelope/invalid/missing-actor-chain.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x8",
+                "envelope": {
+                  "fixture": "envelope/invalid/missing-envelope-version.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x9",
+                "envelope": {
+                  "fixture": "envelope/invalid/missing-origin-mode.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x10",
+                "envelope": {
+                  "fixture": "envelope/invalid/missing-scope.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x11",
+                "envelope": {
+                  "fixture": "envelope/invalid/missing-trace-context.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x12",
+                "envelope": {
+                  "fixture": "envelope/invalid/origin-mode-number.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x13",
+                "envelope": {
+                  "fixture": "envelope/invalid/re-broadening-empty.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "x14",
+                "envelope": {
+                  "fixture": "envelope/invalid/scope-missing-environment.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "y",
+                "fixture": "delivery/invalid/envelope-missing-actor-chain.json"
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 202
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "forward",
+      "args": {
+        "ref": "1",
+        "payload": 1
+      },
+      "label": "f"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x1",
+          "sealOf": "x1"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x2",
+          "sealOf": "x2"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x3",
+          "sealOf": "x3"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x4",
+          "sealOf": "x4"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x5",
+          "sealOf": "x5"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x6",
+          "sealOf": "x6"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x7",
+          "sealOf": "x7"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x8",
+          "sealOf": "x8"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x9",
+          "sealOf": "x9"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x10",
+          "sealOf": "x10"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x11",
+          "sealOf": "x11"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x12",
+          "sealOf": "x12"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x13",
+          "sealOf": "x13"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "x14",
+          "sealOf": "x14"
+        },
+        {
+          "kind": "delivery"
+        }
+      ]
+    },
+    {
+      "kind": "request-exact",
+      "request": {
+        "path": "/events"
+      },
+      "at": "/draft/inbound/envelope",
+      "equalsEnvelopeOf": "x1"
+    }
+  ]
+}

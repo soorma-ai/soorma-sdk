@@ -1,0 +1,166 @@
+{
+  "id": "CC-PRB-07",
+  "title": "Error paths release their resources",
+  "statements": ["PRB-07"],
+  "timeoutMs": 15000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 500,
+          "json": {
+            "type": "urn:soorma:problem:internal_error",
+            "title": "internal_error",
+            "status": 500,
+            "code": "internal_error"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "drop": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "s2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "reset": true
+        },
+        "times": 10
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 1
+      },
+      "label": "p"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "close",
+      "label": "c"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 300
+      }
+    },
+    {
+      "op": "inspect",
+      "args": {
+        "checks": ["openResources"]
+      },
+      "label": "insp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "insp",
+      "result": {
+        "/openResources/sockets": 0,
+        "/openResources/streams": 0,
+        "/openResources/timers": 0
+      }
+    }
+  ]
+}

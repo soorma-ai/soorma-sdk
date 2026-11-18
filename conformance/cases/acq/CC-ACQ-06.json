@@ -1,0 +1,95 @@
+{
+  "id": "CC-ACQ-06",
+  "title": "An unusable 200 fails start",
+  "statements": ["ACQ-08"],
+  "fixtures": [
+    "data-gateway/AgentCredential/invalid/no-expiry.json",
+    "data-gateway/AgentCredential/invalid/no-instance.json"
+  ],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "b1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "fixture": "data-gateway/AgentCredential/invalid/no-expiry.json"
+        }
+      },
+      {
+        "label": "b2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "fixture": "data-gateway/AgentCredential/invalid/no-instance.json"
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "s1"
+    },
+    {
+      "op": "start",
+      "label": "s2"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 300
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "s1",
+      "ok": false,
+      "error": {
+        "type": "TransportError",
+        "reason": "unusable-response"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "s2",
+      "ok": false,
+      "error": {
+        "type": "TransportError",
+        "reason": "unusable-response"
+      }
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 2
+    }
+  ]
+}

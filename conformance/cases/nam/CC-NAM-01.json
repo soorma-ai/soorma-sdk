@@ -1,0 +1,23 @@
+{
+  "id": "CC-NAM-01",
+  "title": "Exported names follow the name table",
+  "statements": ["NAM-01"],
+  "$comment": "The names check (pnpm checks) compares every export with the table; this case checks the names spelled the same in every language.",
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "names",
+      "label": "n"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "surface",
+      "command": "n",
+      "includes": ["AgentClient", "ProblemError", "Delivery", "StreamEnded", "StreamStarted"]
+    }
+  ]
+}

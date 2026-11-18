@@ -1,0 +1,90 @@
+{
+  "id": "CC-PRB-05",
+  "title": "Past the bound, the last error surfaces",
+  "statements": ["ACQ-05", "PRB-05"],
+  "$comment": "R_max is 3 attempts in all.",
+  "timeoutMs": 12000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "b",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "0"
+          }
+        },
+        "times": 10
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 500
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 503,
+        "code": "unavailable"
+      }
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 3
+    }
+  ]
+}

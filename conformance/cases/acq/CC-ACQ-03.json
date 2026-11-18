@@ -1,0 +1,76 @@
+{
+  "id": "CC-ACQ-03",
+  "title": "too_many_attempts surfaces with retryAfter, once",
+  "statements": ["ACQ-04", "PRB-03", "PRB-06"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 429,
+          "json": {
+            "type": "urn:soorma:problem:too_many_attempts",
+            "title": "too_many_attempts",
+            "status": 429,
+            "code": "too_many_attempts"
+          },
+          "headers": {
+            "Retry-After": "30"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 500
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 429,
+        "code": "too_many_attempts",
+        "retryAfter": 30
+      }
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 1
+    }
+  ]
+}

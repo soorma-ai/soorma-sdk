@@ -1,0 +1,118 @@
+{
+  "id": "CC-SUB-04",
+  "title": "One active subscription per client",
+  "statements": ["SUB-04"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "hold": true
+            }
+          ]
+        },
+        "times": 2
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "s1"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "subscribe",
+      "label": "s2"
+    },
+    {
+      "op": "closeSubscription",
+      "label": "c"
+    },
+    {
+      "op": "subscribe",
+      "label": "s3"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "s2",
+      "ok": false,
+      "error": {
+        "type": "ClientStateError"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "s3",
+      "ok": true
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/subscriptions"
+      },
+      "count": 2
+    }
+  ]
+}

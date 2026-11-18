@@ -1,0 +1,67 @@
+{
+  "id": "CC-SEC-06",
+  "title": "Group read and symlink chains are allowed",
+  "statements": ["SEC-06"],
+  "timeoutMs": 15000,
+  "setup": {
+    "files": [
+      {
+        "name": "group-read",
+        "type": "file",
+        "content": "${SECRET}",
+        "mode": "0640"
+      },
+      {
+        "name": "real",
+        "type": "file",
+        "content": "${SECRET}\n",
+        "mode": "0440"
+      },
+      {
+        "name": "kube",
+        "type": "symlink",
+        "target": "real",
+        "chain": 2
+      }
+    ]
+  },
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:group-read}",
+        "timeoutMs": 2000
+      },
+      "label": "g"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:kube}",
+        "timeoutMs": 2000
+      },
+      "label": "k"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "g",
+      "ok": true,
+      "result": {
+        "/length": 48
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "k",
+      "ok": true,
+      "result": {
+        "/length": 48
+      }
+    }
+  ]
+}

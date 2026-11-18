@@ -1,0 +1,103 @@
+{
+  "id": "CC-SEC-03",
+  "title": "fileSecret reads an owner-only file, one line ending removed, on each call",
+  "statements": ["SEC-04", "SEC-07"],
+  "timeoutMs": 15000,
+  "setup": {
+    "files": [
+      {
+        "name": "lf",
+        "type": "file",
+        "content": "${SECRET}\n",
+        "mode": "0600"
+      },
+      {
+        "name": "crlf",
+        "type": "file",
+        "content": "${SECRET}\r\n",
+        "mode": "0600"
+      },
+      {
+        "name": "bare",
+        "type": "file",
+        "content": "${SECRET}",
+        "mode": "0600"
+      }
+    ]
+  },
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:lf}",
+        "timeoutMs": 2000
+      },
+      "label": "lf"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:lf}",
+        "timeoutMs": 2000
+      },
+      "label": "lf2"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:crlf}",
+        "timeoutMs": 2000
+      },
+      "label": "crlf"
+    },
+    {
+      "op": "fileSecret",
+      "args": {
+        "path": "${FILE:bare}",
+        "timeoutMs": 2000
+      },
+      "label": "bare"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "lf",
+      "ok": true,
+      "result": {
+        "/length": 48
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "lf2",
+      "ok": true,
+      "result": {
+        "/length": 48
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "crlf",
+      "ok": true,
+      "result": {
+        "/length": 48
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "bare",
+      "ok": true,
+      "result": {
+        "/length": 48
+      }
+    },
+    {
+      "kind": "absence",
+      "noSecretAnywhere": true
+    }
+  ]
+}

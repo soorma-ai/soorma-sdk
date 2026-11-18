@@ -147,7 +147,15 @@ export function makeCaseFiles(
             throw new SetupError(
               `cannot create the foreign-owned file ${name}: no second user (CI creates one; locally use --local-skip CC-SEC-05)`,
             );
-          execFileSync('sudo', ['-n', 'chown', opts.foreignUser, path], { stdio: 'ignore' });
+          // Owned by the second user, group the runner's, so the case can read it
+          // and SEC-05's owner check (not a permission error) is what refuses it.
+          execFileSync(
+            'sudo',
+            ['-n', 'chown', `${opts.foreignUser}:${process.getgid?.() ?? 0}`, path],
+            {
+              stdio: 'ignore',
+            },
+          );
         }
         out[name] = path;
         break;

@@ -1,0 +1,136 @@
+{
+  "id": "CC-REN-02",
+  "title": "A lineage that cannot extend is replaced by a new bootstrap",
+  "statements": ["REN-03"],
+  "timeoutMs": 12000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+4000}"
+          }
+        }
+      },
+      {
+        "label": "renew",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.two",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+4000}"
+          }
+        }
+      },
+      {
+        "label": "boot2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.three",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "waitForRequest",
+      "args": {
+        "match": {
+          "path": "/agent-credentials"
+        },
+        "count": 2,
+        "timeoutMs": 6000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 2
+    },
+    {
+      "kind": "request-timing",
+      "request": {
+        "path": "/agent-credentials",
+        "nth": 2
+      },
+      "notAfter": "${TIME:+4000}"
+    }
+  ]
+}

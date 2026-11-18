@@ -1,0 +1,181 @@
+{
+  "id": "CC-SPN-05",
+  "title": "An unparseable received traceparent gives a root span",
+  "statements": ["SPN-03"],
+  "fixtures": ["draft/valid/traceparent-higher-version.json"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "hv",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json",
+                  "set": {
+                    "/traceContext/traceparent": "01-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01-extra"
+                  }
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "bad",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json",
+                  "set": {
+                    "/traceContext/traceparent": "not-a-traceparent"
+                  }
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 202
+        },
+        "times": 2
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        },
+        "otel": true
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "forward",
+      "args": {
+        "ref": "1",
+        "payload": 1
+      },
+      "label": "f1"
+    },
+    {
+      "op": "forward",
+      "args": {
+        "ref": "2",
+        "payload": 2
+      },
+      "label": "f2"
+    },
+    {
+      "op": "spans",
+      "label": "sp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "span",
+      "command": "sp",
+      "spans": [
+        {
+          "kind": "producer",
+          "sameAs": {
+            "draftOf": "f1"
+          },
+          "traceIdOf": {
+            "receivedOf": "hv"
+          }
+        },
+        {
+          "kind": "producer",
+          "sameAs": {
+            "draftOf": "f2"
+          },
+          "parent": "root"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "id": "CC-STR-06",
+  "title": "A lineage change closes the old stream itself",
+  "statements": ["STR-05"],
+  "$comment": "Renewal answers credential_expired (the code of the credential-expired fixture): a new lineage, so no superseded end will come.",
+  "fixtures": ["event-ingest/StreamEndCode/valid/credential-expired.json"],
+  "timeoutMs": 15000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+3000}"
+          }
+        }
+      },
+      {
+        "label": "renew",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 401,
+          "json": {
+            "type": "urn:soorma:problem:credential_expired",
+            "title": "credential_expired",
+            "status": 401,
+            "code": "credential_expired"
+          }
+        }
+      },
+      {
+        "label": "boot2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.three",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "d1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                }
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      },
+      {
+        "label": "s2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 6000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 6000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 6000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 6000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d1",
+          "sealOf": "d1"
+        },
+        {
+          "kind": "streamEnded",
+          "code": null,
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        }
+      ]
+    },
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/subscriptions",
+        "nth": 2
+      },
+      "headers": {
+        "equals": {
+          "authorization": "Bearer soorma_ac_token.three"
+        }
+      }
+    }
+  ]
+}

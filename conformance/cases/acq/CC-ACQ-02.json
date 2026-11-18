@@ -1,0 +1,68 @@
+{
+  "id": "CC-ACQ-02",
+  "title": "authentication_failed surfaces, once",
+  "statements": ["ACQ-03"],
+  "fixtures": ["problem/valid/authentication-failed.json"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 403,
+          "fixture": "problem/valid/authentication-failed.json"
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 500
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403,
+        "code": "authentication_failed"
+      }
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 1
+    }
+  ]
+}

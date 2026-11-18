@@ -1,0 +1,105 @@
+{
+  "id": "CC-TRC-02",
+  "title": "Without an OpenTelemetry SDK, a valid non-zero traceparent",
+  "statements": ["TRC-01", "TRC-03"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 202
+        },
+        "times": 2
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        },
+        "otel": false
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 1
+      },
+      "label": "p1"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 2
+      },
+      "label": "p2"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/events",
+        "nth": 1
+      },
+      "bodyAt": {
+        "/draft/traceContext/traceparent": {
+          "matches": "^00-(?!0{32})[0-9a-f]{32}-(?!0{16})[0-9a-f]{16}-[0-9a-f]{2}$"
+        }
+      }
+    },
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/events",
+        "nth": 2
+      },
+      "bodyAt": {
+        "/draft/traceContext/traceparent": {
+          "matches": "^00-(?!0{32})[0-9a-f]{32}-(?!0{16})[0-9a-f]{16}-[0-9a-f]{2}$"
+        }
+      }
+    }
+  ]
+}

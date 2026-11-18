@@ -1,0 +1,22 @@
+{
+  "id": "CC-NEV-02",
+  "title": "No platform-stamped field can be set",
+  "statements": ["DRF-03", "NEV-02"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "surface",
+      "label": "s"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "surface",
+      "command": "s",
+      "excludesMatching": "^(envelopeVersion|envelope_version|scope|originMode|origin_mode|delegatingPrincipal|delegating_principal|actorChain|actor_chain|reBroadening|re_broadening)$"
+    }
+  ]
+}

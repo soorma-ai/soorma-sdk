@@ -1,0 +1,44 @@
+{
+  "id": "CC-SEC-08",
+  "title": "A provider failure surfaces and sends nothing",
+  "statements": ["SEC-08"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": []
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "failing"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": false,
+      "error": {
+        "type": "SecretSourceError",
+        "reason": "provider-failed"
+      }
+    },
+    {
+      "kind": "absence",
+      "noRequests": true
+    }
+  ]
+}

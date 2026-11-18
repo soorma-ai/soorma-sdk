@@ -1,0 +1,159 @@
+{
+  "id": "CC-REN-05",
+  "title": "An unrenewed expiry makes the next operation bootstrap",
+  "statements": ["REN-06"],
+  "timeoutMs": 15000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+3000}"
+          }
+        }
+      },
+      {
+        "label": "renew",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "0"
+          }
+        },
+        "times": 10
+      },
+      {
+        "label": "boot2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.three",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 202
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 4500
+      }
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": {
+          "k": "v"
+        }
+      },
+      "label": "p"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "p",
+      "ok": true
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 2
+    },
+    {
+      "kind": "request-shape",
+      "request": {
+        "path": "/events"
+      },
+      "headers": {
+        "equals": {
+          "authorization": "Bearer soorma_ac_token.three"
+        }
+      }
+    }
+  ]
+}

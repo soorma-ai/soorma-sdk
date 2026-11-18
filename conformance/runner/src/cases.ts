@@ -60,13 +60,16 @@ const TIME_EXPR = /\$\{(?:TIME|EPOCH):\+([^}]+)\}/g;
 /** The latest time a case scripts or waits for, in ms after its start. */
 export function latestScriptedMs(c: Case, values: Values): number {
   let latest = 0;
-  const text = JSON.stringify([c.script, c.commands, c.expect]);
+  // Times in responses (a credential expiring in ten minutes) are not waited
+  // for; only the times a case asserts on, or waits for, must fit its timeout.
+  const text = JSON.stringify([c.commands, c.expect.filter((a) => a.kind === 'request-timing')]);
   for (const m of text.matchAll(TIME_EXPR))
     latest = Math.max(latest, sumTerms(m[1] ?? '', { values }));
   let waits = 0;
   for (const cmd of c.commands) {
+    // Only explicit waits are spent for sure; a `next` or `waitForRequest`
+    // timeout is an upper bound, and a case past its own timeout fails anyway.
     if (cmd.op === 'wait') waits += Number(cmd.args?.ms ?? 0);
-    if (cmd.op === 'waitForRequest' || cmd.op === 'next') waits += Number(cmd.args?.timeoutMs ?? 0);
   }
   return Math.max(latest, waits);
 }

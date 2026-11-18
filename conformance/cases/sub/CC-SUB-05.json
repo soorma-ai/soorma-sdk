@@ -1,0 +1,284 @@
+{
+  "id": "CC-SUB-05",
+  "title": "Failures before the stream opens",
+  "statements": ["SUB-05"],
+  "timeoutMs": 20000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 8,
+    "T_idle": 1500,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "b1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "x1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "status": 401,
+          "json": {
+            "type": "urn:soorma:problem:credential_refused",
+            "title": "credential_refused",
+            "status": 401,
+            "code": "credential_refused"
+          }
+        }
+      },
+      {
+        "label": "b2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "x2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "status": 403,
+          "json": {
+            "type": "urn:soorma:problem:forbidden",
+            "title": "forbidden",
+            "status": 403,
+            "code": "forbidden"
+          }
+        }
+      },
+      {
+        "label": "b3",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "x3",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "1"
+          }
+        }
+      },
+      {
+        "label": "x4",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "c1"
+    },
+    {
+      "op": "start",
+      "label": "st1"
+    },
+    {
+      "op": "subscribe",
+      "label": "s1"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      },
+      "label": "n1"
+    },
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "c2"
+    },
+    {
+      "op": "start",
+      "label": "st2"
+    },
+    {
+      "op": "subscribe",
+      "label": "s2"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      },
+      "label": "n2"
+    },
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "c3"
+    },
+    {
+      "op": "start",
+      "label": "st3"
+    },
+    {
+      "op": "subscribe",
+      "label": "s3"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 5000
+      },
+      "label": "n3"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "n1",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 401,
+        "code": "credential_refused"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "n2",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403,
+        "code": "forbidden"
+      }
+    },
+    {
+      "kind": "observation",
+      "command": "n3",
+      "ok": true,
+      "result": {
+        "/kind": "streamStarted"
+      }
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/subscriptions"
+      },
+      "count": 4
+    }
+  ]
+}

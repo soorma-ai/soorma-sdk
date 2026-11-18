@@ -797,3 +797,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G6
 
 ---
+## U1 Code Generation — G6 CI green; G7 gate green
+**Timestamp**: 2026-11-18T15:27:37Z
+**User Input**: (none)
+**AI Response**: "G6 pushed as 018341a; CI run 44334002163 green. G7: the 90 case files under conformance/cases/{area}/, generated once from the approved catalogue (business-logic-model §6) by a script and committed as data; each case's statements are those spec/behaviour.md lists for it. Loaded through the runner: schema valid, rules pass, links two-way, every one of the 103 agent-side fixtures used; a test now loads the real set in the gate (90 cases, no problem, no code). Plan notes recorded: protocol details fixed while writing the cases (secret kinds, create arguments, the docs command, the done item, error reason codes, error.problem, providerIsNoop), to be documented for U3 and U4 in conformance/README.md; four cases narrowed from the catalogue's wording, each stated in its $comment (CC-PRB-06 bootstrap and subscribe only; CC-PRB-08 without the renewal-after-expiry branch; CC-SEC-03 re-read by a second call; CC-ACQ-01 sample response only); the loader's timeout rule counts only waits and timing assertions; evaluator additions differsFrom, minAfterMs, noBodyContains and pointers into an error. 67 of the 90 cases are first executed by U3's driver (plan 1.4). G7 gate: frozen install, typecheck, lint, format, 90 tests, audit, audit-exceptions, pnpm checks: pass."
+**Context**: CONSTRUCTION — U1 Code Generation G7
+
+---

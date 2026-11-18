@@ -1,0 +1,90 @@
+{
+  "id": "CC-PRB-03",
+  "title": "forbidden surfaces with no added cause",
+  "statements": ["PRB-04"],
+  "$comment": "The Problem has no detail; the SDK adds none.",
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "pub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/events"
+        },
+        "respond": {
+          "status": 403,
+          "json": {
+            "type": "urn:soorma:problem:forbidden",
+            "title": "Forbidden",
+            "status": 403,
+            "code": "forbidden"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "publish",
+      "args": {
+        "payload": 1
+      },
+      "label": "p"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "p",
+      "ok": false,
+      "error": {
+        "type": "ProblemError",
+        "status": 403,
+        "code": "forbidden",
+        "detail": null
+      }
+    }
+  ]
+}

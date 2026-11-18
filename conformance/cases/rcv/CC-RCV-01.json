@@ -1,0 +1,262 @@
+{
+  "id": "CC-RCV-01",
+  "title": "Extraction does not depend on member order",
+  "statements": ["RCV-01"],
+  "fixtures": ["delivery/valid/sample.json"],
+  "timeoutMs": 15000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "sub",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "o1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                },
+                "order": ["envelope", "seal", "payload"]
+              }
+            },
+            {
+              "delivery": {
+                "label": "o2",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                },
+                "order": ["envelope", "payload", "seal"]
+              }
+            },
+            {
+              "delivery": {
+                "label": "o3",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                },
+                "order": ["seal", "envelope", "payload"]
+              }
+            },
+            {
+              "delivery": {
+                "label": "o4",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                },
+                "order": ["seal", "payload", "envelope"]
+              }
+            },
+            {
+              "delivery": {
+                "label": "o5",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                },
+                "order": ["payload", "envelope", "seal"]
+              }
+            },
+            {
+              "delivery": {
+                "label": "o6",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "v"
+                  }
+                },
+                "order": ["payload", "seal", "envelope"]
+              }
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "o1",
+          "sealOf": "o1",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "o2",
+          "sealOf": "o2",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "o3",
+          "sealOf": "o3",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "o4",
+          "sealOf": "o4",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "o5",
+          "sealOf": "o5",
+          "payload": {
+            "k": "v"
+          }
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "o6",
+          "sealOf": "o6",
+          "payload": {
+            "k": "v"
+          }
+        }
+      ]
+    }
+  ]
+}
