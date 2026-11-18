@@ -1,0 +1,9 @@
+{
+  "id": "CC-AAA-05",
+  "title": "runs after the slow case",
+  "statements": ["AAA-02"],
+  "timeoutMs": 5000,
+  "script": { "exchanges": [] },
+  "commands": [{ "op": "newInstanceId", "label": "pid" }],
+  "expect": [{ "kind": "observation", "command": "pid", "ok": true }]
+}

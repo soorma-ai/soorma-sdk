@@ -1,0 +1,9 @@
+{
+  "id": "CC-AAA-04",
+  "title": "slow",
+  "statements": ["AAA-02"],
+  "timeoutMs": 5000,
+  "script": { "exchanges": [] },
+  "commands": [{ "op": "start", "args": { "hangMs": 1300 }, "label": "s" }],
+  "expect": [{ "kind": "observation", "command": "s", "ok": true }]
+}
