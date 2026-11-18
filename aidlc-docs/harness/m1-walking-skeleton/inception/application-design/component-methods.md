@@ -173,7 +173,7 @@ observation  {"id": n, "ok": true, "result": {...}}
 | `next` | the next subscription item, within a timeout | the item, as data |
 | `forward` | `delivery.publish(payload)` on a Delivery returned by `next` | `{traceContext}` |
 | `close` | `close()` | `{}` |
-| `inspect` | language internals: secret references held, provider call count, open streams | the counts |
+| `inspect` | **checks the runtime itself**, never lists the driver's own fields (CDI-02): TypeScript forces garbage collection and searches a heap snapshot for the secret's value; Python compares `sys.getrefcount` on the provider's returned string with its value before bootstrap. Also the provider call count and open streams | the findings |
 | `names` | the package's exported names | the list (also used by C-04) |
 
 The full command set is the conformance unit's Functional Design. Every assertion is the

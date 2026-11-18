@@ -165,11 +165,12 @@ internal.
   reference after that bootstrap's request is sent. A tenant on a secrets manager writes their
   own
 - **`fileSecret(path)`, the one provider shipped**. **The SDK ships no provider that reads an
-  environment variable.** Each call opens the path, **follows symlinks and checks the final
-  file** (Kubernetes' `..data` links), checks it on the opened handle, then reads it, strips
+  environment variable.** Each call opens the path **without blocking** (`O_NONBLOCK` or the language's
+  equivalent; CDI-03), **follows symlinks and checks the final file** (Kubernetes' `..data`
+  links), checks it on the opened handle, then reads it, strips
   one trailing line ending, returns the value, and keeps nothing. It **refuses**, without
   reading the contents, when the final file is:
-  - not a regular file
+  - not a regular file (a named pipe or device is refused, never waited on)
   - **writable by group or others**
   - **readable by others**
   - **owned by anyone other than the process's user or root**
@@ -259,8 +260,9 @@ internal.
 ### C-21 Conformance driver — T, P
 - **Purpose**: lets the runner (C-03) drive this language's public API (FR-03; US-14 #2)
 - **Responsibilities**: reads commands as JSON lines on stdin, calls the package's **public
-  interface only**, writes observations as JSON lines on stdout. Answers the few checks that
-  look inside a language (no secret retained, US-02 #3) from its own internals. Not part of
+  interface only**, writes observations as JSON lines on stdout. Answers the checks that look
+  inside a language (no secret retained, US-02 #3) by **checking the runtime itself**, never
+  by listing its own fields (CDI-02). Not part of
   the package's public interface
 - **Location**: `typescript/conformance-driver/`, `python/conformance_driver/`
 

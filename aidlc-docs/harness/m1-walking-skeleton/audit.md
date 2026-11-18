@@ -311,3 +311,29 @@ Log this word for word in audit.md, then generate the Application Design."
 **Context**: INCEPTION — Application Design, approval gate presented
 
 ---
+## Application Design — approval
+**Timestamp**: 2026-11-18T05:51:30Z
+**User Input**: "Approve & Continue: Application Design approved. Proceed to Units Generation.
+
+Accepted: AD-01 to AD-14 as written; the 19 components; the public interface and the starting name table; the driver protocol; the end-to-end commands; the gap pass result (no new gap); US-Q1 carried to the unit holding C-19.
+
+Carry into Functional Design (add each to the deferred-questions table, or to the owning unit's design inputs):
+
+Record the exposed environment reference as a decision. credential.environment (organisation, project, environment) is exposed read only. That settles the open technology item from the User Stories gap pass about exposing the credential's environment reference. Record it with its trace to FR-15: the client accepts no environment and only reports what the credential says.
+US-02 #3 is checked by the runtime, not reported by the driver. The driver's inspect must check the runtime itself, not list its own fields.
+TypeScript: force garbage collection, take a heap snapshot, and find no occurrence of the secret's value.
+Python: sys.getrefcount on the string the test provider returned is back to its value before bootstrap. Python's gc doesn't track strings.
+The conformance unit's Functional Design defines both.
+fileSecret must not block on a special file. Open the path without blocking (O_NONBLOCK, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on.
+Log this word for word in audit.md, then start Units Generation."
+**AI Response**: "Application Design APPROVED. Recorded the three carried items in aidlc-state.md under ## Carried Design Inputs (CDI-01 decision: credential.environment exposed read only, settling T-6, traced to FR-15; CDI-02: US-02 #3 checked by the runtime, TypeScript heap snapshot after forced GC, Python sys.getrefcount, defined by the conformance unit's Functional Design; CDI-03: fileSecret opens without blocking, checks the opened handle, refuses a named pipe or device). Noted them in application-design.md (AD-15) and aligned the driver's inspect row in component-methods.md and C-13 in components.md. Units Generation assigns each to its owning unit. Starting Units Generation."
+**Context**: INCEPTION — Application Design approved; Units Generation begins
+
+---
+## Units Generation — plan and questions
+**Timestamp**: 2026-11-18T05:53:18Z
+**User Input**: (none since the Application Design approval)
+**AI Response**: "Loaded units-generation.md (Step 2.4 intake gaps; Step 2.5 unit shapes). Wrote inception/working/unit-of-work-plan.md (git-ignored) with three questions. Q1 the units: recommended four, in build order: U1 contract-and-conformance (ordinary; C-01 to C-04), U2 e2e-stack (ordinary, amending D-14 by one unit; C-05), U3 typescript-harness (harness; C-10 to C-22 TypeScript; M1's proof), U4 python-harness (harness; C-10 to C-22 Python); alternatives: three units (U2 folded into TypeScript, D-14 as written) or six (each language split into credentials and events). Q2 where the language-neutral behaviour is designed: recommended all in U1's Functional Design, which moves US-Q1 to U1 (the span rules C-19 implements); alternative: split, US-Q1 stays with U3. Q3 design stages for the ordinary units: recommended U2 without NFR Design. Awaiting answers."
+**Context**: INCEPTION — Units Generation, questions presented
+
+---

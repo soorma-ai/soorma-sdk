@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: INCEPTION - Application Design
+- **Current Stage**: INCEPTION - Units Generation
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -70,6 +70,17 @@ Gap IDs are qualified by repository whenever they leave this initiative (soorma-
 |---|---|---|---|---|---|
 | US-Q1 | How a forwarding hop's span relates to the trace it received: child or link (US-08 #4) | Functional Design of the unit that owns trace emission (component C-19, Tracing; the unit set at Units Generation) | GAP-INT-002's open choice; to be settled under the work-around, consistent with *done when* 5's trace-id check, and recorded as a decision (user, at User Stories approval) | stories.md US-08 #4; soorma-sdk GAP-INT-002 | Open |
 
+## Carried Design Inputs
+
+Settled or directed by the user at the Application Design approval (audit 2026-11-18T05:51:30Z).
+Each is an input to the named unit's Functional Design; the unit is set at Units Generation.
+
+| ID | Input | Owning component | Unit | Kind | Status |
+|---|---|---|---|---|---|
+| CDI-01 | **Decision**: `credential.environment` (`organization`, `project`, `environment`) is exposed **read only**. Settles T-6 (User Stories gap pass). Traces to FR-15: the client accepts no environment and only reports what the credential says | C-11, C-14 | (set at Units Generation) | Decision (recorded) | Settled |
+| CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | (set at Units Generation) | Design input | Open: to Functional Design |
+| CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | (set at Units Generation) | Design input | Open: to Functional Design |
+
 ## Extension Configuration
 
 | Extension | Enabled | Decided At | Notes |
@@ -112,8 +123,8 @@ the first published release.
 - [x] Requirements Analysis — APPROVED 2026-11-18T02:47:34Z, with the user's correction to Q1 (Node.js 24 or later; CI Node 24 and 26; Python 3.11+, CI 3.11 and newest). Questions answered 2026-11-18T02:37:58Z (Q1 X two languages, TypeScript first; Q2–Q10 A; Q11 A2; Q12 A; Q13 A; Q14 A3; Q15 B)
 - [x] User Stories — APPROVED 2026-11-18T03:05:37Z. Plan answered 2026-11-18T02:55:43Z (Q1–Q6 A); 2 personas, 14 stories, 80 criteria; gap pass: no new gap; US-Q1 carried to Functional Design
 - [x] Workflow Planning — APPROVED 2026-11-18T05:13:20Z (with two items for Application Design: the examples' secret source; how CI runs soorma-core)
-- [ ] Application Design — answers 2026-11-18T05:32:10Z (Q1, Q3–Q6, Q8 A; Q2, Q7, Q9 X); design generated (inception/application-design/); awaiting approval
-- [ ] Units Generation — EXECUTE
+- [x] Application Design — APPROVED 2026-11-18T05:51:30Z. Answers 2026-11-18T05:32:10Z (Q1, Q3–Q6, Q8 A; Q2, Q7, Q9 X); AD-01 to AD-15; carried CDI-01 to CDI-03
+- [ ] Units Generation — plan and questions written (inception/working/unit-of-work-plan.md); awaiting answers
 - [ ] Tickets (extension) — EXECUTE
 - [ ] QA test specs, inception pass (extension) — EXECUTE
 - [ ] Inception PR gate (extension) — EXECUTE

@@ -34,6 +34,7 @@ This document consolidates four others, which hold the detail:
 | AD-12 | **End-to-end jobs**: one per language, each with its own stack, in parallel; on pull requests and pushes to `dev`, **not pushes to `main`**; skipped by a job-level condition only when every changed file is provably under `aidlc-docs/` (soorma-core #26's pattern) | Q9 X | D-12; NFR-10 |
 | AD-13 | **Expected CI time added**: about 3 to 5 minutes per end-to-end job for soorma-core's bring-up, under a minute for set-up and scenario; wall time about 4 to 6 minutes with the two jobs in parallel. Measured at the first code PR; past 8 minutes, NFR Design revisits | the user's item 2 | — |
 | AD-14 | **Tracing depends on the OpenTelemetry API only**; no exporter, no sampler; the end-to-end test installs an in-memory exporter in the test process holding both agents | FR-14 (as stated) | soorma-sdk GAP-INT-002 |
+| AD-15 | **Carried at approval** (aidlc-state.md *Carried Design Inputs*): CDI-01 `credential.environment` exposed read only, settling T-6, traced to FR-15; CDI-02 US-02 #3 checked by the runtime (TypeScript heap snapshot after forced GC; Python `sys.getrefcount`), defined by the conformance unit's Functional Design; CDI-03 `fileSecret` opens without blocking and refuses a named pipe or device | the user, at approval | FR-15; US-02 #2, #3; D-09 |
 
 **Carried, unsettled**: **US-Q1** (a forwarding hop's span: child of, or linked to, the trace it
 received) to the Functional Design of the unit holding C-19, under GAP-INT-002's work-around and
