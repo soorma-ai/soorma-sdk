@@ -565,3 +565,36 @@ Log this word for word in audit.md, then generate the NFR Requirements."
 **Context**: CONSTRUCTION — U1 NFR Requirements, follow-up presented
 
 ---
+## U1 NFR Requirements — Q7a answer
+**Timestamp**: 2026-11-18T07:55:51Z
+**User Input**: "Q7a: X. Option A as described won't work. GitHub's commit-to-PR lookup (GET /repos/{owner}/{repo}/commits/{sha}/pulls) returns only open PRs for a commit that isn't on the default branch. Once a Dependabot commit is on dev, it finds the open dev → main PR, not the merged Dependabot PR. Option B depends on who GitHub records as a squash commit's author, and the check requires the sign-off to match the author.
+
+Instead, anchor the exemption on GitHub's own signature. An unsigned commit is exempt only when GitHub's API (GET /repos/{owner}/{repo}/commits/{sha}) reports both:
+
+author.login == "dependabot[bot]";
+commit.verification.verified == true.
+Dependabot's commits are signed by GitHub, so the email can't be spoofed into the exemption. This works on the Dependabot PR and on every later dev → main PR.
+
+Token: read with the workflow's own token via an action input (for example actions/github-script with its default github-token), never as an environment variable, and with contents: read only.
+Everything else unchanged: every other commit still needs a Signed-off-by matching its author, and merge commits stay skipped (--no-merges).
+Fix the three problems you found: drop the *[bot]* email exemption; pin actions/checkout by commit SHA with its tag in a comment; pin the runner image (ubuntu-24.04).
+Tests. Each of these fails:
+another author's commit without a sign-off;
+a commit whose author email contains [bot] but that isn't verified as Dependabot's;
+a human commit without a sign-off pushed into a Dependabot PR.
+And each of these passes:
+a verified Dependabot commit, on its own PR;
+the same commit already merged into dev, on the dev → main PR.
+If the API lookup fails, the check fails closed.
+Record target-branch: dev as before. Log this word for word in audit.md, then generate the NFR Requirements."
+**AI Response**: "Q7a recorded; no further ambiguity. Generating U1's NFR Requirements."
+**Context**: CONSTRUCTION — U1 NFR Requirements, follow-up answered
+
+---
+## U1 NFR Requirements — generated; approval requested
+**Timestamp**: 2026-11-18T07:57:13Z
+**User Input**: (none since the Q7a answer at 2026-11-18T07:55:51Z)
+**AI Response**: "Generated construction/contract-and-conformance/nfr-requirements/: nfr-requirements.md (NFR-U1-01 to -36: performance budgets 5 and 8 minutes; no automatic retries, timing windows with margins of at least twice the value; drift check local half always, remote half by git ls-remote and a --depth 1 fetch, fail closed in CI, --offline locally only and refused in CI; Linux CI authoritative with CC-SEC-05 always run via sudo, --local-skip CC-SEC-05 locally only, refused in CI, no local sudo, no dscl, no Windows; secrets never printed or in reports; loopback-only stub with a per-run CA; test-only code out of the packages; pinned toolchain; Dependabot weekly with a 7-day cooldown and target-branch dev for npm and GitHub Actions; pnpm audit; dependency review; actions pinned by SHA, ubuntu-24.04, contents: read; the DCO check rewritten: exempt an unsigned commit only when GitHub's commit API reports author.login dependabot[bot] and verification.verified true, the [bot] email exemption removed, token via actions/github-script's input, fail closed on lookup failure, with three failing and two passing tests plus a failing lookup; security and invariant compliance; no new gap) and tech-stack-decisions.md (TS-U1-01 to -12; the jobs U1 adds or changes). Presenting the U1 NFR Requirements gate; next stage NFR Design (U1)."
+**Context**: CONSTRUCTION — U1 NFR Requirements, approval gate presented
+
+---
