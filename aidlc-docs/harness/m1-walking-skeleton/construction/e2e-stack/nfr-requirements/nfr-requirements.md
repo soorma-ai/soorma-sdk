@@ -10,7 +10,7 @@ unchanged.
 
 | Id | Requirement | Source | Verification |
 |---|---|---|---|
-| NFR-U2-01 | The `e2e` job has **`timeout-minutes: 20`**: a hung stack is stopped, never left to the 6-hour default | Q3 A | The workflow check (U1) and the job's YAML |
+| NFR-U2-01 | The `e2e` job has **`timeout-minutes: 20`**, a backstop only. **Every raw call in `setup` and `prove-stack`, and every child step of `core-up` and `core-down` that can hang, has its own time limit**, each well under 20 minutes (values: TS-U2-11), so a hung service fails its step, with its name, long before the job's timeout. A single hang in `core-up`, after its other steps' normal time, ends it in about 10 minutes at most | Q3 A; the user (2026-11-18T20:54:18Z) | TC-ES-022, TC-ES-023 |
 | NFR-U2-02 | **The job's time is measured on U2's code PR**, with its run ID recorded (OBL-02). **Over 8 minutes**, NFR Requirements is reopened for U2 before U3 starts | AD-13; Q3 A | TC-ES-011; OBL-02 |
 | NFR-U2-03 | **Nothing is cached** until that measurement: a fresh clone, a fresh install and fresh images every run, so the first measurement shows the cold cost and no cache feeds a job whose point is a fresh stack | Q3 A; AD-11 | The job's YAML (no cache step) |
 
@@ -18,10 +18,10 @@ unchanged.
 
 | Id | Requirement | Source | Verification |
 |---|---|---|---|
-| NFR-U2-04 | **`core-down` always runs** (`if: always()`), with `--logs` when an earlier step failed; without an ownership record it does nothing and exits `0` | CD-01; JOB-03 | TC-ES-008, TC-ES-018 |
+| NFR-U2-04 | **`core-down` always runs** (`if: always()`), and gets **`--logs` when `failure() \|\| cancelled()`**: GitHub reports a job stopped by its timeout, or cancelled, as cancelled rather than failed, and those are the runs whose logs matter most. Without an ownership record it does nothing and exits `0` | CD-01; JOB-03; the user (2026-11-18T20:54:18Z) | TC-ES-008 (the workflow's condition read by a unit test), TC-ES-018 |
 | NFR-U2-05 | **No retry** inside any command (ST-12, PS-06); a red job is fixed, never rerun until green, except one recorded rerun for a CI-infrastructure cause (code-generation.md Step 12a) | U2-FD-Q8; U1 policy | TC-ES-020 |
 | NFR-U2-06 | **`core-up` checks its prerequisites before writing the ownership record** (Docker Engine 26 or later, Docker Compose 2.26.0 or later, `git`, the `--core-node` executable), so a missing one leaves nothing to tear down (CU-11) | Q5 A | TC-ES-021 (unit, fake `docker`) |
-| NFR-U2-07 | Every failure exits non-zero with one line saying what failed; no stack trace that could carry a request or response body | GEN-06; SECURITY-15 | TC-ES-020 |
+| NFR-U2-07 | Every failure exits non-zero with one line saying what failed; no stack trace that could carry a request or response body. **A time limit running out is a failure**: one line naming the step and saying it timed out (`setup: registerAgent agent-b timed out after 30 s`), then the command's usual failure path. **Never retried.** `setup` still ends its sign-in and environment credential and checks them refused (ST-09), each of those calls under its own limit | GEN-06, GEN-07; SECURITY-15; the user (2026-11-18T20:54:18Z) | TC-ES-020, TC-ES-022, TC-ES-023 |
 
 ## Security and Secret Handling
 
@@ -67,7 +67,7 @@ unchanged.
 
 | Id | Requirement | Source | Verification |
 |---|---|---|---|
-| NFR-U2-19 | **Vitest in `unit`, on every PR, for everything that needs no stack**: TC-ES-002, 003, 013 to 021, with recorded log text, the vendored contract, a local HTTPS fake of S1 and S2, and fake `docker` and `git` executables first on `PATH`. **The `e2e` job** for TC-ES-001, 004 to 008. **Locally** TC-ES-012 | Q4 A; NFR-10 | The `unit` and `e2e` jobs |
+| NFR-U2-19 | **Vitest in `unit`, on every PR, for everything that needs no stack**: TC-ES-002, 003, 013 to 023 (and TC-ES-008's workflow-condition test), with recorded log text, the vendored contract, a local HTTPS fake of S1 and S2, and fake `docker` and `git` executables first on `PATH`. **The `e2e` job** for TC-ES-001, 004 to 008. **Locally** TC-ES-012 | Q4 A; NFR-10 | The `unit` and `e2e` jobs |
 | NFR-U2-20 | **TC-ES-020's fake validates every response it sends** against the vendored contract's schema for that operation and status, in the fake or the test, so it cannot drift from the contract | The user (2026-11-18T19:25:25Z) | TC-ES-020 |
 | NFR-U2-21 | `e2e/` is a **private workspace package**, never published; U1's packaging guard forbids `e2e/` in either package (GEN-03) | Q1 A; I6, I8 | The packaging guard's test |
 

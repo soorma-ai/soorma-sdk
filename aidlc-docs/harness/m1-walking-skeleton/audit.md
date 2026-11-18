@@ -1025,3 +1025,28 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements complete, awaiting approval
 
 ---
+
+## U2 NFR Requirements — APPROVED with one addition first (time limits)
+**Timestamp**: 2026-11-18T20:54:18Z
+**User Input**: "Continue to Next Stage: U2 NFR Requirements approved, with one addition first.
+
+A hung call currently loses both the step name and the logs. No raw call or child step has a time limit of its own, so a stuck service holds setup or prove-stack until the job's 20-minute timeout. That drops the step-name line (NFR-U2-07). GitHub also reports a timed-out job as cancelled, not failed, so if \"when an earlier step failed\" is written as failure(), core-down skips --logs in exactly the case the logs are for.
+
+Add:
+1. A time limit on every raw call in setup and prove-stack (for example 30 s per request, connecting included), and on each child step of core-up and core-down that can hang (git clone, pnpm install, docker build, stack:init, stack:up, docker compose logs, down -v). Set each limit well under the job's 20 minutes, and decide the values here, as technology decisions. A limit that runs out is a failure: one line naming the step and saying it timed out, then the command's usual failure path. setup still ends its sign-in and environment credential and checks them refused (ST-09). Never retried.
+2. In the workflow, core-down runs if: always(), and gets --logs when failure() || cancelled(), so a timed-out or cancelled job still searches and shows the logs.
+3. Test the call limit with the local HTTPS fake: it accepts the connection and never answers. Expect the step-name line and the end-and-refuse sequence.
+
+Update NFR-U2-01, -04 and -07, JOB-03 in business-rules.md, and the planned test cases. Log this message word for word in audit.md, commit signed off, push, wait for CI, then go on to QA enrichment."
+**AI Response**: "Accepted. Adding the time limits (values decided as technology, TS-U2-11), the workflow condition, and the tests; updating NFR-U2-01, -04, -07, JOB-03, the rules they touch (GEN-07 new, ST-09, CD-07 new, LS-10) and the planned test cases (TC-ES-022, TC-ES-023 new; TC-ES-008, TC-ES-016 extended). Then QA enrichment."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements approved with an addition
+
+---
+
+## U2 NFR Requirements — time-limit addition applied
+**Timestamp**: 2026-11-18T20:55:10Z
+**User Input**: (none)
+**AI Response**: "Applied. TS-U2-11 (technology): raw call 30 s (connect through whole response); git clone 3 min; pnpm install (clone) 6 min; docker build 5 min per image; stack:init 2 min; stack:up 5 min; docker compose logs 1 min per service; down -v 3 min; every other child command 30 s; SIGTERM then SIGKILL after 10 s. Basis: several times each step's normal time at the tag (soorma-core run 43391996560); a single hang in core-up ends it in about 10 minutes. NFR-U2-01 (job timeout a backstop), NFR-U2-04 (core-down if: always(), --logs on failure() || cancelled()), NFR-U2-07 (a limit running out is a failure, one step-name line, never retried, ST-09 still runs). business-rules.md: GEN-07 new; ST-09 (a timed-out call still ends and checks); CD-07 new (a failed or timed-out teardown keeps the ownership record); LS-10 (a timed-out log read is unreadable); JOB-03. business-logic-model.md: §3 failure path; §7 TC-ES-022 (fake accepts and never answers: step-name line, end-and-refuse sequence; also prove-stack), TC-ES-023 (child steps that never end), TC-ES-016 and TC-ES-008 extended (the workflow condition read by a unit test). Going on to QA enrichment."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements approved; QA enrichment next
+
+---

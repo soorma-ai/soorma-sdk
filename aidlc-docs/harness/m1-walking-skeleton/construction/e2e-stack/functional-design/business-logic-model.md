@@ -62,7 +62,7 @@ is somehow still live it ends it, never extends it. Call 1's response may not as
 factor: the stack is configured with `secondFactorRequired: false`, so a response with
 `secondFactorEnrollmentRequired` and no sign-in is a failure (ST-06).
 
-**On a failure** (ST-12): stop; print `setup: <step> failed: <status> <Problem code> (request
+**On a failure** (ST-12), including a call that ran out of its 30 s limit (GEN-07, printed as `setup: <step> timed out after 30 s`): stop; print `setup: <step> failed: <status> <Problem code> (request
 <Soorma-Request-Id>)`. If the failure is past call 1, run calls 6 to 9 for whichever of the
 environment credential and the sign-in exist (ST-09); the original failure stays the reported
 one, and a credential found still live after its end adds a line naming which (never its value);
@@ -139,7 +139,7 @@ U1's packaging guard (`tools/packaging/`) checks that neither package's file lis
 
 ## 7. Test Cases Planned for QA Enrichment
 
-The inception cases TC-ES-001 to 012 stand. Functional Design adds these (TC-ES-021 added at NFR Requirements); QA enrichment
+The inception cases TC-ES-001 to 012 stand. Functional Design adds these (TC-ES-021 to 023 added at NFR Requirements); QA enrichment
 writes them with these numbers:
 
 | TC | Title | Rules |
@@ -147,12 +147,14 @@ writes them with these numbers:
 | TC-ES-013 | The log search finds each typed prefix followed by token characters, naming the service and the kind; a bare prefix is not a hit | LS-03, LS-06, LS-08, LS-09; one case per prefix read from the contract |
 | TC-ES-014 | The log search finds the exact enrollment material, and an exact agent secret | LS-04, LS-08 |
 | TC-ES-015 | A clean log is printed; nothing is searched without `--logs` | LS-07, LS-11 |
-| TC-ES-016 | An unreadable log: nothing printed, `core-down` fails closed and still tears the stack down | LS-10, CD-05, CD-06 |
+| TC-ES-016 | An unreadable log (including one whose read times out): nothing printed, `core-down` fails closed and still tears the stack down | LS-10, CD-05, CD-06 |
 | TC-ES-017 | The prefixes come from the vendored contract; none readable fails closed | LS-01, LS-02 |
 | TC-ES-018 | `core-down` without an ownership record removes nothing and exits `0` | CD-01 |
 | TC-ES-019 | `setup` refuses a bad agent identifier or secrets directory before consuming the marker | ST-01, ST-02 |
 | TC-ES-020 | `setup` stops at the first failed call, printing step, status, Problem code and request id, nothing else; **after a failure past first authentication, no sign-in or environment credential `setup` opened is left live**, shown by each being refused when presented again (calls 7 and 9) | ST-12, ST-09, GEN-06 |
 | TC-ES-021 | `core-up` refuses, before installing anything, a missing prerequisite (before the ownership record), a clone whose `pnpm-workspace.yaml` lacks `strictDepBuilds: true` or `allowBuilds: {}`, a `--core-node` whose version is not the clone's `.node-version`, and a pnpm that is not the clone's `packageManager` (added at NFR Requirements) | CU-11, CU-12, CU-13 |
+| TC-ES-022 | **A raw call that never answers**: the local HTTPS fake accepts the connection to one operation (`registerAgent`) and never answers; `setup` prints the step-name line saying it timed out, then runs the end-and-refuse sequence (calls 6 to 9, against the fake's answering operations), makes no retry, and exits non-zero. Also `prove-stack` against a fake S3 that never answers. *Added at the NFR Requirements approval* | GEN-07, ST-09, ST-12, PS-06 |
+| TC-ES-023 | **A child step that never ends**: a fake `docker` whose `build` (then `compose logs`, then `down -v`) never exits; `core-up` prints the step-name line saying it timed out and exits non-zero with the ownership record kept; `core-down --logs` treats a timed-out log read as unreadable (no log printed); a timed-out `down -v` keeps the ownership record (CD-07). *Added at the NFR Requirements approval* | GEN-07, CU-10, LS-10, CD-07 |
 
 **TC-ES-006, extended at QA enrichment** (the user, 2026-11-18T19:20:00Z): after a **successful**
 `setup`, no sign-in or environment credential `setup` opened is left live, shown by each being
@@ -166,6 +168,10 @@ refuses (test-only code in the command). So TC-ES-020 runs `setup` against a **l
 and S2** that follows the contract's end semantics (an ended credential is refused with `401`) and
 fails `registerAgent` with `503`. It asserts that no `authenticate` call is made, that calls 6 to 9 are made, and that the fake holds no
 live sign-in or environment credential at the end. The real-stack refusal is TC-ES-006's.
+
+**TC-ES-008, extended at the NFR Requirements approval**: a unit test reads the workflow and
+asserts that the `core-down` step runs `if: always()` and passes `--logs` exactly when
+`failure() || cancelled()`.
 
 TC-ES-013 to 017 run against recorded log text and the vendored contract, without a stack, so
 they run in `unit` on every PR; the end-to-end job exercises the search for real only when a job
