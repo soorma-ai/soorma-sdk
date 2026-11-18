@@ -973,3 +973,23 @@ Log this message word for word in audit.md, commit signed off, push, wait for CI
 **Context**: CONSTRUCTION — U2 e2e-stack, Functional Design complete (revised), awaiting approval
 
 ---
+
+## U2 Functional Design — APPROVED (Continue to Next Stage)
+**Timestamp**: 2026-11-18T19:25:25Z
+**User Input**: "Continue to Next Stage: U2 Functional Design approved, as revised in 58f58cc.
+
+On TC-ES-020: the fake is right. On the real stack, the only way to make setup fail after first authentication is a fault switch inside setup, and test-only switches don't belong in a tool that holds secrets. TC-ES-006 already checks the refusals against the real stack. One requirement: validate every response the fake sends against the vendored contract's schema for that operation and status, in the fake itself or in the test, so it can't drift from the contract. Add that to TC-ES-020 when you write it at QA enrichment.
+
+Log this message word for word in audit.md, then start U2's NFR Requirements."
+**AI Response**: "U2 Functional Design approved as revised in 58f58cc. Recorded for QA enrichment: TC-ES-020's fake validates every response it sends against the vendored contract's schema for that operation and status (in the fake or the test). Starting U2 NFR Requirements."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design approved; NFR Requirements starts
+
+---
+
+## U2 NFR Requirements — questions
+**Timestamp**: 2026-11-18T19:26:57Z
+**User Input**: (none)
+**AI Response**: "U2 is ordinary: Step 1.5 seeds nothing from a PRD profile. Inherited from U1 and not asked: Node 24.22.3, pnpm 12.18.0, TypeScript by type stripping, ajv and yaml, Vitest, the workflow rules (NFR-U1-28), Dependabot, audit and dependency review, no retry except a recorded infrastructure rerun. Decided as technology (to be recorded in tech-stack-decisions.md): the changes job copies soorma-core #26 exactly (shell and git diff --name-only --no-renames, failing safe, read at soorma-core origin/main ci.yml); K is 32 CSPRNG bytes, base64url; soorma-local detection by docker compose ls --all and a volume label filter; raw calls by node:https with the clone's CA only. Questions written (construction/working/e2e-stack-nfr-requirements-plan.md): Q1 language and runtime of the commands; Q2 soorma-core's Node 26.13.0 beside Node 24; Q3 time budget and caching; Q4 how the commands are tested (TC-ES-020's fake validating every response against the contract, as the user required); Q5 where the commands run locally (soorma-core needs Docker Engine 26 and Compose 2.26.0 or later); Q6 soorma-core's dependencies installed in this repository's CI. No specification gap. Stopped for answers."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements questions
+
+---
