@@ -1,0 +1,13 @@
+{
+  "$comment": "The declared expected sets of the negative controls (business-logic-model §5.2): each faulted run must fail its named case, and its failed set must equal the declared set. A new knock-on is declared here by a recorded change, never suppressed.",
+  "faults": [
+    { "fault": "retain-secret", "named": "CC-SEC-01", "expected": ["CC-SEC-01"] },
+    {
+      "fault": "reorder-forwarded-envelope",
+      "named": "CC-FWD-02",
+      "expected": ["CC-FWD-02", "CC-RCV-06"]
+    },
+    { "fault": "retry-publish", "named": "CC-PUB-03", "expected": ["CC-PRB-01", "CC-PUB-03"] },
+    { "fault": "skip-boundary", "named": "CC-STR-04", "expected": ["CC-STR-04"] }
+  ]
+}

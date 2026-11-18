@@ -15,7 +15,9 @@
     "test": "vitest run --passWithNoTests",
     "check:audit-exceptions": "node tools/audit-exceptions/check.ts",
     "checks": "node tools/checks.ts",
-    "conformance": "node conformance/runner/src/cli.ts"
+    "conformance": "node conformance/runner/src/cli.ts",
+    "conformance:reference": "node conformance/runner/src/cli.ts run --mode reference --driver \"node --expose-gc conformance/reference-driver/src/driver.ts\"",
+    "conformance:self-test": "node conformance/runner/src/self-test.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

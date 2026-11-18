@@ -804,3 +804,10 @@ Log this word for word in audit.md, then finish Step 1a, run the G1 gate, commit
 **Context**: CONSTRUCTION — U1 Code Generation G7
 
 ---
+## U1 Code Generation — G7 CI green; G8 gate green
+**Timestamp**: 2026-11-18T15:37:48Z
+**User Input**: (none)
+**AI Response**: "G7 pushed as f63ec4e; CI run 44335889222 green. G8 written: conformance/reference-driver (private; test only; @opentelemetry/api 1.9.1 and sdk-trace-base 2.12.0 as its own dependencies): http (TLS verified against the run CA; knows whether a request was sent), secret (fileSecret: non-blocking open, checks on the opened handle, reason codes), heap (CDI-02: forced GC, heap snapshot streamed in memory and searched as bytes for the value and its halves; a count only), tracing (send and receive spans; forwarding spans children of the received context with a link to a differing tenant span; generated identifiers without the SDK), client (bootstrap with the retry rules, renewal from expiresAt, publish and forward with the envelope spliced as received text, the subscription with in-order boundaries, replacement on renewal with W_super, backoff and L_ends), driver (the protocol; declared coverage of 23 cases; faults retain-secret, reorder-forwarded-envelope, retry-publish narrowed skip-boundary). First run: 22 of 23; CC-STR-01 found a stub defect (a stream's headers were not flushed until its first event), fixed in the stub. faults.json holds the declared expected sets of business-logic-model §5.2. conformance/runner/src/self-test.ts (pnpm conformance:self-test) and its tests; ci.yml gains the conformance-self-test job. Local results: reference run 23 passed; retain-secret failed {CC-SEC-01} (3 heap matches); reorder-forwarded-envelope {CC-FWD-02, CC-RCV-06}; retry-publish {CC-PUB-03, CC-PRB-01}; skip-boundary {CC-STR-04}; each as declared; self-test 82 s. G8 gate: frozen install, typecheck, lint, format, 94 tests, audit, audit-exceptions, pnpm checks, the self-test: pass; no run directory left behind."
+**Context**: CONSTRUCTION — U1 Code Generation G8
+
+---

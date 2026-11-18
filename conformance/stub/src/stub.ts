@@ -72,6 +72,8 @@ export async function startStub(certs: Certs): Promise<StubControl> {
     gen: number,
   ): Promise<void> {
     res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-store' });
+    // A stream announces itself at once, even before its first event.
+    res.flushHeaders();
     const rec: StreamRecord = { label, openedAt: Date.now() };
     streams.push(rec);
     open.add(res);
