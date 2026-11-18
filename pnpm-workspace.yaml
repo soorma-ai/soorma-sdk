@@ -38,8 +38,9 @@ overrides:
 # Audit exceptions: by advisory id only, never by package or severity. Each is
 # recorded under "Audit exceptions" in DEPENDENCIES.md and in
 # tools/audit-exceptions/register.json, and expires by itself: the
-# audit-exceptions check fails once a fix is published or the affected package
-# is no longer installed.
+# audit-exceptions check fails once a fix is installable (published longer ago
+# than minimumReleaseAge above, which it reads from this file) or the affected
+# package is no longer installed.
 auditConfig:
   ignoreGhsas:
     - GHSA-fc5q-39xc-vjpf

@@ -4,10 +4,15 @@
 // An audit exception is ignored by advisory id only (pnpm-workspace.yaml,
 // auditConfig.ignoreGhsas) and recorded in register.json and DEPENDENCIES.md.
 // It expires by itself: this check fails once
-//   1. a release of the package outside the affected range is published, or
+//   1. a release of the package outside the affected range is installable:
+//      published longer ago than the release cooldown (minimumReleaseAge in
+//      pnpm-workspace.yaml, read from there), by the registry's `time` field, or
 //   2. no installed version of the package matches the range any more,
 // and when the ignore list and the register disagree. The exception is then
-// removed in a recorded change. Network failures fail the check (fail closed).
+// removed in a recorded change. A fix still inside the cooldown cannot be
+// installed yet, so it passes with a notice naming the version and the time it
+// becomes installable (the user's direction on PR #10). A fix without a publish
+// time, a missing cooldown and network failures fail the check (fail closed).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseRelease, satisfies } from '../lib/semver.ts';
@@ -28,12 +33,25 @@ export interface Facts {
   ignored: string[];
   /** Installed versions per package, from pnpm-lock.yaml. */
   installed: Record<string, string[]>;
-  /** Published versions per package, from the npm registry. */
-  published: Record<string, string[]>;
+  /** Published versions per package with their publish times (ISO 8601), from the npm registry's `time` field. */
+  published: Record<string, Record<string, string | undefined>>;
+  /** The release cooldown in minutes (minimumReleaseAge), or null when it is not set. */
+  cooldownMinutes: number | null;
+  /** The time the check runs. */
+  now: Date;
 }
 
-export function evaluate(register: AuditException[], facts: Facts): string[] {
+export interface Outcome {
+  failures: string[];
+  notices: string[];
+}
+
+export function evaluate(register: AuditException[], facts: Facts): Outcome {
   const failures: string[] = [];
+  const notices: string[] = [];
+  if (facts.cooldownMinutes === null && register.length > 0) {
+    failures.push('minimumReleaseAge is not set in pnpm-workspace.yaml (failing closed)');
+  }
   const registered = new Set(register.map((e) => e.ghsa));
   for (const id of facts.ignored) {
     if (!registered.has(id))
@@ -48,11 +66,30 @@ export function evaluate(register: AuditException[], facts: Facts): string[] {
     const published = facts.published[e.package];
     if (!published) {
       failures.push(`${e.ghsa}: no registry data for ${e.package} (failing closed)`);
-    } else {
-      const fixes = published.filter((v) => parseRelease(v) && !satisfies(v, e.affectedRange));
-      if (fixes.length > 0) {
+    } else if (facts.cooldownMinutes !== null) {
+      const cooldownMs = facts.cooldownMinutes * 60_000;
+      const candidates = Object.keys(published).filter(
+        (v) => parseRelease(v) && !satisfies(v, e.affectedRange),
+      );
+      const installable: string[] = [];
+      for (const v of candidates) {
+        const raw = published[v];
+        const at = raw === undefined ? NaN : Date.parse(raw);
+        if (Number.isNaN(at)) {
+          failures.push(
+            `${e.ghsa}: ${e.package} ${v} is outside ${e.affectedRange} but has no publish time (failing closed)`,
+          );
+        } else if (facts.now.getTime() - at >= cooldownMs) {
+          installable.push(v);
+        } else {
+          notices.push(
+            `${e.ghsa}: ${e.package} ${v} is outside ${e.affectedRange} but inside the release cooldown (minimumReleaseAge ${facts.cooldownMinutes} minutes); it becomes installable at ${new Date(at + cooldownMs).toISOString()}`,
+          );
+        }
+      }
+      if (installable.length > 0) {
         failures.push(
-          `${e.ghsa}: ${e.package} ${fixes.join(', ')} published outside ${e.affectedRange}; upgrade and remove the exception`,
+          `${e.ghsa}: ${e.package} ${installable.join(', ')} published outside ${e.affectedRange} and past the release cooldown; upgrade and remove the exception`,
         );
       }
     }
@@ -65,7 +102,13 @@ export function evaluate(register: AuditException[], facts: Facts): string[] {
       );
     }
   }
-  return failures;
+  return { failures, notices };
+}
+
+/** minimumReleaseAge from pnpm-workspace.yaml, in minutes; null when absent. */
+export function cooldownFromWorkspace(yaml: string): number | null {
+  const m = /^minimumReleaseAge:\s*(\d+)\s*(?:#.*)?$/m.exec(yaml);
+  return m ? Number(m[1]) : null;
 }
 
 export function ignoredFromWorkspace(yaml: string): string[] {
@@ -89,13 +132,24 @@ export function installedFromLock(lock: string, pkg: string): string[] {
   return [...new Set([...lock.matchAll(re)].map((m) => m[1] ?? ''))];
 }
 
-async function publishedFromRegistry(pkg: string): Promise<string[]> {
+/** Every published version with its publish time. The full document carries `time`; the abbreviated one does not. */
+export function publishedFromDocument(body: {
+  versions?: Record<string, unknown>;
+  time?: Record<string, string>;
+}): Record<string, string | undefined> {
+  const out: Record<string, string | undefined> = {};
+  for (const v of Object.keys(body.versions ?? {})) out[v] = body.time?.[v];
+  return out;
+}
+
+async function publishedFromRegistry(pkg: string): Promise<Record<string, string | undefined>> {
   const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg)}`, {
-    headers: { accept: 'application/vnd.npm.install-v1+json' },
+    headers: { accept: 'application/json' },
   });
   if (!res.ok) throw new Error(`registry answered ${res.status} for ${pkg}`);
-  const body = (await res.json()) as { versions?: Record<string, unknown> };
-  return Object.keys(body.versions ?? {});
+  return publishedFromDocument(
+    (await res.json()) as { versions?: Record<string, unknown>; time?: Record<string, string> },
+  );
 }
 
 async function main(): Promise<void> {
@@ -107,7 +161,13 @@ async function main(): Promise<void> {
   ).exceptions;
   const workspace = readFileSync(resolve(root, 'pnpm-workspace.yaml'), 'utf8');
   const lock = readFileSync(resolve(root, 'pnpm-lock.yaml'), 'utf8');
-  const facts: Facts = { ignored: ignoredFromWorkspace(workspace), installed: {}, published: {} };
+  const facts: Facts = {
+    ignored: ignoredFromWorkspace(workspace),
+    installed: {},
+    published: {},
+    cooldownMinutes: cooldownFromWorkspace(workspace),
+    now: new Date(),
+  };
   for (const e of register) {
     facts.installed[e.package] = installedFromLock(lock, e.package);
     try {
@@ -116,7 +176,8 @@ async function main(): Promise<void> {
       console.error(`registry read failed for ${e.package}: ${(error as Error).message}`);
     }
   }
-  const failures = evaluate(register, facts);
+  const { failures, notices } = evaluate(register, facts);
+  for (const n of notices) console.log(`NOTICE ${n}`);
   for (const e of register) {
     console.log(
       `${e.ghsa} ${e.package} ${e.affectedRange}: installed ${(facts.installed[e.package] ?? []).join(', ') || 'none'}`,
