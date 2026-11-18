@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U2 e2e-stack, QA enrichment done; next: Construction Design PR gate
+- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Construction Design PR gate PENDING (design PR dev → main); next after merge: Code Generation
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -135,6 +135,13 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **dco.yml checking its own PR**: run 44339401604 (first; all ten commits then signed off, none needed the exemption); again in run 44358181249
 - **Final head `a57f6d5`**: CI run 44358647204 (pull request) green, dependency review included; DCO run 44358647419 green; CI run 44358636704 (push) green
 - **Merged**: merge commit `91d09106c9d5e323a6a47cd67d074a5b1adc9e88` on `main`, 2026-11-18T17:30:33Z, parents `c8ebb7a` (main) and `a57f6d5` (PR head); dev fast-forwarded to it
+
+### Construction Design PR Gate — e2e-stack
+- **Status**: PENDING
+- **Branch**: dev (the user's standing instruction; confirmed for this gate 2026-11-18T22:26:50Z: dev → main, as for #9)
+- **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/e2e-stack-design-pr-checkpoint-instructions.md
+- **Created**: 2026-11-18T22:27:14Z
+- **Approved**: —
 
 ## Extension Configuration
 

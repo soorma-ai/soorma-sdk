@@ -1058,3 +1058,13 @@ Update NFR-U2-01, -04 and -07, JOB-03 in business-rules.md, and the planned test
 **Context**: CONSTRUCTION — U2 e2e-stack, QA enrichment complete
 
 ---
+
+## U2 Construction Design PR gate — the user confirms the branch
+**Timestamp**: 2026-11-18T22:26:50Z
+**User Input**: "Yes, open U2's Construction Design PR, dev → main, as for U1's #9. Wait for every check, including DCO and dependency review, record its state with the run IDs, and stop with the PR number. Don't record it merged until I tell you it is and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Opening the design PR from dev to main. Instructions written to construction/working/e2e-stack-design-pr-checkpoint-instructions.md (git-ignored); gate recorded PENDING in aidlc-state.md. Committing signed off, pushing, opening the PR, then waiting for every check (CI, DCO, dependency review) and recording the state with the run IDs. Stopping with the PR number; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate (pr-checkpoint §5); branch confirmed: dev → main
+
+---
