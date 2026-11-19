@@ -1666,3 +1666,24 @@ Log this message word for word in audit.md."
 **Context**: Construction, typescript-harness, Code Generation Part 2, G9; code PR CHECKS_GREEN; stopped for the user
 
 ---
+
+## Code Generation: typescript-harness approved; code PR #19 merged
+**Timestamp**: 2026-11-19T18:30:58Z
+**User Input**: "Continue to Next Stage: U3 Code Generation approved. soorma-ai/soorma-sdk#19 is merged: merge commit 7fcb4998ace85efbee73cac78c0c3b3498929f1b on main, 2026-11-19T18:29:42Z, with parents 06b9df8 (main) and 1c8c5ee (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record #19 as MERGED with the runs at 1c8c5ee: CI (pull request) 44584492128, DCO 44584491713, CI (push) 44584478257. Mark U3 complete and tick the plan's last step.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Start U4 python-harness: Unit Initialization, the L1 gate, then its stages as planned. Stop at each gate as before. Carry into its design everything U3 settled that is language-neutral, so Python is judged by the same spec:
+   - REN-07 with R_min and the skew rule (a skewed lineage's expiry is judged by S3), and CDI-06's single validity check;
+   - SEC-01 per attempt (CC-ACQ-08);
+   - STR-02 and STR-05: timers count only while reading, and the new stream stays paused until the old one ends;
+   - the values hook the driver protocol requires, kept out of the published package;
+   - the state name row, and Python's own idioms for the names check;
+   - CDI-04 for Python's typed envelope; CDI-05 for any failing case; the case authors' T_idle rule;
+   - OBL-04 for the Python conformance job; e2e-python on the same steps as e2e-typescript, with prove-stack kept;
+   - your per-runtime limit values in NFR Requirements, set for Python (D_lang above all, since CPython's json recursion limit is low)."
+**AI Response**: "Confirmed on GitHub: #19 MERGED 2026-11-19T18:29:42Z, merge commit 7fcb4998ace85efbee73cac78c0c3b3498929f1b, parents 06b9df85c117024f63904904fb0b9ebee7794910 and 1c8c5eeb7f1153500772f275243bde15e2b9acf2. dev fast-forwarded 1c8c5ee..7fcb499 (no merge commit). Recorded #19 MERGED with the final head's runs (CI 44584492128, DCO 44584491713, push 44584478257); U3 marked complete; the plan's Step 44 carries the merge and Part 2 is complete. Next: U4 python-harness, Unit Initialization and the L1 gate, carrying U3's language-neutral settlements into its design."
+**Context**: Construction, typescript-harness: Code Generation approved; U3 complete. Start of U4 python-harness
+
+---
