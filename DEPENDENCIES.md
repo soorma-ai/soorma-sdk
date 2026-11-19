@@ -23,6 +23,10 @@ affected package is no longer installed, and the exception is then removed in a 
 | ----------------------------------------------------------------------------------------- | ----------- | -------- | -------------- | ------------------------------------------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GHSA-fc5q-39xc-vjpf (ReDoS through single-branch repeated extglobs; published 2026-10-19) | `picomatch` | high     | `<= 4.0.7`     | **none published** (4.0.7 is the newest release) | `vitest`, `typescript-eslint` (development dependencies) | Development only: the test runner and the linter match globs that live in this repository, never untrusted input | A `picomatch` release outside `<= 4.0.7` is published **and older than the release cooldown** (`minimumReleaseAge` in `pnpm-workspace.yaml`, judged by the registry's publish time), so pnpm can install it (upgrade, then remove); or no installed `picomatch` matches the range. While a fix is inside the cooldown the check passes and prints a notice naming the version and when it becomes installable. A fix with no publish time fails the check (fail closed) |
 
+## Update rules
+
+- **`@types/node` stays on `engines.node`'s major** (Node 24). Types for a newer major would let code use APIs Node 24 does not have, so `.github/dependabot.yml` ignores `@types/node`'s semver-major updates; minor and patch updates still arrive. Its major is changed by hand, in the same change that moves `engines.node`.
+
 ## Install scripts
 
 None allowed (`strictDepBuilds: true`, `allowBuilds: {}`).
