@@ -1111,3 +1111,11 @@ dev's push CI on 85f639d, with all four together, is green: run 44446341525.
 **Context**: CONSTRUCTION — U2 e2e-stack, before Code Generation; Dependabot merges recorded, local gate green on the new dev
 
 ---
+
+## U2 Code Generation — Part 1 plan, approval prompt
+**Timestamp**: 2026-11-19T02:54:59Z
+**User Input**: (none)
+**AI Response**: "Push CI 44447016828 at d4b30d8 green. Code Generation plan written to construction/working/e2e-stack-code-generation-plan.md (git-ignored), against dev at d4b30d8: 28 steps in 6 commit groups (G1 workspace, shared modules and U1's checks made stronger; G2 log search; G3 core-up and core-down; G4 setup and prove-stack; G5 CI jobs, DEPENDENCIES.md and README, the local run; G6 summaries, coverage, code PR with OBL-02). Points for approval: 1.1 the commands as modules whose options (root, endpoints, CA, limits, PATH) the CLI entry always fixes to GEN-05 and TS-U2-11, a unit test pinning them; 1.2 TC-ES-010 run on the changes step's own script from ci.yml in a temporary git repository, plus the code PR's real runs; 1.3 the real failure path and --logs search run locally in G5's gate (rebuilds soorma/*:local images, uses ports 8441 to 8447, removes everything after); 1.4 class 2 changes to U1's packaging guard (e2e/) and workflow check (.e2e upload; secrets. in the end-to-end jobs), refusal sweep done, every affected test keeps one cause; 1.5 reuse of U1's contract.ts and rundir.ts by relative path, a new contract-ops resolver. Checked before writing: soorma-core's docker build lines at c1e3d7f3 (ci.yml lines 142, 154, 168, 190), its stack scripts, .node-version 26.13.0, strictDepBuilds and allowBuilds at the tag; the contract's credentials are HTTP bearer. ST-02's other-owner case tested through a pure function given another uid (no second local user, OBL-04). Asking: approve the plan, or request changes."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 1, awaiting approval
+
+---
