@@ -1711,3 +1711,27 @@ Log this message word for word in audit.md."
 **Context**: Construction, U4 python-harness, Functional Design Step 3 and 4: questions awaiting answers
 
 ---
+
+## U4 python-harness — Functional Design: answers
+**Timestamp**: 2026-11-19T19:30:41Z
+**User Input**: "Answers for U4's Functional Design: Q1 A, Q3 A, Q4 A, Q5 A, Q6 A. Q2, Q7 and Q8: A, with these additions.
+
+Q2: Cleanup on garbage collection can't await, so it is synchronous: abort the socket and cancel the timers, never schedule a coroutine. It also emits a ResourceWarning naming the unclosed subscription (or client), as asyncio's own transports do. Developers then learn they forgot async with. A test checks both.
+
+Q7: \"tenant filters still apply\" includes the error action (pytest's filterwarnings = error, python -W error). Under it, warnings.warn_explicit raises SoormaWarning inside the SDK's renewal task. Node's emitWarning never throws, so TypeScript never had this. Wrap the emit: if the warning raises, catch it, and renewal carries on unaffected. The warning is advisory, never control flow. Add a test that runs the skew path with warnings set to error and asserts renewal still happens. The name-table row for SoormaWarning is approved as a change to U1's spec, like state.
+
+Q8: patching time.time works only if the SDK's clock module calls time.time() each time it reads the clock, never \"from time import time\" bound at import. Make that a rule of the clock module, and add a check that fails if anything under the package binds time.time, time.time_ns or datetime.now at import. Otherwise the end-to-end test could pass without the skew ever reaching the SDK.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the Functional Design artifacts and the L1 traceability, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U4-FD-Q1: A. U4-FD-Q2: A, with the addition: \"Cleanup on garbage collection can't await, so it is synchronous: abort the socket and cancel the timers, never schedule a coroutine. It also emits a ResourceWarning naming the unclosed subscription (or client), as asyncio's own transports do. Developers then learn they forgot async with. A test checks both.\" U4-FD-Q3: A. U4-FD-Q4: A. U4-FD-Q5: A. U4-FD-Q6: A. U4-FD-Q7: A, with the addition: \"'tenant filters still apply' includes the error action (pytest's filterwarnings = error, python -W error). Under it, warnings.warn_explicit raises SoormaWarning inside the SDK's renewal task. Node's emitWarning never throws, so TypeScript never had this. Wrap the emit: if the warning raises, catch it, and renewal carries on unaffected. The warning is advisory, never control flow. Add a test that runs the skew path with warnings set to error and asserts renewal still happens. The name-table row for SoormaWarning is approved as a change to U1's spec, like state.\" U4-FD-Q8: A, with the addition: \"patching time.time works only if the SDK's clock module calls time.time() each time it reads the clock, never 'from time import time' bound at import. Make that a rule of the clock module, and add a check that fails if anything under the package binds time.time, time.time_ns or datetime.now at import. Otherwise the end-to-end test could pass without the skew ever reaching the SDK.\" No answer is ambiguous; no follow-up needed. Generating the Functional Design artifacts."
+**Context**: Construction, U4 python-harness, Functional Design Step 5: answers collected
+
+---
+
+## U4 python-harness — Functional Design: artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T19:35:36Z
+**User Input**: (none)
+**AI Response**: "Functional Design artifacts generated in construction/python-harness/functional-design/: domain-entities.md (locations; the Python column's shapes, SoormaWarning included; the private modules with _clock.py; states; the lineage with is_usable(), CDI-06; the F42 items); business-rules.md (PH-API, PH-SEC, PH-RD, PH-PUB, PH-LIFE with the synchronous GC finalizer and ResourceWarning, PH-REN with the guarded emit, PH-CLK with the import-binding check, PH-SPN, PH-DRV, PH-E2E, PH-F42; misuse cases); business-logic-model.md (the flows; the driver; the example and e2e-python; planned TC-PH-067 to 078; values for NFR Requirements, D_lang first); l1-coverage-matrix.md (25 Covered, 5 N/A, 0 Missing); invariant-coverage-matrix.md (9 Covered, I4 N/A for this unit, I11 N/A by design; the I8 packaging table). Gap-classification pass: no PRD specification gap; the SoormaWarning row is a change to U1's specification in this repository, approved by the user. Security compliance: SECURITY-03 (no secret in any message, the SDK writes no log; the centralised log service is hosted, carried), SECURITY-05 (input validation at the SDK's own boundary: options, payloads, delivery lines), SECURITY-10 (dependency choices left to NFR Requirements), SECURITY-11 (misuse cases), SECURITY-12 (no hard-coded credential), SECURITY-13 (no unsafe deserialization: strict scanner, json within D_lang), SECURITY-15 (fail closed, resources released, every task's exception retrieved, the warning advisory) compliant; the rest N/A for a client library or N/A for the milestone, carried. Approval prompt presented: Request Changes or Continue to Next Stage (NFR Requirements)."
+**Context**: Construction, U4 python-harness, Functional Design Step 6 and 7
+
+---
