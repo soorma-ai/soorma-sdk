@@ -1854,3 +1854,26 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: Construction, U4 python-harness, NFR Design Steps 6 and 7
 
 ---
+
+## U4 python-harness — NFR Design: approved
+**Timestamp**: 2026-11-19T23:52:12Z
+**User Input**: "Continue to Next Stage: U4 NFR Design approved as written in 5dfdd9e.
+
+Log this message word for word in audit.md, then do QA enrichment for U4. The cases must cover:
+- TC-PH-076 to 079 as designed;
+- the HTTP parser's table-driven and fuzz tests;
+- the event and body limits in both languages (the two new conformance cases, plus TypeScript unit tests for the fix);
+- the API floor run.
+Then ask me before opening U4's Construction Design PR."
+**AI Response**: "NFR Design marked approved. Starting QA enrichment for python-harness (qa-test-cases §2), covering TC-PH-076 to 079, the parser's table-driven and fuzz tests, the event and body limits in both languages, and the API floor run; then asking before the Construction Design PR."
+**Context**: Construction, U4 python-harness, NFR Design approved; QA enrichment starts
+
+---
+
+## U4 python-harness — QA enrichment
+**Timestamp**: 2026-11-19T23:54:27Z
+**User Input**: (none)
+**AI Response**: "QA enrichment for python-harness (qa-test-cases §2): sources the unit's functional-design, nfr-requirements and nfr-design only; inception IDs and forward links unchanged. 35 cases modified (a Construction design sentence in each expected outcome: TC-PH-003, 004, 006, 008, 011, 013, 015, 017 to 019, 021, 026, 027, 033, 036, 037, 040, 041, 044, 045, 049 to 051, 054 to 056, 058 to 066); 25 added, TC-PH-067 to 091, forward links to construction/python-harness/code/: 067 to 079 as designed (076 with the user's collection test, 077 warnings as errors, 078 the clock check, 079 the 5000-digit integer); 080 to 084 Python counterparts of U3's 076 to 080; 085 the parser's table-driven malformed input; 086 the seeded fuzz test; 087 an SSE event over L_event (new conformance case, both drivers); 088 a body over B_body (new conformance case, both drivers); 089 the TypeScript fix's unit tests; 090 the opentelemetry-api floor run from the lock; 091 the TLS hint. test-case-index.md gains 25 rows (91 in all); enrichment-delta.md written. The user is to be asked before the Construction Design PR."
+**Context**: Construction, U4 python-harness, QA enrichment complete
+
+---

@@ -69,7 +69,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Create a client with `ca_file` set to the run's CA and bootstrap against the stub.
 2. Repeat against a stub presenting a certificate from a different CA.
 
-**Expected outcome**: The first bootstrap succeeds; the second fails with a `TransportError` naming a TLS verification failure, and no request body reaches the second server.
+**Expected outcome**: The first bootstrap succeeds; the second fails with a `TransportError` naming a TLS verification failure, and no request body reaches the second server. **Construction design**: The context is `ssl.create_default_context()` (hostname checking, TLS 1.2 minimum) plus `load_verify_locations(ca_file)`, built at `start()`; a missing, unreadable or non-PEM CA file is `TransportError` (`ca-file`, the path) with nothing sent; a verification failure is `TransportError` (`tls`), never retried, its message naming no certificate detail.
 
 **Scope**: negative · **Priority**: High
 
@@ -93,7 +93,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Search the options and the package for any setting that disables certificate verification.
 
-**Expected outcome**: None exists.
+**Expected outcome**: None exists. **Construction design**: `AgentClientOptions` is a frozen keyword-only dataclass: an unknown keyword, such as a misspelt verification switch, is a `TypeError` at construction.
 
 **Scope**: negative · **Priority**: High
 
@@ -145,7 +145,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Run the driver under two different hostnames and with unrelated environment variables set.
 2. Create a client with an instance from `new_instance_id()` and bootstrap.
 
-**Expected outcome**: The bootstrap's `instance` equals the supplied value; no request carries the hostname or any environment variable's value; `new_instance_id()` returns a UUID v4 that differs between calls.
+**Expected outcome**: The bootstrap's `instance` equals the supplied value; no request carries the hostname or any environment variable's value; `new_instance_id()` returns a UUID v4 that differs between calls. **Construction design**: `ruff`'s banned-API rules refuse `os.environ`, `os.getenv`, `socket.gethostname`, `platform.node` and `print` in `python/src/soorma/`, in the unit job.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -199,7 +199,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Call `start()`.
 3. Ask the driver to `inspect` the runtime for the secret.
 
-**Expected outcome**: The provider was called exactly once; the runtime check finds no reference to the secret's value after the request was sent (Python: `sys.getrefcount` on the string the provider returned is back to its value before bootstrap).
+**Expected outcome**: The provider was called exactly once; the runtime check finds no reference to the secret's value after the request was sent (Python: `sys.getrefcount` on the string the provider returned is back to its value before bootstrap). **Construction design**: The driver's `inspect` uses U1's Python check: the test provider builds the secret `str` at run time, records `sys.getrefcount` before bootstrap, and `found` is false after (CDI-02). The provider is called once per bootstrap attempt (SEC-01, reworded at U3).
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -278,7 +278,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Call `start()`.
 3. Repeat with `503` beyond the retry bound.
 
-**Expected outcome**: The first run succeeds after three requests spaced at least one second apart; the second fails with the last `ProblemError` once the bound is reached, with no request after it.
+**Expected outcome**: The first run succeeds after three requests spaced at least one second apart; the second fails with the last `ProblemError` once the bound is reached, with no request after it. **Construction design**: The retry policy (P-01) with `R_max` 5, `W_max` 60 s, `B_init` 0.5 s, `B_factor` 2, `B_cap` 10 s; `Retry-After` first; the last error raised past either bound.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -328,7 +328,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Call `file_secret(path)` for each file.
 2. Inspect each error's message and string form.
 
-**Expected outcome**: Each call fails with a `SecretSourceError` naming the path and the reason (others' read, group write, others' write, foreign owner), never the contents.
+**Expected outcome**: Each call fails with a `SecretSourceError` naming the path and the reason (others' read, group write, others' write, foreign owner), never the contents. **Construction design**: The checks are on the descriptor opened with `os.O_RDONLY | os.O_NONBLOCK` (`os.fstat`); a tenant provider's failure is `SecretSourceError` (`provider-failed`) raised `from None`, so its exception is not chained.
 
 **Scope**: negative · **Priority**: High
 
@@ -378,7 +378,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Call `file_secret` on each path with a timeout of one second.
 
-**Expected outcome**: Each call fails promptly (well within the timeout) with a `SecretSourceError` stating the file is not a regular file.
+**Expected outcome**: Each call fails promptly (well within the timeout) with a `SecretSourceError` stating the file is not a regular file. **Construction design**: The open is `os.O_NONBLOCK`, off the event loop, so a named pipe neither blocks the open nor the loop; it is refused as `not-regular-file`.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -430,7 +430,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Call `start()` and wait past the first `expiresAt`.
 3. Publish.
 
-**Expected outcome**: `POST /agent-credentials/current/renewal` with the current credential and no body was sent before the first `expiresAt`; the publish presents the renewed credential; the details show the new `expiresAt`.
+**Expected outcome**: `POST /agent-credentials/current/renewal` with the current credential and no body was sent before the first `expiresAt`; the publish presents the renewed credential; the details show the new `expiresAt`. **Construction design**: Renewal is due at `expires_at − H_renew` (120 s) by the wall clock, never sooner than `R_min` (30 s) after the credential arrived, by the monotonic clock.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -456,7 +456,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Script renewal to answer `401 credential_expired`, then a successful bootstrap.
 2. Let renewal run.
 
-**Expected outcome**: The provider is called again and a new bootstrap is sent; later calls present the new credential.
+**Expected outcome**: The provider is called again and a new bootstrap is sent; later calls present the new credential. **Construction design**: The decision goes through `is_usable()`, the one validity check (CDI-06).
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -483,7 +483,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Let renewal run.
 3. Then call `publish`.
 
-**Expected outcome**: No new bootstrap is sent; `publish` fails with a `ClientStateError` carrying the refusal's Problem.
+**Expected outcome**: No new bootstrap is sent; `publish` fails with a `ClientStateError` carrying the refusal's Problem. **Construction design**: A `credential_refused` on a retried renewal is terminal too (GAP-CAC-001's work-around, fail closed).
 
 **Scope**: negative · **Priority**: High
 
@@ -537,7 +537,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Bootstrap, publish, then provoke a Problem on each call.
 3. Render the client, the details and each error as a string.
 
-**Expected outcome**: Neither the secret nor the credential string appears in any log line, error message, or string form.
+**Expected outcome**: Neither the secret nor the credential string appears in any log line, error message, or string form. **Construction design**: Also checked: `repr`, `str` and pickling (`__reduce__` raises) of the client, `CredentialInfo` and every error; the `SoormaWarning`, the `ResourceWarning` and every `TransportError` message hold no credential, secret, payload or response bytes.
 
 **Scope**: negative · **Priority**: High
 
@@ -667,7 +667,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Publish twice.
 2. Read both recorded `traceparent` values.
 
-**Expected outcome**: Each is a valid version-00 `traceparent` with a non-zero trace id and parent id.
+**Expected outcome**: Each is a valid version-00 `traceparent` with a non-zero trace id and parent id. **Construction design**: Generated trace and span ids come from `secrets.token_bytes`.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -694,7 +694,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Publish in response through the Delivery.
 3. Read the recorded draft.
 
-**Expected outcome**: The draft's `traceContext.traceparent` is this hop's own, and is not T copied; T appears only inside the forwarded envelope text.
+**Expected outcome**: The draft's `traceContext.traceparent` is this hop's own, and is not T copied; T appears only inside the forwarded envelope text. **Construction design**: The received `traceparent` is parsed by the SDK into a remote `SpanContext`, not through the global propagator; without an OpenTelemetry SDK the draft's span id is this hop's own, never the parent's.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -852,7 +852,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Publish a payload containing `<`, `>`, `&`, `é` and an emoji.
 2. Read the recorded body bytes.
 
-**Expected outcome**: The body has no insignificant whitespace, no duplicate member names, and the characters appear literally in UTF-8, not as `\u` escapes.
+**Expected outcome**: The body has no insignificant whitespace, no duplicate member names, and the characters appear literally in UTF-8, not as `\u` escapes. **Construction design**: The body's text equals `json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False)` for every accepted value, except that a lone surrogate is written as its `\uXXXX` escape; the serializer is iterative.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -930,7 +930,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Script a stream with two `delivery` events.
 2. Subscribe and read three items.
 
-**Expected outcome**: One `POST /subscriptions` with `{ draft }` and the credential was recorded; the items are a stream-started item, then two Deliveries.
+**Expected outcome**: One `POST /subscriptions` with `{ draft }` and the credential was recorded; the items are a stream-started item, then two Deliveries. **Construction design**: `async with client.subscribe() as subscription:` is the closing idiom; items are told apart by their class.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -956,7 +956,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Script a stream with heartbeat comments between two deliveries.
 2. Read the items.
 
-**Expected outcome**: Only the stream-started item and the two Deliveries are yielded.
+**Expected outcome**: Only the stream-started item and the two Deliveries are yielded. **Construction design**: `T_idle` is 45 s and counts only while the stream is read.
 
 **Scope**: edge/boundary · **Priority**: Medium
 
@@ -1031,7 +1031,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Script a stream that closes the connection without an `end` event.
 
-**Expected outcome**: A stream-ended item with no code is yielded; then, while the credential is valid, a new stream is opened and a stream-started item follows.
+**Expected outcome**: A stream-ended item with no code is yielded; then, while the credential is valid, a new stream is opened and a stream-started item follows. **Construction design**: `T_idle` counts only while the socket is read (`pause_reading` stops it; a resume restarts it).
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1058,7 +1058,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Read items across the renewal.
 3. Inspect the second subscribe request.
 
-**Expected outcome**: The replacement subscribe was sent with the renewed credential before the old one expired; a stream-started item and a stream-ended item with code `superseded` are yielded; no `Last-Event-ID` header was sent and nothing claims continuity.
+**Expected outcome**: The replacement subscribe was sent with the renewed credential before the old one expired; a stream-started item and a stream-ended item with code `superseded` are yielded; no `Last-Event-ID` header was sent and nothing claims continuity. **Construction design**: The new stream is paused from its opening until the old stream ends or `W_super` (10 s, counted only while the old stream is read) expires.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1134,7 +1134,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Script `401 credential_refused`, then (fresh client) `403 forbidden`, then (fresh client) `503` with `Retry-After: 1` once followed by a stream.
 
-**Expected outcome**: The first two subscriptions end with the `ProblemError` as scripted; the third opens its stream after one retry spaced at least one second.
+**Expected outcome**: The first two subscriptions end with the `ProblemError` as scripted; the third opens its stream after one retry spaced at least one second. **Construction design**: Resubscribe goes through the one validity check and the retry policy.
 
 **Scope**: negative · **Priority**: High
 
@@ -1160,7 +1160,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Script a delivery with a known envelope, seal and payload.
 2. Read the Delivery.
 
-**Expected outcome**: The parsed envelope is read only; the envelope text equals the delivered bytes; the seal is as delivered; the payload is parsed and its source text is available.
+**Expected outcome**: The parsed envelope is read only; the envelope text equals the delivered bytes; the seal is as delivered; the payload is parsed and its source text is available. **Construction design**: The envelope is deeply read only (`MappingProxyType`, tuples): mutating it raises; the payload is plain JSON types.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1260,7 +1260,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Script a payload with `1.0`, `1e400` and a 30-digit integer.
 
-**Expected outcome**: The parsed payload uses native numbers; the payload source text contains the exact spellings.
+**Expected outcome**: The parsed payload uses native numbers; the payload source text contains the exact spellings. **Construction design**: Integers are exact `int`s; a payload holding an integer longer than `sys.get_int_max_str_digits()` is left unparsed (TC-PH-079).
 
 **Scope**: edge/boundary · **Priority**: Medium
 
@@ -1287,7 +1287,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Read the Delivery.
 3. Forward it.
 
-**Expected outcome**: The Delivery is yielded with envelope and seal intact, the payload absent, the payload text present, and the not-parsed flag set; forwarding sends the envelope text byte for byte.
+**Expected outcome**: The Delivery is yielded with envelope and seal intact, the payload absent, the payload text present, and the not-parsed flag set; forwarding sends the envelope text byte for byte. **Construction design**: `D_lang` is 256; the scanner is iterative; reading `payload` raises `PayloadNotParsed`, and `hasattr(delivery, "payload")` is false.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1312,7 +1312,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Script a stream with a non-JSON line, a line missing `seal`, and then a valid delivery.
 
-**Expected outcome**: Two delivery-error items are yielded, then the valid Delivery; the stream stays open.
+**Expected outcome**: Two delivery-error items are yielded, then the valid Delivery; the stream stays open. **Construction design**: The reasons include `not-json` (the tokens `NaN` and `Infinity` too), `duplicate-member`, `envelope-too-deep`, `envelope-unparsed` and `event-too-large`.
 
 **Scope**: negative · **Priority**: High
 
@@ -1388,7 +1388,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Provoke each failure (TLS error, Problem on each operation, dropped stream), then call `close()`.
 2. Ask the driver for open connections, streams and timers.
 
-**Expected outcome**: None remain open.
+**Expected outcome**: None remain open. **Construction design**: `close()` is idempotent and concurrent calls await one close; every task's exception is retrieved; the package's tests run with warnings as errors and a loop exception handler that fails a test on any unretrieved exception.
 
 **Scope**: edge/boundary · **Priority**: Medium
 
@@ -1415,7 +1415,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Publish, receive a Delivery, and forward it.
 2. Read the exported spans.
 
-**Expected outcome**: Spans exist for the publish and the receive, named and attributed per OpenTelemetry's messaging semantic conventions, with no soorma-defined span name or attribute; the forwarding hop's span relates to the received trace as the specification's span rule states.
+**Expected outcome**: Spans exist for the publish and the receive, named and attributed per OpenTelemetry's messaging semantic conventions, with no soorma-defined span name or attribute; the forwarding hop's span relates to the received trace as the specification's span rule states. **Construction design**: Messaging attributes follow OpenTelemetry semantic conventions 1.45.0, as constants; `messaging.system` `soorma`.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1440,7 +1440,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. List the package's runtime dependencies.
 2. Search the package for exporter or sampler set-up.
 
-**Expected outcome**: It depends on the OpenTelemetry API only, and configures no exporter, sampler or provider.
+**Expected outcome**: It depends on the OpenTelemetry API only, and configures no exporter, sampler or provider. **Construction design**: `opentelemetry-api` is the one runtime dependency, a range `>= floor, < 2`; the floor run is TC-PH-090.
 
 **Scope**: negative · **Priority**: High
 
@@ -1491,7 +1491,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Build the package and install it into a new project from the repository path.
 2. Import `soorma`.
 
-**Expected outcome**: It installs and imports on each supported runtime; the package metadata states Apache-2.0; nothing was published to a registry.
+**Expected outcome**: It installs and imports on each supported runtime; the package metadata states Apache-2.0; nothing was published to a registry. **Construction design**: `package-python` builds the wheel and the sdist; the guard over both file lists finds no test-only path and no `soorma/_internal/`; the wheel installs offline into a fresh virtual environment with the API's wheel from the lock; importing `soorma` constructs an `AgentClient`; importing `soorma._internal.test_values` fails.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1516,7 +1516,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Run the runner with the Python conformance driver on Python 3.11 and the newest release.
 
-**Expected outcome**: Every case passes and none is skipped, on each runtime.
+**Expected outcome**: Every case passes and none is skipped, on each runtime. **Construction design**: `conformance-python`: 3.11 and 3.15 with `otel-latest`, and 3.11 with `otel-floor`; the second local user and `--foreign-user` (CC-SEC-05 passed, not skipped, on every entry); every case, the two new ones included; a failing case judged under CDI-05.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1541,7 +1541,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Run the names check for this package.
 
-**Expected outcome**: Every exported name is in the table's Python column and every name in that column is exported.
+**Expected outcome**: Every exported name is in the table's Python column and every name in that column is exported. **Construction design**: The Python column includes the Python-only rows `SoormaWarning` and `PayloadNotParsed`; the driver reports `__all__` and public members only, so dunders never reach the check.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1567,7 +1567,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Start agents A and B with `file_secret` reading their secret files.
 2. Force one renewal on B.
 
-**Expected outcome**: Both hold credentials naming their agent and environment `e`; B's renewal succeeds.
+**Expected outcome**: Both hold credentials naming their agent and environment `e`; B's renewal succeeds. **Construction design**: Only `time.time` and `time.time_ns` are patched, 14 minutes ahead and advancing; two warnings, one per client's lineage, none at B's renewal; one real renewal no sooner than `R_min`; no second within `R_min`; the real clock restored before closing.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1594,7 +1594,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. A publishes a payload.
 3. B reads the next items.
 
-**Expected outcome**: B receives a Delivery whose payload is A's, with an envelope and a seal.
+**Expected outcome**: B receives a Delivery whose payload is A's, with an envelope and a seal. **Construction design**: Both clients run in the test's one process.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1620,7 +1620,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Run the steps of the test case "B receives what A publishes (done when 3)" with the in-memory exporter installed.
 2. Compare the `traceparent` on B's received envelope with the exported spans.
 
-**Expected outcome**: A span's trace id equals the trace id in the `traceparent` on the envelope B received.
+**Expected outcome**: A span's trace id equals the trace id in the `traceparent` on the envelope B received. **Construction design**: B's subscription and loop run inside a decoy span; B's receive span's parent is A's send span, and the decoy is neither its parent nor linked from it.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1644,7 +1644,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Run the Python example (`python/examples/two_agents/`): B first, then A.
 
-**Expected outcome**: B prints the envelope it received and the trace id.
+**Expected outcome**: B prints the envelope it received and the trace id. **Construction design**: Each agent file has one marked configuration block and `async def run(config)`; run directly, `asyncio.run(run(config))`.
 
 **Scope**: happy-path · **Priority**: Medium
 
@@ -1670,7 +1670,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Install the package from the repository.
 3. Edit only the marked configuration block and run it.
 
-**Expected outcome**: It builds and runs as a single agent. The configuration block holds the S3 and S4 addresses, the CA path, the agent identifier, the secret source as a `file_secret` path (never the secret) and the instance identifier; nothing else needed editing; the file uses only the public interface and holds no human credential.
+**Expected outcome**: It builds and runs as a single agent. The configuration block holds the S3 and S4 addresses, the CA path, the agent identifier, the secret source as a `file_secret` path (never the secret) and the instance identifier; nothing else needed editing; the file uses only the public interface and holds no human credential. **Construction design**: Proved by `package-python`: the agent file copied into a fresh environment, type-checked with `mypy` and imported.
 
 **Scope**: edge/boundary · **Priority**: Medium
 
@@ -1694,7 +1694,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Read the README.
 
-**Expected outcome**: It names `e2e/core-up` and `e2e/setup` as the set-up, says delivery is live only (start B before A publishes), and says the span shape is unstable.
+**Expected outcome**: It names `e2e/core-up` and `e2e/setup` as the set-up, says delivery is live only (start B before A publishes), and says the span shape is unstable. **Construction design**: The README also states: `async with` as the closing idiom; python.org's macOS installer starting with no CA certificates until *Install Certificates* is run; that the SDK never changes the process's integer digit limit; `PayloadNotParsed` and `SoormaWarning`.
 
 **Scope**: happy-path · **Priority**: Low
 
@@ -1703,3 +1703,619 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/`
 
 **Technical references**: `inception/application-design/unit-of-work.md`, `construction/python-harness/functional-design/`
+
+### TC-PH-067 — `file_secret` is refused on Windows without opening the path
+
+**Context**: The SEC-09 choice for Python (PH-SEC-02). Covers FR-04.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “`file_secret` is refused on Windows without opening the path” and observes the outcome below.
+
+**Steps**:
+1. Patch `sys.platform` to `win32`.
+2. Call a `file_secret` provider on an existing path.
+
+**Expected outcome**: `SecretSourceError` with reason `unsupported-platform` and the path; the file is never opened.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-04
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-SEC-02)
+
+---
+
+### TC-PH-068 — A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error
+
+**Context**: `json.loads` would silently take the last member (PH-RD-02). Covers FR-12.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error” and observes the outcome below.
+
+**Steps**:
+1. Feed the reader a line with each member duplicated in turn.
+
+**Expected outcome**: Each yields `DeliveryError` (`duplicate-member`); the stream continues.
+
+**Scope**: negative · **Priority**: Medium
+
+**Source**: python-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-RD-02)
+
+---
+
+### TC-PH-069 — Every member of the `Envelope` type is optional, and the envelope is read only
+
+**Context**: CDI-04 and RCV-02 in Python (PH-RD-03, PH-RD-05). Covers FR-12.
+
+**Preconditions**:
+- The package's unit tests and `mypy --strict`
+
+**Scenario**: a tester, under the preconditions above, exercises “Every member of the `Envelope` type is optional, and the envelope is read only” and observes the outcome below.
+
+**Steps**:
+1. Type-check code reading an `Envelope` member without a check.
+2. Mutate a received envelope and a nested member.
+
+**Expected outcome**: `mypy` requires the member's absence to be handled (`total=False`); each mutation raises.
+
+**Scope**: edge/boundary · **Priority**: Medium
+
+**Source**: python-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-RD-03, -05)
+
+---
+
+### TC-PH-070 — `publish` refuses a payload JSON cannot carry exactly, naming the path, never the value
+
+**Context**: PH-PUB-01: exact types only; an over-long `int` included; no depth limit. Covers FR-10.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “`publish` refuses a payload JSON cannot carry exactly, naming the path, never the value” and observes the outcome below.
+
+**Steps**:
+1. Publish payloads holding `NaN`, a tuple, an `int` key, an `IntEnum`, a `set`, a cycle, and an `int` longer than `sys.get_int_max_str_digits()`.
+2. Publish payloads 10 000 and 1 000 000 levels deep.
+
+**Expected outcome**: Each refused payload is `TypeError` naming its path and kind, never the value, before any request; the deep payloads are sent.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-10
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-PUB-01)
+
+---
+
+### TC-PH-071 — Leaving `async with` closes the subscription; a process whose main coroutine returns exits
+
+**Context**: PH-LIFE-02, PH-LIFE-04. Covers FR-11.
+
+**Preconditions**:
+- The package's unit tests
+- A child Python process against U1's stub
+
+**Scenario**: a tester, under the preconditions above, exercises “Leaving `async with` closes the subscription; a process whose main coroutine returns exits” and observes the outcome below.
+
+**Steps**:
+1. Leave an `async with client.subscribe()` block by `break`, `return`, an exception and cancellation.
+2. In a child process, leave such a block and return from the main coroutine.
+
+**Expected outcome**: Each way of leaving closes the stream; the child exits within 1 s.
+
+**Scope**: edge/boundary · **Priority**: Medium
+
+**Source**: python-harness / FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-LIFE-02, -04)
+
+---
+
+### TC-PH-072 — A client whose clock runs fast renews at most once per `R_min` and warns once per lineage
+
+**Context**: REN-07 in Python (PH-REN-01, -03); CC-REN-06. Covers FR-05.
+
+**Preconditions**:
+- The conformance runner and stub; the Python driver
+
+**Scenario**: a tester, under the preconditions above, exercises “A client whose clock runs fast renews at most once per `R_min` and warns once per lineage” and observes the outcome below.
+
+**Steps**:
+1. Run CC-REN-06 under the Python driver.
+
+**Expected outcome**: Renewals at least `R_min` apart; exactly one `clock-skew` warning reported.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-05
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-REN-01, -03)
+
+---
+
+### TC-PH-073 — An envelope nested deeper than `D_lang` is a delivery error; the stream continues
+
+**Context**: PH-RD-03: no envelope reaches `RecursionError`. Covers FR-12.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “An envelope nested deeper than `D_lang` is a delivery error; the stream continues” and observes the outcome below.
+
+**Steps**:
+1. Feed a line whose envelope nests `D_lang` + 1 levels, then a valid line.
+
+**Expected outcome**: `DeliveryError` (`envelope-too-deep`), then the Delivery.
+
+**Scope**: edge/boundary · **Priority**: Medium
+
+**Source**: python-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-RD-03)
+
+---
+
+### TC-PH-074 — An unknown option, such as a misspelt TLS switch, is refused
+
+**Context**: PH-API-03. Covers FR-15.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “An unknown option, such as a misspelt TLS switch, is refused” and observes the outcome below.
+
+**Steps**:
+1. Construct `AgentClientOptions` with an unknown keyword.
+
+**Expected outcome**: `TypeError`; nothing contacted.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-15
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-API-03)
+
+---
+
+### TC-PH-075 — A client more than a lifetime ahead uses its credential until S3 answers `credential_expired`, then bootstraps once
+
+**Context**: REN-07's second half (PH-REN-01, -02); CC-REN-07. Covers FR-05.
+
+**Preconditions**:
+- The conformance runner and stub; the Python driver
+
+**Scenario**: a tester, under the preconditions above, exercises “A client more than a lifetime ahead uses its credential until S3 answers `credential_expired`, then bootstraps once” and observes the outcome below.
+
+**Steps**:
+1. Run CC-REN-07 under the Python driver.
+
+**Expected outcome**: Exactly two bootstraps; no bootstrap before the first publishes; the last publish presents the second credential.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-05
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-REN-01, -02)
+
+---
+
+### TC-PH-076 — An unclosed subscription or client, forgotten, is collected, closes its socket synchronously and emits one `ResourceWarning`
+
+**Context**: PH-LIFE-03 and P-10, with the user's collection test: guards against the finalizer or any callback holding the handle. Covers FR-13.
+
+**Preconditions**:
+- The package's unit tests
+- U1's stub, for a connected stream
+
+**Scenario**: a tester, under the preconditions above, exercises “An unclosed subscription or client, forgotten, is collected, closes its socket synchronously and emits one `ResourceWarning`” and observes the outcome below.
+
+**Steps**:
+1. Start a client; open a subscription with its stream connected.
+2. Drop the last reference to the subscription; run `gc.collect()`.
+3. Repeat for the client.
+
+**Expected outcome**: For each: a `weakref` to the handle is dead; the finalizer ran (the stub sees the connection closed; no SDK timer or task remains); exactly one `ResourceWarning` naming it was emitted; no coroutine was scheduled. A closed handle, collected, emits nothing.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-13
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-10); `construction/python-harness/functional-design/business-rules.md` (PH-LIFE-03)
+
+---
+
+### TC-PH-077 — With warnings set to error, the skew path still renews at the floor
+
+**Context**: PH-REN-04: the warning is advisory, never control flow. Covers FR-05.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “With warnings set to error, the skew path still renews at the floor” and observes the outcome below.
+
+**Steps**:
+1. Under `warnings.simplefilter("error")`, start a client whose credential arrives already due.
+
+**Expected outcome**: No exception escapes the renewal task; the renewal happens at `R_min`; the lineage is unchanged.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-05
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-REN-04)
+
+---
+
+### TC-PH-078 — A module binding `time.time`, `time.time_ns` or `datetime.now` at import fails the clock check
+
+**Context**: PH-CLK-02, P-05: otherwise a patched clock could never reach the SDK. Covers FR-05.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “A module binding `time.time`, `time.time_ns` or `datetime.now` at import fails the clock check” and observes the outcome below.
+
+**Steps**:
+1. Run the check over the package.
+2. Run it over scratch modules holding each forbidden form: `from time import time`, `now = time.time`, a default argument `time.time`, `datetime.now` outside `_clock.py`.
+
+**Expected outcome**: The package passes; each scratch form fails, naming its file and line.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-05
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-05)
+
+---
+
+### TC-PH-079 — A payload holding a 5000-digit integer is left unparsed, its Delivery intact
+
+**Context**: PH-RD-06, -07, on 3.11 and the newest release. Covers FR-12, FR-10.
+
+**Preconditions**:
+- The package's unit tests, on 3.11 and 3.15
+
+**Scenario**: a tester, under the preconditions above, exercises “A payload holding a 5000-digit integer is left unparsed, its Delivery intact” and observes the outcome below.
+
+**Steps**:
+1. Feed a Delivery whose payload holds a 5000-digit integer.
+2. Forward it.
+3. Publish an `int` of 5000 digits.
+
+**Expected outcome**: `payload_parsed` is false; `payload` raises `PayloadNotParsed`; `payload_text` exact; the envelope and seal intact and forwardable; `sys.get_int_max_str_digits()` unchanged; the publish is refused with the path, never the value.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-12, FR-10
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/functional-design/business-rules.md` (PH-RD-06, -07)
+
+---
+
+### TC-PH-080 — On a skewed lineage, a `503` on renewal is retried and a dropped stream is resubscribed, without a bootstrap
+
+**Context**: CDI-06 in Python (P-02). Covers FR-05, FR-11.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “On a skewed lineage, a `503` on renewal is retried and a dropped stream is resubscribed, without a bootstrap” and observes the outcome below.
+
+**Steps**:
+1. On a warned lineage, answer a renewal `503`.
+2. Drop the stream.
+
+**Expected outcome**: The renewal is retried; the stream is resubscribed; no bootstrap.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-05, FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-02)
+
+---
+
+### TC-PH-081 — A stream paused for backpressure does not time out; a resume restarts `T_idle`
+
+**Context**: STR-02 in Python (P-04). Covers FR-11.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “A stream paused for backpressure does not time out; a resume restarts `T_idle`” and observes the outcome below.
+
+**Steps**:
+1. Fill the queue so the protocol pauses reading; wait past `T_idle`; pull.
+
+**Expected outcome**: No *stream ended* with `None`; reading resumes; `T_idle` restarts.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-04)
+
+---
+
+### TC-PH-082 — A replacement with a full buffer yields the old stream's remaining Deliveries, its `superseded` end, then the new stream's
+
+**Context**: STR-05 in Python (P-04); CC-STR-13. Covers FR-11.
+
+**Preconditions**:
+- The package's unit tests; CC-STR-13 under the Python driver
+
+**Scenario**: a tester, under the preconditions above, exercises “A replacement with a full buffer yields the old stream's remaining Deliveries, its `superseded` end, then the new stream's” and observes the outcome below.
+
+**Steps**:
+1. Fill the queue; renew so a replacement opens; pull.
+
+**Expected outcome**: Old Deliveries, *ended* (`superseded`), *started*, new Deliveries; no *ended* with `None`.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-04)
+
+---
+
+### TC-PH-083 — A retried bootstrap calls the provider once per attempt and holds no secret during the wait
+
+**Context**: SEC-01 per attempt (P-12); CC-ACQ-08. Covers FR-04.
+
+**Preconditions**:
+- The conformance runner and stub; the Python driver
+
+**Scenario**: a tester, under the preconditions above, exercises “A retried bootstrap calls the provider once per attempt and holds no secret during the wait” and observes the outcome below.
+
+**Steps**:
+1. Run CC-ACQ-08 under the Python driver.
+
+**Expected outcome**: Two provider calls, two requests; the `sys.getrefcount` check finds nothing during the wait.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-04
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-12)
+
+---
+
+### TC-PH-084 — A bad CA file fails `start()` before anything is sent
+
+**Context**: P-06. Covers FR-15.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “A bad CA file fails `start()` before anything is sent” and observes the outcome below.
+
+**Steps**:
+1. Start with a missing, an unreadable and a non-PEM CA file.
+
+**Expected outcome**: `TransportError` (`ca-file`, the path) each time; no request sent.
+
+**Scope**: negative · **Priority**: Medium
+
+**Source**: python-harness / FR-15
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-06)
+
+---
+
+### TC-PH-085 — The response parser refuses malformed, oversized and conflicting input, table-driven
+
+**Context**: NFR-U4-07 to -09; P-07: the SDK parses untrusted responses with its own code. Covers FR-13.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “The response parser refuses malformed, oversized and conflicting input, table-driven” and observes the outcome below.
+
+**Steps**:
+1. Feed the parser each table row: truncation at every boundary; an oversized status line, header line, header block, header count, body, chunk-size line, trailers; `Content-Length` with `Transfer-Encoding`; differing `Content-Length`s; an unknown coding; a bare LF; an obs-fold line; a bad header name; a malformed chunk size.
+
+**Expected outcome**: Each row ends in `TransportError` with its reason (`malformed-response`, `response-too-large` or `truncated-response`), its message holding none of the input bytes; valid responses parse, chunk extensions ignored, trailers discarded.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-13
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-07); `construction/python-harness/nfr-requirements/nfr-requirements.md` (NFR-U4-07 to -09)
+
+---
+
+### TC-PH-086 — Random bytes never hang the parser or raise anything but `TransportError`
+
+**Context**: NFR-U4-11; TS-U4-06: a seeded fuzz test. Covers FR-13.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “Random bytes never hang the parser or raise anything but `TransportError`” and observes the outcome below.
+
+**Steps**:
+1. With fixed seeds, feed random bytes and mutations of valid responses (truncation, byte flips, duplicated and oversized lines) at random split points.
+
+**Expected outcome**: Every input ends in a complete response or `TransportError`; no other exception; no buffer past the bounds; the run is reproducible from its seed.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-13
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-requirements/tech-stack-decisions.md` (TS-U4-06)
+
+---
+
+### TC-PH-087 — An SSE event over `L_event` is a delivery error, and the next Delivery still arrives
+
+**Context**: The new statement beside RCV-07 (NFR-U4-10, -37): a new conformance case, under both drivers. Covers FR-12.
+
+**Preconditions**:
+- The conformance runner and stub (the generated-body directive); the Python and TypeScript drivers
+
+**Scenario**: a tester, under the preconditions above, exercises “An SSE event over `L_event` is a delivery error, and the next Delivery still arrives” and observes the outcome below.
+
+**Steps**:
+1. Script one event of many `data:` lines, each under 1 MiB, together over `L_event`, then a normal Delivery.
+2. Pull items under each driver.
+
+**Expected outcome**: A `DeliveryError` (`event-too-large`, no text), then the Delivery, the stream still open; memory held for the event never beyond `L_event` and a chunk.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-requirements/nfr-requirements.md` (NFR-U4-10, -37); `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-08)
+
+---
+
+### TC-PH-088 — A non-stream response body over `B_body` is a transport error
+
+**Context**: The new statement beside RCV-07 (NFR-U4-37): a new conformance case, under both drivers. Covers FR-13.
+
+**Preconditions**:
+- The conformance runner and stub (the generated-body directive); both drivers
+
+**Scenario**: a tester, under the preconditions above, exercises “A non-stream response body over `B_body` is a transport error” and observes the outcome below.
+
+**Steps**:
+1. Script a Problem response whose body exceeds `B_body`.
+2. Run the operation under each driver.
+
+**Expected outcome**: `TransportError` (`response-too-large`), its message holding none of the body.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-13
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-requirements/nfr-requirements.md` (NFR-U4-37); `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-08)
+
+---
+
+### TC-PH-089 — The TypeScript fix bounds each SSE event and each non-stream body
+
+**Context**: NFR-U4-38: a defect fix to merged U3 code, in its own commit in U4's code PR. Covers FR-12, FR-13.
+
+**Preconditions**:
+- The TypeScript package's unit tests (Vitest)
+
+**Scenario**: a tester, under the preconditions above, exercises “The TypeScript fix bounds each SSE event and each non-stream body” and observes the outcome below.
+
+**Steps**:
+1. Feed `subscription.ts` an event over `L_event` in many lines, then a Delivery.
+2. Answer a request in `transport.ts`'s `post` and `readReply` paths with a body over `B_body`.
+
+**Expected outcome**: The event yields `event-too-large` and the Delivery follows, `pending` never beyond the bound; each body read stops with `response-too-large`. The TypeScript driver passes TC-PH-087 and 088's cases.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: python-harness / FR-12, FR-13
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-requirements/nfr-requirements.md` (NFR-U4-38); `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-08)
+
+---
+
+### TC-PH-090 — Every case passes at the `opentelemetry-api` floor, from the lock
+
+**Context**: NFR-U4-26; P-14. Covers FR-14, FR-18.
+
+**Preconditions**:
+- `conformance-python`'s floor entry
+
+**Scenario**: a tester, under the preconditions above, exercises “Every case passes at the `opentelemetry-api` floor, from the lock” and observes the outcome below.
+
+**Steps**:
+1. `uv sync --locked --group otel-floor` on 3.11.
+2. Run every case.
+
+**Expected outcome**: The installed API is the floor version from `uv.lock`; nothing is fetched outside the lock; every case passes, CC-SEC-05 included.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: python-harness / FR-14, FR-18
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-14)
+
+---
+
+### TC-PH-091 — A TLS failure on a Python with no CA certificates hints at *Install Certificates*
+
+**Context**: NFR-U4-17; P-06: the user's condition. Covers FR-15.
+
+**Preconditions**:
+- The package's unit tests
+
+**Scenario**: a tester, under the preconditions above, exercises “A TLS failure on a Python with no CA certificates hints at *Install Certificates*” and observes the outcome below.
+
+**Steps**:
+1. Start against a server whose certificate fails, once with a context whose default store is empty, once with a normal store.
+
+**Expected outcome**: Both are `TransportError` (`tls`); only the empty-store message hints at python.org's *Install Certificates* step or `ca_file`; neither names any certificate detail.
+
+**Scope**: negative · **Priority**: Medium
+
+**Source**: python-harness / FR-15
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/python-harness/code/`
+
+**Technical references**: `construction/python-harness/nfr-design/nfr-design-patterns.md` (P-06)
+
+---
