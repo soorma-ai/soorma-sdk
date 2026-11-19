@@ -1658,3 +1658,11 @@ Log this message word for word in audit.md."
 **Context**: Construction, typescript-harness, Code Generation Part 2: G7 and G8 accepted; G9
 
 ---
+
+## Code Generation: typescript-harness, G9 (the code summary, the matrices, the code PR)
+**Timestamp**: 2026-11-19T18:07:39Z
+**User Input**: "(none: G9 continues under the user's message above)"
+**AI Response**: "Step 42: code-summary.md (the files; every F42 change with its class, diff and covering message; U1's self-test ran its timing cases with production values until 0a91e6a; CDI-05; budgets; groups and runs; technology decisions; the local run). Step 43: the L1 matrix (25 rows Implemented and Verified) and the invariant matrix (9 Implemented and Verified), with the I9 review (no tenant or local-stack value in typescript/src/; the generated types' only hits are the contract's description text) and the I10 statement. Committed efe1597, pushed (push run 44583674081 green, e2e-typescript skipped: aidlc-docs/ only). Step 44: the code PR soorma-ai/soorma-sdk#19, dev to main, opened 2026-11-19T18:03:27Z (the branch from the user's standing instruction). Every check green at head efe1597: CI run 44583734202 (pull request): unit, repository checks, conformance self-test, changes, conformance-typescript on Node 24.22.3 / API 1.9.0 (95 passed, 0 failed, 0 not run), Node 24.22.3 / API 1.10.0 (95, 0, 0) and Node 26.13.0 / API 1.10.0 (95, 0, 0), e2e-typescript (172 s, the scenario 1 passed), package-typescript, dependency review; DCO run 44583734359. OBL-04 discharged for U3 on run 44583734202: CC-SEC-05 passed, not skipped, on every entry; open for U4. AD-13: 172 s, under 8 minutes. State CHECKS_GREEN recorded; the PR is not merged and is not recorded as merged."
+**Context**: Construction, typescript-harness, Code Generation Part 2, G9; code PR CHECKS_GREEN; stopped for the user
+
+---

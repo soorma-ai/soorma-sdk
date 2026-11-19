@@ -143,4 +143,16 @@ clean, the stack, its volumes and `.e2e/` removed.
 
 ## Code PR
 
-Recorded in `aidlc-state.md` once its checks complete.
+soorma-ai/soorma-sdk#19 (`dev` → `main`), opened 2026-11-19T18:03:27Z. Every check was green at
+head `efe1597` on 2026-11-19T18:06:35Z:
+- CI run 44583734202 (pull request): unit, repository checks, conformance self-test, `changes`, `conformance-typescript` on all three entries, `e2e-typescript`, `package-typescript` and dependency review;
+- DCO run 44583734359.
+
+**OBL-04, discharged for U3 on the PR's own run** (44583734202): CC-SEC-05 passed, not skipped, on
+every `conformance-typescript` entry; each ran 95 passed, 0 failed, 0 not run (Node 24.22.3 with
+API 1.9.0, 106 s; Node 24.22.3 with 1.10.0, 99 s; Node 26.13.0 with 1.10.0, 98 s).
+
+**AD-13**: `e2e-typescript` took **172 s** (the scenario 59.8 s), under 8 minutes, so NFR
+Requirements is not reopened.
+
+The matrices' *Verified* includes this run.
