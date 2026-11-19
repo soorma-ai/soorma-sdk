@@ -119,10 +119,10 @@ order:
 | Event | What the subscription does |
 |---|---|
 | `subscribe()` | `ClientStateError` if one is active (SUB-04). Returns a `Subscription` at once; the first pull sends `POST {S4}/subscriptions` with `{ draft }` (SUB-01). A failure before the stream opens surfaces from the iterator as the `ProblemError` (SUB-05) |
-| Stream open | Yield *stream started* (STR-01). Read lines **only as tenant code pulls**, through a buffer of at most `N_buf` items (SUB-06). Heartbeats are consumed (SUB-02). `T_idle` of silence counts as dropped (STR-02) |
+| Stream open | Yield *stream started* (STR-01). Read lines **only as tenant code pulls**, through a buffer of at most `N_buf` items (SUB-06). Heartbeats are consumed (SUB-02). `T_idle` of silence **while the socket is read** counts as dropped (STR-02); a socket paused for backpressure cannot time out, and a resume restarts `T_idle` (NFR Design P-04) |
 | `delivery` event | §5. The receive span is started and ended as the item is yielded, with parent the received context (TH-SPN-03) |
 | `end` event or drop | Yield *stream ended* with the code, or `null`. Non-terminal: re-subscribe with backoff, `Retry-After` first, counting consecutive ends with no Delivery against `L_ends` (STR-03, STR-06). `credential_refused`: terminal, client revoked (STR-07) |
-| New credential, same lineage | Open the next stream before expiry. Hold new Deliveries (counting against `N_buf`) until the old stream's `superseded`, or `W_super`. Yield *ended* (old), then *started* (new), then the held items (STR-04, STR-05). Duplicates are possible (DEC-U1-12) |
+| New credential, same lineage | Open the next stream before expiry, and **pause it once open** (NFR Design P-04): its Deliveries wait upstream, not in `N_buf`, until the old stream's end or `W_super`, which counts only while the old stream is read. Yield *ended* (old), then *started* (new), then the new stream's Deliveries (STR-04, STR-05). Duplicates are possible (DEC-U1-12) |
 | New lineage | Open the new stream, close the old one at once, and yield the same sequence (STR-05) |
 | `close()`, `break` | Abort the stream, yield a terminal *stream ended* (no code) if iterating, finish; release everything (SUB-07, TH-LIFE-01, -02) |
 

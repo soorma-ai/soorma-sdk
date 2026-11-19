@@ -1369,3 +1369,33 @@ Log this message word for word in audit.md, then start U3's NFR Design."
 **Context**: CONSTRUCTION — U3 typescript-harness, NFR Design, awaiting answers
 
 ---
+
+## U3 NFR Design — answers
+**Timestamp**: 2026-11-19T05:13:36Z
+**User Input**: "Answers for U3's NFR Design: Q1 A, Q3 A. Q2: A, with three changes.
+
+Pausing a socket when the queue is full is the right way to meet SUB-06, but as designed it conflicts with two timers:
+- T_idle: while a socket is paused, the SDK reads nothing, heartbeats included. A consumer slower than 45 s would make T_idle declare the stream dropped. The SDK would then yield an end with no code and resubscribe, losing the events still in the paused socket. SUB-06 says the opposite: a slow consumer lets the platform's buffer fill, and the platform's overflow end is surfaced.
+- W_super: during a replacement, held Deliveries from the new stream count against N_buf. If they fill it, the old stream is paused too and can't deliver its remaining items or its superseded end. W_super then expires and the old stream is closed with its unread items discarded.
+
+Changes:
+1. T_idle and W_super count only while their stream's socket is being read. A stream paused for backpressure can't time out; the platform's overflow end is the signal for that case. Resume restarts T_idle from zero.
+2. During a replacement, pause the new stream once it's open (after its started is queued per STR-05), until the old stream has ended or W_super, counted as in item 1, has expired. The new stream's Deliveries then wait upstream instead of using the buffer, so they can't starve the old stream. STR-05 allows this: it only says Deliveries read early are held.
+3. Put these in U1's spec, since they're language-neutral: a sentence in STR-02 ("silence while the SDK is reading the stream") and one in STR-05 (the timers pause with backpressure, and the new stream may be paused until the old one ends). Add conformance cases:
+   - a consumer that doesn't pull for longer than T_idle gets no end with code null and no resubscribe, and receives every Delivery once it pulls;
+   - a replacement with a full buffer yields the old stream's remaining Deliveries, then its superseded end, then the new stream's, with no W_super close.
+   Record them as changes to an earlier unit's tests (F42), and have the reference driver declare them if it can; the self-test's fault sets stay unchanged.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Design artifacts and present the completion message."
+**AI Response**: "Answers recorded by question ID: U3-NFR-D-Q1 A; U3-NFR-D-Q2 A with the three changes (T_idle and W_super count only while their stream's socket is read; resume restarts T_idle; during a replacement the new stream is paused once open until the old stream ends or W_super expires; STR-02 and STR-05 sentences added to U1's specification; two conformance cases; F42; the reference driver declares them if it can; the fault sets unchanged); U3-NFR-D-Q3 A. Reading of change 2: STR-05 orders the new stream's started after the old stream's ended, so the new stream's started is held and queued in that order while its socket stays paused. Generating the NFR Design artifacts."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design answers (U3-NFR-D-Q1 to Q3)
+
+---
+
+## U3 NFR Design — artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T05:16:00Z
+**User Input**: (none)
+**AI Response**: "NFR Design for typescript-harness: nfr-design-patterns.md (P-01 the retry policy and its classification table; P-02 the validity check keeper.isUsable() with its four callers and a source check (CDI-06); P-03 renewal scheduling with REN-07; P-04 the supervisor: states opening, open, replacing, backingOff, terminal, closed, a transition table, the bounded queue with socket pause, and the user's three changes: T_idle and W_super count only while their stream's socket is read, a resume restarts T_idle, the new stream paused once open during a replacement until the old stream ends or W_super expires, its started held and queued after the old stream's ended (STR-05's order); the sentences for STR-02 and STR-05; CC-STR-12 and CC-STR-13 (CC-STR-11 already exists); CC-STR-12 waits out T_idle, 45 s, the suite budget checked at Code Generation; P-05 the clock seam, clock.ts with Vitest fake timers; P-06 the trust store built at start(), TransportError ca-file; P-07 resource release, no unhandled rejection; P-08 hygiene: a retried bootstrap calls the provider once per attempt, as U1's reference driver does, so SEC-02 holds between attempts and SEC-01 reads as once per attempt; P-09 the iterative scanner and payload check; P-10 the CI user helper; the security compliance summary with SECURITY-12 per clause, as the user recorded it; the invariant compliance), logical-components.md (the package's modules and their one-way dependencies; lint rules; the private packages; the changes to U1's components; the CI components; NFR to component). Functional Design kept consistent: TH-F42-02 gains the STR-02 and STR-05 sentences and CC-STR-12, CC-STR-13; business-logic-model §6's open and same-lineage rows. No PRD gap. Presented the completion message: Request Changes, or Continue to Next Stage (QA test specs, construction enrichment)."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design complete, awaiting approval
+
+---
