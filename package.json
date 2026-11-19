@@ -21,7 +21,8 @@
     "e2e:core-up": "node e2e/src/cli/core-up.ts",
     "e2e:setup": "node e2e/src/cli/setup.ts",
     "e2e:prove-stack": "node e2e/src/cli/prove-stack.ts",
-    "e2e:core-down": "node e2e/src/cli/core-down.ts"
+    "e2e:core-down": "node e2e/src/cli/core-down.ts",
+    "e2e:scenario-typescript": "vitest run --config typescript/e2e/vitest.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -12,6 +12,13 @@ export default defineConfig({
       'tools/**/*.test.ts',
       'typescript/**/*.test.ts',
     ],
-    exclude: ['**/node_modules/**', 'contract/**', 'aidlc-docs/**', 'typescript/dist/**'],
+    exclude: [
+      '**/node_modules/**',
+      'contract/**',
+      'aidlc-docs/**',
+      'typescript/dist/**',
+      // Needs soorma-core's real stack: `pnpm e2e:scenario-typescript` (the e2e-typescript job).
+      'typescript/e2e/**',
+    ],
   },
 });
