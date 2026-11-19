@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U1 contract-and-conformance, Code Generation (Part 2)
+- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Construction Design PR gate: #16 CHECKS_GREEN, awaiting merge; next after merge: Code Generation
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -93,6 +93,7 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 | CDI-02 | **US-02 #3 is checked by the runtime, not reported by the driver**: the driver's `inspect` checks the runtime itself, never lists its own fields. TypeScript: force garbage collection, take a heap snapshot, find no occurrence of the secret's value. Python: `sys.getrefcount` on the string the test provider returned is back to its value before bootstrap (Python's gc does not track strings). The conformance unit's Functional Design defines both | C-03, C-21 | U1 (defines); U3, U4 (drivers implement) | Design input | **Defined** 2026-11-18T07:05:50Z in U1's Functional Design (business-logic-model.md §4; case CC-SEC-01) |
 | CDI-03 | **`fileSecret` never blocks on a special file**: open the path without blocking (`O_NONBLOCK`, or the language's equivalent), check the opened handle (regular file, mode, owner), and only then read. A named pipe or device at the path is refused, never waited on | C-13 | U1 (specification); U3, U4 (Windows behaviour in their Functional Design) | Design input | **Stated** 2026-11-18T07:05:50Z as SEC-04, SEC-05 (cases CC-SEC-03, CC-SEC-07); Windows open to U3 and U4 Functional Design (SEC-09) |
 | CDI-04 | **The typed envelope claims no field is present that the SDK did not check** (DEC-U1-09 follow-on): optional types, or documented, per language | C-18 | U3, U4 (each language's Functional Design); stated in U1 as RCV-08 | Design input | Open: to U3 and U4 Functional Design |
+| CDI-05 | **67 of the 90 cases are first run at U3**: no U1 job runs them; U1 checked only their structure (the schema, links and fixtures). They first run under U3's TypeScript driver. When one fails there, decide first whether the SDK or the case is wrong. Fixing a case is a change to an earlier unit's tests (F42): record it as one, with the reason, in U3's code summary and `audit.md`. Never edit a case quietly | C-03 (the conformance suite's cases) | U3 (then U4) | Design input | Open: to U3 Code Generation (the user, 2026-11-18T17:43:12Z) |
 
 ## Tickets
 - **Status**: Complete
@@ -126,13 +127,23 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Approved**: 2026-11-18T08:40:41Z
 
 ### Code PR — contract-and-conformance
-- **Status**: CHECKS_GREEN 2026-11-18T17:25:53Z (awaiting the user's merge; not recorded as merged until GitHub shows it)
+- **Status**: MERGED 2026-11-18T17:30:33Z (confirmed on GitHub 2026-11-18T17:32:21Z); CHECKS_GREEN was 2026-11-18T17:25:53Z
 - **PR**: soorma-ai/soorma-sdk#10 (dev → main), opened 2026-11-18T15:44Z; head `2b8c135` at CHECKS_GREEN (the run IDs below are for that head; the commit recording this state is bookkeeping only)
 - **Checks at `2b8c135`**: CI run 44358181296 (pull request): unit, repository checks, conformance self-test and **dependency review** green; DCO run 44358181249 green; CI run 44358169366 (push to dev) green (dependency review skipped on push by design)
 - **Earlier head `7ca7c57`**: CI run 44339401082 had dependency review red because the Dependency graph was disabled; the user enabled it 2026-11-18T17:20:44Z (no rerun: the fixes' push gave a fresh run)
 - **Fixes on the PR** (the user, 2026-11-18T17:20:44Z): `5314abe` audit exceptions honour the release cooldown; `cb84234` leftover fragment removed from aidlc-state.md; `2b8c135` OBL-03 recorded
 - **dco.yml checking its own PR**: run 44339401604 (first; all ten commits then signed off, none needed the exemption); again in run 44358181249
-- **Merged**: —
+- **Final head `a57f6d5`**: CI run 44358647204 (pull request) green, dependency review included; DCO run 44358647419 green; CI run 44358636704 (push) green
+- **Merged**: merge commit `91d09106c9d5e323a6a47cd67d074a5b1adc9e88` on `main`, 2026-11-18T17:30:33Z, parents `c8ebb7a` (main) and `a57f6d5` (PR head); dev fast-forwarded to it
+
+### Construction Design PR Gate — e2e-stack
+- **Status**: CHECKS_GREEN 2026-11-18T22:29:41Z (awaiting the user's merge; not recorded merged until the user says so and GitHub shows it)
+- **Branch**: dev (the user's standing instruction; confirmed for this gate 2026-11-18T22:26:50Z: dev → main, as for #9)
+- **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/e2e-stack-design-pr-checkpoint-instructions.md
+- **PR**: soorma-ai/soorma-sdk#16 (dev → main), opened 2026-11-18T22:27:57Z; head `17a2b21` at CHECKS_GREEN (the run IDs below are for that head; the commit recording this state is bookkeeping only)
+- **Checks at `17a2b21`**: CI run 44411836632 (pull request): unit, repository checks, conformance self-test and **dependency review** green; DCO run 44411836353 (Check sign-off) green; CI run 44411816416 (push to dev) green (dependency review skipped on push by design)
+- **Created**: 2026-11-18T22:27:14Z
+- **Approved**: —
 
 ## Extension Configuration
 
@@ -153,6 +164,7 @@ Full rules loaded at opt-in: security-baseline.md, soorma-platform-invariants.md
 | OBL-01 | **Live confirmation of the DCO exemption**: the first real Dependabot PR into `dev`, and the `dev` → `main` PR after it; record both CI run IDs here | U1 NFR-U1-32 (the user, 2026-11-18T08:05:52Z) | Open: awaiting the first Dependabot PR |
 | OBL-02 | **AD-13's CI time**, first measured on U2's code PR, with the run ID recorded | Units Generation (U2 *done when*) | Open: at U2 Code Generation |
 | OBL-03 | **DCO check runs the base branch's code, not the PR's**: `.github/workflows/dco.yml` checks out the PR's merge commit and imports `tools/dco/action.ts` from it, so a pull request from a fork could change the code that judges it. Once #10 is merged and `main` has `tools/dco`, check out the base commit (`github.event.pull_request.base.sha`) for the tools and read the PR's commits separately (the API or a fetch of the head), never executing the PR's own `tools/`. Observation, to settle then: under `pull_request` the workflow file itself also comes from the PR, so the fix closes the `tools/` path; the workflow file's own path needs a separate answer (for example review required on `.github/`) | The user, on PR #10 (2026-11-18T17:20:44Z); recorded only, not done in #10 | Open: after #10 merges, in a later PR |
+| OBL-04 | **CC-SEC-05 runs in CI: the CI user helper**. U3's TypeScript conformance job, and U4's Python job after it, must create the second local user (`sudo`) and pass it to the runner with `--foreign-user`. CC-SEC-05 must run in CI, and `--local-skip` stays refused there (NFR-U1-14, -16). U1 did not build the helper (no U1 job runs CC-SEC-05; the reference driver does not declare it); U2 runs no conformance, so nothing changes for U2 | U1 NFR Design *CI user helper* (`logical-components.md`); deferred at the U1 Code Generation approval (the user, 2026-11-18T17:43:12Z) | Open: at U3 Code Generation, then U4 |
 
 ## Carried Security Obligations
 
@@ -193,8 +205,8 @@ the first published release.
 ### CONSTRUCTION PHASE
 - [x] Construction Phase Initialization — 2026-11-18T06:49:05Z: rules loaded for the five enabled extensions; prd-gap-classification.md active
 - Per unit, in order U1 → U2 → U3 → U4; each: Unit Initialization and L1 gate; Infrastructure Design SKIP
-- [ ] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan APPROVED 2026-11-18T08:46:28Z (1.1 changed: declared-set rule). Part 2 in progress: G1 `34d6f76` (CI 44271040027 green); G2 `cbd0a4a` (CI 44271420822 green); G3 `266347d` (CI 44272174556 green); G4 `95700f1` (CI 44272417353 green); G5 `98dc659` (CI 44333400503 green); G6 `018341a` (CI 44334002163 green); G7 `f63ec4e` (CI 44335889222 green); G8 `f63e652` (CI 44337861952 green, self-test job included); G9 `7ca7c57` (CI 44338826146 green); code PR #10 open 2026-11-18T15:48:45Z; fixes `5314abe`, `cb84234`, `2b8c135`; CHECKS_GREEN 2026-11-18T17:25:53Z (CI 44358181296, DCO 44358181249), awaiting the user's merge; Step 38 open. Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
-- [ ] U2 `e2e-stack` (ordinary): Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
+- [x] U1 `contract-and-conformance` (ordinary): Unit Initialization and L1 gate done 2026-11-18T06:49:05Z; Functional Design APPROVED 2026-11-18T07:25:27Z (corrections 2026-11-18T07:17:08Z; GAP-CAC-001 raised, soorma-core#34). NFR Requirements APPROVED 2026-11-18T08:05:52Z. NFR Design APPROVED 2026-11-18T08:26:29Z. QA enrichment done 2026-11-18T08:28:18Z (13 modified, 21 added; 45 cases). Design PR #9 merged 2026-11-18T08:38:48Z (`c8ebb7a`). Code Generation plan APPROVED 2026-11-18T08:46:28Z (1.1 changed: declared-set rule). Part 2 in progress: G1 `34d6f76` (CI 44271040027 green); G2 `cbd0a4a` (CI 44271420822 green); G3 `266347d` (CI 44272174556 green); G4 `95700f1` (CI 44272417353 green); G5 `98dc659` (CI 44333400503 green); G6 `018341a` (CI 44334002163 green); G7 `f63ec4e` (CI 44335889222 green); G8 `f63e652` (CI 44337861952 green, self-test job included); G9 `7ca7c57` (CI 44338826146 green); code PR #10 open 2026-11-18T15:48:45Z; fixes `5314abe`, `cb84234`, `2b8c135`; CHECKS_GREEN 2026-11-18T17:25:53Z (final head `a57f6d5`: CI 44358647204, DCO 44358647419, push CI 44358636704); MERGED 2026-11-18T17:30:33Z (`91d0910`). **Code Generation COMPLETE** 2026-11-18T17:32:21Z; **APPROVED** 2026-11-18T17:43:12Z (records fixed first: OBL-04, CDI-05, code-summary.md). Stages: Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
+- [ ] U2 `e2e-stack` (ordinary): Unit Initialization and L1 gate done 2026-11-18T17:49:55Z; Functional Design questions written 2026-11-18T17:49:55Z; answered 2026-11-18T18:51:06Z (U2-FD-Q1 to Q8; Q7 X); artifacts generated 2026-11-18T18:56:16Z (L1: 5 Covered, 0 Missing; invariants: 9 Covered, 2 N/A, 0 Missing); Request Changes 2026-11-18T19:20:00Z (one sign-in only, ended and checked refused) applied 2026-11-18T19:21:01Z, **Functional Design APPROVED** 2026-11-18T19:25:25Z (as revised in `58f58cc`; for QA enrichment: TC-ES-020's fake validates every response it sends against the vendored contract's schema for that operation and status). NFR Requirements questions written 2026-11-18T19:26:57Z; answered 2026-11-18T20:01:38Z (U2-NFR-Q1 to Q6, all A; Q6's reasons corrected); artifacts generated 2026-11-18T20:03:44Z (NFR-U2-01 to 24, TS-U2-01 to 10; CU-11 to CU-13 and TC-ES-021 added to the Functional Design); **NFR Design stays SKIPPED** (no pattern left to design). **NFR Requirements APPROVED** 2026-11-18T20:54:18Z with the time-limit addition applied 2026-11-18T20:55:10Z (GEN-07, CD-07, TS-U2-11; JOB-03 core-down if: always(), --logs on failure() || cancelled(); TC-ES-022, 023). QA enrichment done 2026-11-18T20:59:34Z (12 modified, 11 added; 23 cases). Functional Design, NFR Requirements, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE; NFR Design SKIP (Q3 A; reinstated if NFR Requirements finds a pattern)
 - [ ] U3 `typescript-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] U4 `python-harness` (harness): Functional Design, NFR Requirements, NFR Design, QA enrichment, Design PR gate, Code Generation and Code PR — EXECUTE
 - [ ] Build and Test — EXECUTE

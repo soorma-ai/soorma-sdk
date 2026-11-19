@@ -864,3 +864,215 @@ Log this message word for word in audit.md. Then push c012a48 and the fixes, wai
 **Context**: CONSTRUCTION — U1 Code Generation, code PR #10, awaiting the user's merge
 
 ---
+
+## U1 Code Generation — code PR #10 merged; Code Generation complete
+**Timestamp**: 2026-11-18T17:32:21Z
+**User Input**: "soorma-ai/soorma-sdk#10 is merged: merge commit 91d09106c9d5e323a6a47cd67d074a5b1adc9e88 on main, 2026-11-18T17:30:33Z, with parents c8ebb7a (main) and a57f6d5 (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only, since GitHub's merge commit has no sign-off: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me; don't create a merge commit.
+2. Record U1's code PR as MERGED in aidlc-state.md. Use the merge commit and time above, and the runs at the final head a57f6d5: CI (pull request) 44358647204, DCO 44358647419, CI (push) 44358636704. Mark Step 38 [x], and mark U1's Code Generation complete in Stage Progress.
+3. Log this message word for word in audit.md, then commit signed off and push.
+4. Present U1's Code Generation completion message, the standard two options, with the per-group CI table. The next stage is the next unit, U2 e2e-stack. Stop for my approval before starting U2."
+**AI Response**: "Confirmed on GitHub: PR #10 state MERGED, mergedAt 2026-11-18T17:30:33Z, merge commit 91d09106c9d5e323a6a47cd67d074a5b1adc9e88, parents c8ebb7a708911e6a75a2bff3d2a3b2ab356c5ac6 and a57f6d5d26a9c81431195e30f8cf14bd5a97a4bb (the PR head). dev fast-forwarded a57f6d5..91d0910; no merge commit created. aidlc-state.md: Code PR — contract-and-conformance MERGED with the merge commit, time and the final-head runs (CI 44358647204, DCO 44358647419, push CI 44358636704); U1 marked [x] with Code Generation COMPLETE; Current Stage updated. Plan Step 38 marked [x] (every plan step now done). Presenting U1's Code Generation completion message; next stage: the next unit, U2 e2e-stack. Stopped for approval before U2."
+**Context**: CONSTRUCTION — U1 Code Generation complete; awaiting approval to start U2
+
+---
+
+## U1 Code Generation — APPROVED (Continue to Next Stage), records fixed first
+**Timestamp**: 2026-11-18T17:43:12Z
+**User Input**: "Continue to Next Stage: U1 Code Generation approved, once these records are fixed. They're documentation only, in one signed-off commit before U2 starts:
+
+1. CC-SEC-05's second user belongs to U3, not U2. U1's NFR design has a \"CI user helper\" (logical-components.md; NFR-U1-14): in CI only, it creates the second local user with sudo and passes it to the runner through --foreign-user. U1 never built it, and ci.yml has no such step. That's acceptable, because the reference driver doesn't declare CC-SEC-05, so no U1 job runs the case. But record it:
+   - In U1's plan notes and code-summary.md, as a deviation: the helper is deferred to the first CI job that runs a full driver.
+   - In aidlc-state.md's Open Obligations, as OBL-04: U3's TypeScript conformance job (and U4's Python job after it) must create the second user and pass --foreign-user. CC-SEC-05 must run in CI, and --local-skip stays refused there (NFR-U1-14, -16).
+   U2 doesn't run conformance, so nothing here changes U2.
+
+2. The 67 cases no U1 job runs. Add to code-summary.md and to the inputs carried to U3: 67 of the 90 cases are checked only for structure (the schema, links and fixtures) and first run under U3's TypeScript driver. When one fails there, decide first whether the SDK or the case is wrong. Fixing a case is a change to an earlier unit's tests (F42): record it as one, with the reason, in U3's code summary and audit.md. Never edit a case quietly.
+
+3. Bring code-summary.md up to date:
+   - CI run 44339401082 at 7ca7c57 failed on dependency review because the Dependency graph was off; replace \"No failed CI run\" with that.
+   - Fill in G9's row (7ca7c57, CI 44338826146).
+   - Add the PR fixes 5314abe (audit exceptions wait for the release cooldown) and cb84234.
+   - Add PR #10 merged as 91d0910 with the final-head runs.
+
+Log this message word for word in audit.md, commit signed off, push, and wait for the push's CI. Then start U2 e2e-stack: Unit Initialization, the L1 gate, then its stages as planned."
+**AI Response**: "Records fixed in one documentation commit. (1) The CI user helper deferral: a deviation in code-summary.md and in the plan's notes (§6); OBL-04 in Open Obligations (U3's TypeScript conformance job, then U4's, create the second user and pass --foreign-user; CC-SEC-05 runs in CI; --local-skip refused there; NFR-U1-14, -16). (2) The 67 cases: a 'Cases First Run at U3' section in code-summary.md, and CDI-05 in Carried Design Inputs (unit U3, then U4). (3) code-summary.md: the failed run 44339401082 replaces 'No failed CI run'; G9 row filled (7ca7c57, 44338826146); the PR fixes 5314abe and cb84234; PR #10 merged as 91d0910 with the final-head runs (CI 44358647204, DCO 44358647419, push CI 44358636704); test count 94 → 98. U1 marked APPROVED in Stage Progress; Current Stage set to U2 Unit Initialization. Next: commit, push, wait for the push's CI, then start U2."
+**Context**: CONSTRUCTION — U1 Code Generation approved; transition to U2 e2e-stack
+
+---
+
+## U2 Unit Initialization
+**Timestamp**: 2026-11-18T17:46:54Z
+**User Input**: (none; the approval logged at 2026-11-18T17:43:12Z directs the start of U2)
+**AI Response**: "Push CI for 27e1639 (records fixes) green: run 44361973022. Unit Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets] (unit: e2e-stack). prd-gap-classification.md active (## PRD Intake exists). Next: the L1 Domain Coverage Gate for U2, then Functional Design."
+**Context**: CONSTRUCTION — U2 e2e-stack, Unit Initialization
+
+---
+
+## U2 L1 Domain Coverage Gate and Functional Design questions
+**Timestamp**: 2026-11-18T17:49:55Z
+**User Input**: (none)
+**AI Response**: "L1 coverage assessment (U2): L1 sources PF @ prd-platform-foundations-v1.3 (U1's rows); ID @ prd-identity-v1.0 has no L1 source. Applicable to U2: L1-12 (as the stack proof), L1-25, L1-26, L1-27, L1-28 (as a constraint); N/A for U2: L1-01 to L1-11, L1-13 to L1-24, L1-29, L1-30 (SDK behaviour, built in U3 and U4). Covered: targets set at Functional Design; Missing: 0. Functional Design plan written with 8 questions (construction/working/e2e-stack-functional-design-plan.md): Q1 when setup consumes the fresh-stack marker; Q2 which stack core-down may remove; Q3 agent identifiers; Q4 what setup hands to the language jobs; Q5 the secrets directory; Q6 the stack proof and the job after U3; Q7 the stack's logs on a failure; Q8 a failed call in setup, and retries. Settled items (AD-10 to AD-13, S-6, S-7) not re-asked. Gap classification: every question technology or design; no gap raised; U2 inherits none. Grounded in soorma-core at contract-v0.1.0, read only (stack-client.ts, e2e/support.ts, tenancy.yaml, compose.yaml, its CI's stack job). Stopped for answers."
+**Context**: CONSTRUCTION — U2 e2e-stack, L1 gate; Functional Design questions
+
+---
+
+## U2 Functional Design — answers
+**Timestamp**: 2026-11-18T18:51:06Z
+**User Input**: "Answers for U2's Functional Design: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q8 A.
+
+Q6 A: I checked two things. The contract's exchangeBootstrap needs only an active secret, so the proof's bootstrap doesn't use the secret up. soorma-core's attempt limit counts only failed bootstraps (FailedBootstrapAttemptWriter). So the proof can't affect U3's scenario. Say both in the business rules.
+
+Q7: X. A, with three changes:
+1. Also search the logs for a typed-prefix pattern, not only for the exact values. Every secret and credential the contract defines has a typed prefix: soorma_rs_, soorma_em_, soorma_ac_, soorma_ec_, soorma_si_, soorma_dc_ (conventions/credentials.md: the prefixes exist so scanners find them). A prefix followed by token characters counts as a hit: the environment credential, the sign-in and the agent credentials, which never touch disk, are then searched for too. Take the prefix list from the vendored contract, not a copy of it. Only the human secret stays unsearchable; say so.
+2. Also search for the exact enrollment material from the clone's deploy/local/.secrets/handover/ file, alongside the agent secrets.
+3. A hit means a soorma-core logging defect. core-down fails without printing the logs, names the service and which kind of secret or credential it found (never the value), and still tears the stack down. The business rules say to raise it as a soorma-core issue naming the service and the tag.
+Give the search its own test cases: a log holding each prefix, a log holding the exact enrollment material, a clean log, and an unreadable log (refuse to print, fail closed).
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the Functional Design artifacts and the L1 traceability, and present the completion message."
+**Answers by question ID** (word for word):
+- **U2-FD-Q1**: "A"
+- **U2-FD-Q2**: "A"
+- **U2-FD-Q3**: "A"
+- **U2-FD-Q4**: "A"
+- **U2-FD-Q5**: "A"
+- **U2-FD-Q6**: "A" — "Q6 A: I checked two things. The contract's exchangeBootstrap needs only an active secret, so the proof's bootstrap doesn't use the secret up. soorma-core's attempt limit counts only failed bootstraps (FailedBootstrapAttemptWriter). So the proof can't affect U3's scenario. Say both in the business rules."
+- **U2-FD-Q7**: "X. A, with three changes: 1. Also search the logs for a typed-prefix pattern, not only for the exact values. Every secret and credential the contract defines has a typed prefix: soorma_rs_, soorma_em_, soorma_ac_, soorma_ec_, soorma_si_, soorma_dc_ (conventions/credentials.md: the prefixes exist so scanners find them). A prefix followed by token characters counts as a hit: the environment credential, the sign-in and the agent credentials, which never touch disk, are then searched for too. Take the prefix list from the vendored contract, not a copy of it. Only the human secret stays unsearchable; say so. 2. Also search for the exact enrollment material from the clone's deploy/local/.secrets/handover/ file, alongside the agent secrets. 3. A hit means a soorma-core logging defect. core-down fails without printing the logs, names the service and which kind of secret or credential it found (never the value), and still tears the stack down. The business rules say to raise it as a soorma-core issue naming the service and the tag. Give the search its own test cases: a log holding each prefix, a log holding the exact enrollment material, a clean log, and an unreadable log (refuse to print, fail closed)."
+- **U2-FD-Q8**: "A"
+**AI Response**: "Answers recorded; no ambiguity, no follow-up. Q6's two facts checked at soorma-core contract-v0.1.0 (read only): data-gateway.openapi.yaml exchangeBootstrap requires 'an active secret of that agent's registration' and consumes nothing; packages/abuse-bound/src/slot-bound.ts: 'A failure keeps the entry; a success removes exactly its own', and FailedBootstrapAttemptWriter records failures only. Q7's prefix list confirmed in the vendored contract/conventions/credentials.md (soorma_ac_, soorma_ec_, soorma_si_, soorma_dc_ in the typed-prefix table; soorma_rs_, soorma_em_ under 'Material is not a credential'; token syntax: RFC 6750 b64token). Generating the Functional Design artifacts."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design answers
+
+---
+
+## U2 Functional Design — artifacts generated; completion message
+**Timestamp**: 2026-11-18T18:56:16Z
+**User Input**: (none)
+**AI Response**: "Generated construction/e2e-stack/functional-design/: domain-entities.md (E-01 to E-10: clone, stack, ownership record, fresh-stack marker, human session in memory only, agents, stack description, proof result, log search, end-to-end job); business-rules.md (GEN-01 to 06, CU-01 to 10, ST-01 to 12, PS-01 to 06 with the user's two Q6 facts as PS-04 and PS-05, CD-01 to 06, LS-01 to 11 for the Q7 log search, JOB-01 to 07, misuse table); business-logic-model.md (each command's flow, the S1 and S2 call table, core-down and the log search, the packaging guard extended to e2e/, TC-ES-013 to 020 planned for QA enrichment); l1-coverage-matrix.md (L1-12, L1-25, L1-26, L1-27, L1-28 Covered; the rest N/A for U2 with reasons; 0 Missing); invariant-coverage-matrix.md (9 Covered, I4 N/A for this unit, I11 N/A by design, 0 Missing; I8 packaging table). Gap classification pass: no specification gap; U2 inherits none. Security: compliant (summary in the completion message). Presenting the completion message; next stage NFR Requirements (U2)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design complete, awaiting approval
+
+---
+
+## U2 Functional Design — Request Changes: setup must not leave a sign-in open
+**Timestamp**: 2026-11-18T19:20:00Z
+**User Input**: "Request Changes, one change: setup must not leave a sign-in open.
+
+The contract's firstAuthenticate answers 200 with a sign-in when the organization requires no second factor (org-gateway.openapi.yaml at contract-v0.1.0), and ST-06 already requires that sign-in. setup ignores it, signs in again with authenticate (call 2), and ST-09 ends only the second sign-in. The first stays live until it expires, so \"ends the environment credential and the sign-in\" isn't true. soorma-core's smoke.ts makes the same two calls, but it doesn't claim to end every sign-in.
+
+Drop call 2. Use the sign-in that firstAuthenticate returns for issueEnvironmentCredential and for endSignIn. K is then used once, in firstAuthenticate's newSecret, and still never leaves memory. Update ST-05, ST-06, ST-09, the call table in business-logic-model §3 (renumber it), the domain entities, and the L1 and invariant matrices wherever they cite call 2. Record the reading of S-6: its \"sign-in\" is satisfied by the sign-in first authentication returns. Add to TC-ES-006 or TC-ES-020: after a successful setup, and after a failure past first authentication, no sign-in or environment credential setup opened is left live. Test it by checking that the ended credentials are refused, not by assuming.
+
+Log this message word for word in audit.md, commit signed off, push, wait for CI, then present the completion message again."
+**AI Response**: "Accepted. Changing ST-05, ST-06, ST-09 (and adding the refusal check), the call table in business-logic-model §3 (call 2 dropped, renumbered), §7 (TC-ES-006 and TC-ES-020 extended), the domain entities (E-02, E-05), and the L1 matrix's L1-28 row; the invariant matrix cites no call 2 and needs no change. S-6's reading recorded."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design, Request Changes
+
+---
+
+## U2 Functional Design — changes applied; completion message again
+**Timestamp**: 2026-11-18T19:21:01Z
+**User Input**: (none)
+**AI Response**: "Applied: business-rules.md: S-6's reading recorded (its sign-in is the one firstAuthenticate returns); ST-05 (K used once, as firstAuthenticate's newSecret); ST-06 (no authenticate call; issueEnvironmentCredential presents call 1's sign-in); ST-09 (end each, then present each again with its end call and require 401; the environment credential checked before the sign-in is ended; on a failure past first authentication the same for whichever exist, original failure reported, a still-live credential adds a line naming which). business-logic-model.md §3: call table renumbered 1 to 9 (authenticate dropped; calls 7 and 9 are the refusal checks); the failure path; §7: TC-ES-006 extended (refusal on the real stack after success), TC-ES-020 extended (after a failure past first authentication, against a local fake of S1 and S2 following the contract's end semantics, since no failure past first authentication is reachable on the real stack without a fault hook in setup, which the design refuses; the fake also shows no authenticate call). domain-entities.md E-02, E-05. l1-coverage-matrix.md L1-28. invariant-coverage-matrix.md cites no call 2: unchanged."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design complete (revised), awaiting approval
+
+---
+
+## U2 Functional Design — APPROVED (Continue to Next Stage)
+**Timestamp**: 2026-11-18T19:25:25Z
+**User Input**: "Continue to Next Stage: U2 Functional Design approved, as revised in 58f58cc.
+
+On TC-ES-020: the fake is right. On the real stack, the only way to make setup fail after first authentication is a fault switch inside setup, and test-only switches don't belong in a tool that holds secrets. TC-ES-006 already checks the refusals against the real stack. One requirement: validate every response the fake sends against the vendored contract's schema for that operation and status, in the fake itself or in the test, so it can't drift from the contract. Add that to TC-ES-020 when you write it at QA enrichment.
+
+Log this message word for word in audit.md, then start U2's NFR Requirements."
+**AI Response**: "U2 Functional Design approved as revised in 58f58cc. Recorded for QA enrichment: TC-ES-020's fake validates every response it sends against the vendored contract's schema for that operation and status (in the fake or the test). Starting U2 NFR Requirements."
+**Context**: CONSTRUCTION — U2 e2e-stack, Functional Design approved; NFR Requirements starts
+
+---
+
+## U2 NFR Requirements — questions
+**Timestamp**: 2026-11-18T19:26:57Z
+**User Input**: (none)
+**AI Response**: "U2 is ordinary: Step 1.5 seeds nothing from a PRD profile. Inherited from U1 and not asked: Node 24.22.3, pnpm 12.18.0, TypeScript by type stripping, ajv and yaml, Vitest, the workflow rules (NFR-U1-28), Dependabot, audit and dependency review, no retry except a recorded infrastructure rerun. Decided as technology (to be recorded in tech-stack-decisions.md): the changes job copies soorma-core #26 exactly (shell and git diff --name-only --no-renames, failing safe, read at soorma-core origin/main ci.yml); K is 32 CSPRNG bytes, base64url; soorma-local detection by docker compose ls --all and a volume label filter; raw calls by node:https with the clone's CA only. Questions written (construction/working/e2e-stack-nfr-requirements-plan.md): Q1 language and runtime of the commands; Q2 soorma-core's Node 26.13.0 beside Node 24; Q3 time budget and caching; Q4 how the commands are tested (TC-ES-020's fake validating every response against the contract, as the user required); Q5 where the commands run locally (soorma-core needs Docker Engine 26 and Compose 2.26.0 or later); Q6 soorma-core's dependencies installed in this repository's CI. No specification gap. Stopped for answers."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements questions
+
+---
+
+## U2 NFR Requirements — answers
+**Timestamp**: 2026-11-18T20:01:38Z
+**User Input**: "Answers for U2's NFR Requirements: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, with Q6's reasons corrected as below.
+
+Q6: A, but one reason is wrong. soorma-core's CI audits soorma-core's latest code, not the frozen lock file at contract-v0.1.0. An advisory published after the tag is never fixed in it; the fix reaches this repository only with a new contract tag. The tag's lock file already holds a known-vulnerable package: picomatch@4.0.7 (GHSA-fc5q-39xc-vjpf, soorma-core#35). That advisory also fails soorma-core's own audit today, so its CI isn't a green check for the tag either. Record these reasons instead:
+- At the tag, soorma-core's pnpm-workspace.yaml has strictDepBuilds: true and allowBuilds: {}, so installing the clone runs no dependency install scripts. Add a check that the clone's pnpm-workspace.yaml still has both settings; if either is missing, core-up refuses. CU-05's commit check makes that true for this tag, but the explicit check explains the trust and survives a new tag.
+- The clone only runs as a short-lived stack, in a job with contents: read and no repository secrets, torn down by core-down.
+- Its packages never enter this repository's packages, lock file or audit.
+- The tag is frozen. An advisory against it is soorma-core's to fix, and reaches this repository only through a new contract tag. Don't chase it here.
+Put these reasons in DEPENDENCIES.md, with picomatch named as a known instance.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Requirements artifacts, decide whether U2's NFR Design stage comes back, and present the completion message."
+**Answers by question ID** (word for word):
+- **U2-NFR-Q1**: "A"
+- **U2-NFR-Q2**: "A"
+- **U2-NFR-Q3**: "A"
+- **U2-NFR-Q4**: "A"
+- **U2-NFR-Q5**: "A"
+- **U2-NFR-Q6**: "A, with Q6's reasons corrected as below. Q6: A, but one reason is wrong. soorma-core's CI audits soorma-core's latest code, not the frozen lock file at contract-v0.1.0. An advisory published after the tag is never fixed in it; the fix reaches this repository only with a new contract tag. The tag's lock file already holds a known-vulnerable package: picomatch@4.0.7 (GHSA-fc5q-39xc-vjpf, soorma-core#35). That advisory also fails soorma-core's own audit today, so its CI isn't a green check for the tag either. Record these reasons instead: - At the tag, soorma-core's pnpm-workspace.yaml has strictDepBuilds: true and allowBuilds: {}, so installing the clone runs no dependency install scripts. Add a check that the clone's pnpm-workspace.yaml still has both settings; if either is missing, core-up refuses. CU-05's commit check makes that true for this tag, but the explicit check explains the trust and survives a new tag. - The clone only runs as a short-lived stack, in a job with contents: read and no repository secrets, torn down by core-down. - Its packages never enter this repository's packages, lock file or audit. - The tag is frozen. An advisory against it is soorma-core's to fix, and reaches this repository only through a new contract tag. Don't chase it here. Put these reasons in DEPENDENCIES.md, with picomatch named as a known instance."
+**AI Response**: "Answers recorded; no ambiguity. Q6's facts checked at soorma-core contract-v0.1.0 (read only): pnpm-workspace.yaml lines 32-33 strictDepBuilds: true, allowBuilds: {}; pnpm-lock.yaml holds picomatch@4.0.7; soorma-core#35 is open. The withdrawn reason ('soorma-core's own CI audits it') is not used anywhere. Generating the NFR Requirements artifacts."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements answers
+
+---
+
+## U2 NFR Requirements — artifacts generated; NFR Design decision; completion message
+**Timestamp**: 2026-11-18T20:03:44Z
+**User Input**: (none)
+**AI Response**: "Generated construction/e2e-stack/nfr-requirements/: nfr-requirements.md (NFR-U2-01 to 24: time and the 20-minute timeout, measure first with no cache, reopen over 8 minutes; core-down always; no retry; prerequisites before the ownership record; secret handling; one sign-in, checked refused; supply chain: clone pinned by commit, no install scripts checked (strictDepBuilds: true, allowBuilds: {}), soorma-core's exact toolchain via --core-node, the clone not audited here with the user's corrected reasons and the DEPENDENCIES.md text to add at Code Generation, picomatch@4.0.7 named; no new npm dependency; Vitest in unit for TC-ES-002, 003, 013 to 021; the validating fake; Linux and macOS, Docker Engine 26+, Compose 2.26.0+; the README) and tech-stack-decisions.md (TS-U2-01 to 10; the changes and e2e jobs, unit extended). Functional Design amended for traceability with rules the answers add: CU-11 (prerequisites, Q5), CU-12 (no install scripts, Q6), CU-13 (exact toolchain, Q2), and planned TC-ES-021. NFR Design decision: stays SKIPPED (Units Generation Q3 A), because every pattern is specified to code level (LS, the ownership and marker lifecycle, the refusal check, the validating fake); NFR-U2-02 can reopen it if the measured time calls for caching. Next stage: QA enrichment (qa-test-cases), then the Construction Design PR gate."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements complete, awaiting approval
+
+---
+
+## U2 NFR Requirements — APPROVED with one addition first (time limits)
+**Timestamp**: 2026-11-18T20:54:18Z
+**User Input**: "Continue to Next Stage: U2 NFR Requirements approved, with one addition first.
+
+A hung call currently loses both the step name and the logs. No raw call or child step has a time limit of its own, so a stuck service holds setup or prove-stack until the job's 20-minute timeout. That drops the step-name line (NFR-U2-07). GitHub also reports a timed-out job as cancelled, not failed, so if \"when an earlier step failed\" is written as failure(), core-down skips --logs in exactly the case the logs are for.
+
+Add:
+1. A time limit on every raw call in setup and prove-stack (for example 30 s per request, connecting included), and on each child step of core-up and core-down that can hang (git clone, pnpm install, docker build, stack:init, stack:up, docker compose logs, down -v). Set each limit well under the job's 20 minutes, and decide the values here, as technology decisions. A limit that runs out is a failure: one line naming the step and saying it timed out, then the command's usual failure path. setup still ends its sign-in and environment credential and checks them refused (ST-09). Never retried.
+2. In the workflow, core-down runs if: always(), and gets --logs when failure() || cancelled(), so a timed-out or cancelled job still searches and shows the logs.
+3. Test the call limit with the local HTTPS fake: it accepts the connection and never answers. Expect the step-name line and the end-and-refuse sequence.
+
+Update NFR-U2-01, -04 and -07, JOB-03 in business-rules.md, and the planned test cases. Log this message word for word in audit.md, commit signed off, push, wait for CI, then go on to QA enrichment."
+**AI Response**: "Accepted. Adding the time limits (values decided as technology, TS-U2-11), the workflow condition, and the tests; updating NFR-U2-01, -04, -07, JOB-03, the rules they touch (GEN-07 new, ST-09, CD-07 new, LS-10) and the planned test cases (TC-ES-022, TC-ES-023 new; TC-ES-008, TC-ES-016 extended). Then QA enrichment."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements approved with an addition
+
+---
+
+## U2 NFR Requirements — time-limit addition applied
+**Timestamp**: 2026-11-18T20:55:10Z
+**User Input**: (none)
+**AI Response**: "Applied. TS-U2-11 (technology): raw call 30 s (connect through whole response); git clone 3 min; pnpm install (clone) 6 min; docker build 5 min per image; stack:init 2 min; stack:up 5 min; docker compose logs 1 min per service; down -v 3 min; every other child command 30 s; SIGTERM then SIGKILL after 10 s. Basis: several times each step's normal time at the tag (soorma-core run 43391996560); a single hang in core-up ends it in about 10 minutes. NFR-U2-01 (job timeout a backstop), NFR-U2-04 (core-down if: always(), --logs on failure() || cancelled()), NFR-U2-07 (a limit running out is a failure, one step-name line, never retried, ST-09 still runs). business-rules.md: GEN-07 new; ST-09 (a timed-out call still ends and checks); CD-07 new (a failed or timed-out teardown keeps the ownership record); LS-10 (a timed-out log read is unreadable); JOB-03. business-logic-model.md: §3 failure path; §7 TC-ES-022 (fake accepts and never answers: step-name line, end-and-refuse sequence; also prove-stack), TC-ES-023 (child steps that never end), TC-ES-016 and TC-ES-008 extended (the workflow condition read by a unit test). Going on to QA enrichment."
+**Context**: CONSTRUCTION — U2 e2e-stack, NFR Requirements approved; QA enrichment next
+
+---
+
+## U2 QA test specs — construction enrichment
+**Timestamp**: 2026-11-18T20:59:34Z
+**User Input**: (none)
+**AI Response**: "Construction enrichment for e2e-stack (qa-test-cases §2): sources construction/e2e-stack/functional-design/ and nfr-requirements/ (NFR Design skipped; no infrastructure design). test-specs-narrative.md enriched in place: TC-ES-001 to 012 modified (IDs and forward links unchanged), TC-ES-013 to 023 added with forward links to construction/e2e-stack/code/; TC-ES-020 carries the user's requirement that the fake validates every response it sends against the vendored contract's schema for that operation and status; TC-ES-022 the user's never-answering call test; TC-ES-008 the workflow condition. test-case-index.md: 11 rows added, no priority changed. enrichment-delta.md written (git-ignored session artifact). 23 cases. Next: the Construction Design PR gate."
+**Context**: CONSTRUCTION — U2 e2e-stack, QA enrichment complete
+
+---
+
+## U2 Construction Design PR gate — the user confirms the branch
+**Timestamp**: 2026-11-18T22:26:50Z
+**User Input**: "Yes, open U2's Construction Design PR, dev → main, as for U1's #9. Wait for every check, including DCO and dependency review, record its state with the run IDs, and stop with the PR number. Don't record it merged until I tell you it is and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Opening the design PR from dev to main. Instructions written to construction/working/e2e-stack-design-pr-checkpoint-instructions.md (git-ignored); gate recorded PENDING in aidlc-state.md. Committing signed off, pushing, opening the PR, then waiting for every check (CI, DCO, dependency review) and recording the state with the run IDs. Stopping with the PR number; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate (pr-checkpoint §5); branch confirmed: dev → main
+
+---
+
+## U2 Construction Design PR gate — PR #16 opened, checks green
+**Timestamp**: 2026-11-18T22:29:54Z
+**User Input**: (none)
+**AI Response**: "Design commit 17a2b21 (signed off) pushed to dev. PR soorma-ai/soorma-sdk#16 (dev → main) opened 2026-11-18T22:27:57Z. Every check green at head 17a2b21 by 2026-11-18T22:29:41Z: CI run 44411836632 (pull request; unit, repository checks, conformance self-test, dependency review), DCO run 44411836353 (Check sign-off), CI run 44411816416 (push to dev; dependency review skipped on push by design). Recorded CHECKS_GREEN in aidlc-state.md. Stopping for the user's merge; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate, CHECKS_GREEN
+
+---
