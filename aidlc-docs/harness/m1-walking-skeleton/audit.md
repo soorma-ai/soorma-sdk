@@ -1759,3 +1759,11 @@ Log this message word for word in audit.md, update the artifacts, commit signed 
 **Context**: Construction, U4 python-harness, Functional Design complete
 
 ---
+
+## U4 python-harness — NFR Requirements: questions
+**Timestamp**: 2026-11-19T21:09:27Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements plan written (construction/working/python-harness-nfr-requirements-plan.md, git-ignored), seeded from the harness shape (PF §11, §14) and carrying U3's language-neutral settlements. Checked first: Python releases (python.org and the devguide, fetched 2026-11-19): newest stable 3.15 (3.15.2, 2026-10-25), 3.11 at 3.11.18 in security status, end of life 2027-10, so the matrix is 3.11 and 3.15. json.loads depth measured: 3.12.3 and 3.13.12 about 9 990 levels anywhere; 3.11.12 994 at the top, 985 in an asyncio task, 792 under 200 frames (the recursion limit minus the caller's stack). The default SSL context loads 128 to 186 OS CAs on every local interpreter. Nine questions, each Awaiting Answer: U4-NFR-Q1 the named values (A: U3's, D_lang 256); Q2 the HTTP client (A: stdlib asyncio streams and ssl, a small HTTP/1.1 client); Q3 the trust store (A: OS store through OpenSSL defaults plus the CA); Q4 toolchain and build (A: uv exact with uv.lock, exclude-newer cooldown, wheels only, uv_build, src layout, _internal excluded); Q5 development tools (A: pytest with pytest-asyncio, ruff, mypy --strict, warnings as errors in tests); Q6 opentelemetry-api (A: a range >= floor < 2, tested at the lock and at the floor); Q7 generated types (A: a TypeScript generator emitting TypedDicts, in the existing checks job); Q8 CI jobs (A: conformance-python 3.11 and 3.15 plus the API floor, e2e-python on 3.11, package-python offline); Q9 vulnerability scanning (A: pip-audit on the exported lock, the existing exception register, Dependabot's uv ecosystem)."
+**Context**: Construction, U4 python-harness, NFR Requirements Steps 1 to 4
+
+---
