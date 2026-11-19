@@ -70,3 +70,17 @@ Unit abbreviation: TH = typescript-harness
 | TC-TH-064 | The example runs and prints the envelope and trace id | typescript-harness / FR-20 | happy-path | Medium |
 | TC-TH-065 | The agent file copies into a new project | typescript-harness / FR-20 | edge/boundary | Medium |
 | TC-TH-066 | The example's README states what is not promised | typescript-harness / FR-20 | happy-path | Low |
+| TC-TH-067 | `fileSecret` is refused on Windows without opening the path | typescript-harness / FR-04 | negative | High |
+| TC-TH-068 | A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error | typescript-harness / FR-12 | negative | Medium |
+| TC-TH-069 | Every member of the `Envelope` type is optional | typescript-harness / FR-12 | edge/boundary | Medium |
+| TC-TH-070 | `publish` refuses a payload JSON cannot carry exactly, naming the path, never the value | typescript-harness / FR-10 | negative | High |
+| TC-TH-071 | Leaving a loop closes the subscription; the renewal timer alone does not keep the process alive | typescript-harness / FR-11 | edge/boundary | Medium |
+| TC-TH-072 | A client whose clock runs fast renews at most once per `R_min` and warns once per lineage | typescript-harness / FR-05 | edge/boundary | High |
+| TC-TH-073 | An envelope nested deeper than `D_lang` is a delivery error; the stream continues | typescript-harness / FR-12 | edge/boundary | Medium |
+| TC-TH-074 | An unknown option, such as a misspelt TLS switch, is refused | typescript-harness / FR-15 | negative | High |
+| TC-TH-075 | A client whose clock runs more than a lifetime ahead uses its credential until S3 answers `credential_expired`, then bootstraps once | typescript-harness / FR-05 | edge/boundary | High |
+| TC-TH-076 | On a skewed lineage, a `503` on renewal is retried and a dropped stream is resubscribed, without a bootstrap | typescript-harness / FR-05, FR-11 | edge/boundary | High |
+| TC-TH-077 | A stream paused for backpressure does not time out; a resume restarts `T_idle` | typescript-harness / FR-11 | edge/boundary | High |
+| TC-TH-078 | A replacement with a full buffer yields the old stream's remaining Deliveries, its `superseded` end, then the new stream's | typescript-harness / FR-11 | edge/boundary | High |
+| TC-TH-079 | A retried bootstrap calls the provider once per attempt and holds no secret during the wait | typescript-harness / FR-04 | edge/boundary | High |
+| TC-TH-080 | A bad CA file fails `start()` before anything is sent | typescript-harness / FR-15 | negative | Medium |

@@ -1199,3 +1199,246 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation, code PR CHECKS_GREEN
 
 ---
+
+## U2 Code Generation — completion message, approval prompt
+**Timestamp**: 2026-11-19T04:05:08Z
+**User Input**: (none)
+**AI Response**: "PR #17's final head b5a000b (the bookkeeping commit): CI run 44455550563 (pull request) green with e2e passed, DCO run 44455550601 green, push CI 44455544010 green with e2e skipped (aidlc-docs/ only). Presented the Code Generation completion message for e2e-stack (code-generation.md Step 14): Request Changes, or Continue to Next Stage (the next unit, typescript-harness). Stopping for the user's merge of #17 and approval; #17 not recorded merged until the user says so and GitHub shows it. This entry is committed with the merge record, so that #17's head does not move again before review."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation complete, awaiting approval
+
+---
+
+## U2 Code Generation — the user approves; #17 merged
+**Timestamp**: 2026-11-19T04:11:52Z
+**User Input**: "Continue to Next Stage: U2 Code Generation approved. soorma-ai/soorma-sdk#17 is merged: merge commit 3f4883c2566c2bfbf5d1ddefb7724207bdc8b864 on main, 2026-11-19T04:08:31Z, with parents d3ab234 (main) and b5a000b (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record #17 as MERGED, with the runs at b5a000b that you held back: CI (pull request) 44455550563, DCO 44455550601, CI (push) 44455544010. Mark U2 complete in Stage Progress and tick the plan's last step.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Start U3 typescript-harness: Unit Initialization, the L1 gate, then its stages as planned. U3 is the first harness unit, so the shape profile applies. Carry into its design:
+   - OBL-04: U3's TypeScript conformance job creates the second user and passes --foreign-user. CC-SEC-05 runs in CI, and --local-skip stays refused there.
+   - CDI-05: the 67 cases no U1 job ran. When one fails, decide first whether the SDK or the case is wrong; a case fix is a recorded change to an earlier unit's tests (F42).
+   - JOB-06: U2's e2e job becomes e2e-typescript, with the scenario after prove-stack. prove-stack stays.
+   - CDI-01 to CDI-04, US-Q1's span rules (DEC-U1-01), and GAP-CAC-001's work-around (soorma-core#34).
+   Stop at each gate as before."
+**AI Response**: "Confirmed on GitHub: #17 MERGED 2026-11-19T04:08:31Z, merge commit 3f4883c2566c2bfbf5d1ddefb7724207bdc8b864, parents d3ab234 and b5a000b. dev fast-forwarded b5a000b..3f4883c (the uncommitted audit entry kept). Code PR — e2e-stack recorded MERGED with the final-head runs (CI pull request 44455550563, DCO 44455550601, CI push 44455544010). U2 marked complete in Stage Progress; Code Generation APPROVED; the plan's Step 28 records the merge and the plan COMPLETE (every step ticked). Ticket #5 left open, as U1's #4 is (the tickets extension names no closing step). Next: U3 typescript-harness, Unit Initialization and the L1 gate, carrying OBL-04, CDI-05, JOB-06, CDI-01 to CDI-04, DEC-U1-01 and GAP-CAC-001."
+**Context**: CONSTRUCTION — U2 e2e-stack COMPLETE; U3 next
+
+---
+
+## U3 Unit Initialization
+**Timestamp**: 2026-11-19T04:17:58Z
+**User Input**: (none)
+**AI Response**: "Unit Initialization: loaded extension rules for [security-baseline (local-only; hosted clauses carried), soorma-platform-invariants, pr-checkpoint, qa-test-cases (comprehensive), tickets] (unit: typescript-harness). prd-gap-classification.md stays active (PRD Intake present). Shape: harness (face: none; data face only, S3 and S4); NFR profile source PF §11 Harness Surface and §14 Harness Surface Register @ prd-platform-foundations-v1.3, seeded at NFR Requirements (Step 1.5). Ticket soorma-ai/soorma-sdk#6."
+**Context**: CONSTRUCTION — U3 typescript-harness, Unit Initialization
+
+---
+
+## U3 L1 Domain Coverage Gate
+**Timestamp**: 2026-11-19T04:17:58Z
+**User Input**: (none)
+**AI Response**: "L1 sources: PF @ prd-platform-foundations-v1.3 (the most authoritative; §7b, FR-004 to FR-006, §9, §11, §17), as U1's matrix registers them (L1-01 to L1-30); ID @ prd-identity-v1.0: no L1 source, its §11 prohibitions bind as constraints. U3 carries U1's applicable rows to TypeScript code and a passing run: 25 applicable (each to get a TypeScript implementation target and a verification target: its conformance case under the TypeScript driver, and the end-to-end test where it applies), 5 N/A (L1-08, L1-10, L1-14, L1-21 the platform's; L1-28 the SDK has no human operation). Result at the gate: covered 0 of 25 yet (written at Functional Design Step 6), non-applicable 5, missing 0 as unresolved design; the Functional Design matrix is blocking."
+**Context**: CONSTRUCTION — U3 typescript-harness, L1 gate
+
+---
+
+## U3 Functional Design — questions written
+**Timestamp**: 2026-11-19T04:17:58Z
+**User Input**: (none)
+**AI Response**: "Functional Design plan with 9 questions written to construction/working/typescript-harness-functional-design-plan.md (git-ignored): U3-FD-Q1 reading a payload deeper than D_lang (a scanner over the delivery line, recommended); Q2 fileSecret on Windows (refused, SEC-09); Q3 closing and process lifetime (close, Symbol.asyncDispose, iterator return, the renewal timer unref'd); Q4 the typed envelope (every member optional, CDI-04); Q5 a payload JSON cannot carry (refused before sending, path named, never the value); Q6 the example's configuration (a marked block, run(config)); Q7 the end-to-end test's processes (one process, two clients, one in-memory exporter); Q8 one renewal on the real stack (soorma-core's agent credential lifetime is a 15-minute code constant at the tag: a fast Date in the test, recommended); Q9 the driver's heap check (import U1's heap.ts). Carried without asking: DEC-U1-01, CDI-01 to CDI-04, GAP-CAC-001, GAP-INT-001, GAP-INT-002; to NFR Requirements and Code Generation: OBL-04, JOB-06, CDI-05. The named values (H_renew, R_max, W_max, B_*, L_ends, W_super, N_buf, D_lang, T_idle, T_req) are NFR Requirements'. Awaiting the user's answers."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design, awaiting answers
+
+---
+
+## U3 Functional Design — answers
+**Timestamp**: 2026-11-19T04:23:22Z
+**User Input**: "Answers for U3's Functional Design: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q9 A. Q7 and Q8 as below.
+
+Q7: A, with a decoy span. In one process OpenTelemetry has one global context, so if B's receive span picked up the ambient context instead of the envelope's traceparent, the assertion could still pass. Start B's subscription (and its loop) inside a separate active span created by the test. Assert B's receive span's parent is A's send span, matching the envelope's traceparent, and is not the decoy. Assert the decoy is linked only if DEC-U1-01 says it is. A test whose result doesn't depend on the ambient context proves SPN-03; one that could pass on the ambient context doesn't.
+
+Q8: X. A's fast clock is right, but as specified it makes the SDK renew in a tight loop. That's a real defect in REN-01, not only a test problem. REN-01 schedules at expiresAt − H_renew on the client's own clock. Fourteen minutes fast, a fresh 15-minute credential is due at once. The renewed one is again 15 minutes from S3's now, so it's due at once too, and so on as fast as the network allows. REN-03 doesn't stop it, because each renewal returns a later expiry. A real client whose clock runs fast by more than the lifetime minus H_renew would flood S3 the same way, which is the skew T-7 is meant to tolerate.
+
+So:
+1. Add REN-07 to spec/behaviour.md: after a successful renewal or bootstrap, the next renewal is scheduled no sooner than a floor, R_min, measured on a monotonic clock, not the wall clock. If expiresAt − H_renew is already past on the wall clock for a credential just received, the SDK emits one clock-skew warning per lineage, without the credential, and keeps renewing at the floor. NFR Requirements sets R_min's value, as with the other named limits. Classify it as a design gap in U1's specification, not a PRD gap.
+2. Add a conformance case CC-REN-06: the stub answers bootstrap and renewal with an expiresAt already inside H_renew of the client's clock. The client renews no more than once per R_min across a window of several R_min, and emits the warning once. Since it adds to U1's spec and suite, record it as a change to an earlier unit's tests (F42) in U3's code summary and audit.md. The reference driver should declare it too, and the self-test's declared fault sets stay unchanged.
+3. Q8's end-to-end test is then A: fake only Date, 14 minutes ahead, before start(). Assert one real renewal from S3 (client.credential.expiresAt moved), then no second renewal before R_min, then restore the real Date before closing.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the Functional Design artifacts and the L1 traceability, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U3-FD-Q1 A; U3-FD-Q2 A; U3-FD-Q3 A; U3-FD-Q4 A; U3-FD-Q5 A; U3-FD-Q6 A; U3-FD-Q7 A with the decoy span (as quoted above); U3-FD-Q8 X (REN-07 with R_min on a monotonic clock and one clock-skew warning per lineage; CC-REN-06; the end-to-end test's fast Date, one real renewal, no second before R_min, real Date restored before closing; as quoted above); U3-FD-Q9 A. REN-07 classified as a design gap in U1's specification, not a PRD gap. Generating the Functional Design artifacts and the L1 traceability."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design answers (U3-FD-Q1 to Q9)
+
+---
+
+## U3 Functional Design — artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T04:30:27Z
+**User Input**: (none)
+**AI Response**: "Functional Design artifacts for typescript-harness: domain-entities.md (locations; the public surface as TypeScript shapes, the name table's column only; internal modules C-10 to C-20 with keeper.ts the one security-critical module; the client's states; the credential lineage with receivedAt on the monotonic clock; the example and the end-to-end test; the specification change REN-07 and CC-REN-06), business-rules.md (TH-API, TH-SEC incl. SEC-09 for TypeScript: fileSecret refused on Windows; TH-RD the scanner, duplicate members, the envelope deeper than D_lang a delivery error; TH-PUB the payload check; TH-LIFE close, asyncDispose, loop exit, unref'd renewal timer; TH-REN REN-07 and the SOORMA_CLOCK_SKEW warning, GAP-CAC-001; TH-SPN the received context parsed by the SDK, never ambient; TH-DRV U1's heap.ts imported; TH-E2E the configuration block and run(config), one process, the decoy span, the fast Date; TH-F42 the foreseen changes to U1; misuse table), business-logic-model.md (start, renewal scheduling with REN-07 and the constraints it puts on the named values, publish and forward, the scanner, subscription supervision, spans, close, the driver with a warnings report and CC-REN-06, the example and the end-to-end scenario step by step, TC-TH-067 to 074 planned and TC-TH-059, 061, 063 to be extended), l1-coverage-matrix.md (25 Covered with TypeScript implementation and verification targets, 5 N/A, 0 Missing), invariant-coverage-matrix.md (9 Covered, I4 N/A for the unit, I11 N/A; I8 packaging table: core, Apache 2.0). Gap classification: REN-07 a design gap in U1's specification (the user), not a PRD gap; no PRD gap raised. Two points put to the user at approval: (1) SPN-03 states a link to tenant code's active span for the send span of delivery.publish only, while DEC-U1-01's summary can be read as covering the receive span too; the design follows SPN-03 (the receive span links nothing; the decoy not linked), which the cases also follow (CC-SPN-03, CC-SPN-04); (2) U3-FD-Q5 A's refusal of nesting deeper than D_lang at publish narrows PUB-04 ('any JSON value, sent as given'). Also flagged: REN-07 constrains the named values (R_min < H_renew; the 14-minute offset needs H_renew >= 1 min and R_min < 1 min), and CC-REN-06 may need a stub time relative to each response. Presented the completion message: Request Changes, or Continue to Next Stage (NFR Requirements)."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design complete, awaiting approval
+
+---
+
+## U3 Functional Design — the user requests changes
+**Timestamp**: 2026-11-19T04:38:24Z
+**User Input**: "Request Changes: two rulings and one addition to REN-07.
+
+Ruling 1 (the decoy span): follow SPN-03. The link to tenant code's active span is on the send span of a forward only. The receive span is a child of the received context and links nothing. The test asserts the decoy is neither the receive span's parent nor linked from it. No spec change.
+
+Ruling 2 (Q5's depth refusal): drop the depth part. PUB-04 says any JSON value, sent as given, and the contract sets no limit on payload depth. D_lang limits parsing, and RCV-06 already handles a payload deeper than a receiver can parse (kept as text, still forwardable). Refusing at publish would make TypeScript stricter than the spec. Keep Q5's refusals for values JSON can't carry exactly. If JSON.stringify overflows the stack on a very deep payload, catch that RangeError and refuse the same way: name the problem, never the value. Update TH-PUB-01 and its test cases.
+
+Addition to REN-07: it fixes the renewal loop, but not the bootstrap loop. TH-REN-05 keeps REN-06 as stated: an unrenewed expiry, judged on the wall clock, makes the next operation bootstrap. A client whose clock runs more than the credential lifetime ahead sees every fresh credential as already expired, so every publish or subscribe would bootstrap first: a secret-provider call and a new lineage each time. That's the same flood, through bootstrap. Add to REN-07: once the clock-skew warning has fired for a lineage, the SDK stops judging that lineage's expiry on the wall clock and relies on S3. It keeps renewing at the floor, and a 401 credential_expired bootstraps as REN-04 already says. Add to CC-REN-06, or a second case: the stub issues a credential whose expiresAt is already past on the client's clock. The client doesn't bootstrap before each operation, uses the credential until the stub answers credential_expired, then bootstraps once. Drop the R_min < H_renew constraint from business-logic-model §5 if it no longer applies, and say why.
+
+Log this message word for word in audit.md, update the artifacts, commit signed off, push, wait for CI, then present the completion message again."
+**AI Response**: "Applying: ruling 1 (SPN-03 governs; the receive span links nothing; the test asserts the decoy neither parent nor linked; no spec change); ruling 2 (TH-PUB-01 without the depth refusal; a RangeError from JSON.stringify on a very deep payload caught and refused the same way, naming the problem, never the value; TC-TH-070 updated); REN-07 extended (after the lineage's clock-skew warning, its expiry is no longer judged on the wall clock: S3 decides; renewing at the floor; 401 credential_expired bootstraps per REN-04), as a second case CC-REN-07; the R_min < H_renew constraint reviewed in business-logic-model §3 (where the constraints were written; the user's message says §5)."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design, Request Changes
+
+---
+
+## U3 Functional Design — changes applied; approval prompt
+**Timestamp**: 2026-11-19T04:39:39Z
+**User Input**: (none)
+**AI Response**: "Changes applied. Ruling 1: TH-SPN-04 follows SPN-03 (the forward's send span links tenant code's active span; the receive span links nothing; no specification change); TH-E2E-03 and business-logic-model §7 and §10 step 8 assert the decoy is neither the receive span's parent nor linked from it. Ruling 2: TH-PUB-01 refuses only values JSON cannot carry exactly; depth is not limited (PUB-04; RCV-06); a RangeError from JSON.stringify on a very deep payload is caught and refused as a TypeError naming the problem, never the value; TC-TH-070 updated. REN-07 extended (TH-REN-01, TH-REN-05; business-logic-model §3 algorithm and Renew step 6; domain-entities §5 'clock-skew warned', §7): after the lineage's warning, its expiry is no longer judged on the wall clock; the credential is used until S3 answers 401 credential_expired, then one bootstrap (REN-04). New case CC-REN-07 (bootstrap with expiresAt already past; three publishes on the first credential, no bootstrap before them; the floored renewal answered credential_expired; exactly two bootstraps; one warning), added to TH-F42-02, TH-DRV-03, the L1 rows L1-13 and L1-16, and TC-TH-075 planned. Constraints in business-logic-model §3 (the user's message says §5; the constraints are in §3): R_min < H_renew dropped, because the warning hands the lineage's expiry to S3 so the client's clock no longer decides it; what remains is R_min well under the 15-minute lifetime (otherwise one bootstrap per lineage, bounded), and the 14-minute offset needs H_renew of at least 1 minute (the upper bound on the offset is gone). Misuse table: the bootstrap flood added. Presented the completion message again: Request Changes, or Continue to Next Stage (NFR Requirements)."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design revised, awaiting approval
+
+---
+
+## U3 Functional Design — the user approves
+**Timestamp**: 2026-11-19T04:45:45Z
+**User Input**: "Continue to Next Stage: U3 Functional Design approved, as revised in 8c65ed1.
+
+One instruction for Code Generation. "While the credential is valid" appears in more places than REN-06's bootstrap:
+- REN-06's retry of a 503 on renewal;
+- PRB-09's renewal retry while unexpired;
+- the stream supervisor's resubscribe (S-3).
+On a skewed lineage, a wall-clock check in any of them would end retries or resubscription while S3 still accepts the credential. Implement a single validity check that every such place uses: on a lineage with the clock-skew warning it answers valid until S3 says credential_expired, and otherwise uses the wall clock. Nowhere else compares expiresAt with Date.now() to decide validity. Add a unit test: on a skewed lineage, a 503 on renewal is retried, and a dropped stream is resubscribed, without a bootstrap. Note it in the Code Generation plan when you write it.
+
+Log this message word for word in audit.md, then start U3's NFR Requirements."
+**AI Response**: "Functional Design APPROVED as revised in 8c65ed1. The instruction is recorded for Code Generation as CDI-06 under Carried Design Inputs (one validity check in keeper.ts used by REN-06's bootstrap, REN-06's 503 retry on renewal, PRB-09's renewal retry, and the stream supervisor's resubscribe; on a warned lineage valid until S3 answers credential_expired, otherwise the wall clock; nothing else compares expiresAt with Date.now() to decide validity; a unit test for a skewed lineage's 503 renewal retry and dropped-stream resubscribe without a bootstrap), to be noted in U3's Code Generation plan. Starting NFR Requirements."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design APPROVED
+
+---
+
+## U3 NFR Requirements — questions written
+**Timestamp**: 2026-11-19T04:48:15Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements plan with 8 questions written to construction/working/typescript-harness-nfr-requirements-plan.md (git-ignored). Step 1.5 (harness): seeded from PF §11 Harness Surface and §14 Harness Surface Register read at prd-platform-foundations-v1.3 (80dd7c98): every operation advisory; compatibility additive; the renewal precondition part of the contract; no server-side property; no number set by the PRD; the initiative's NFR-01 to NFR-11 carry it. Questions: U3-NFR-Q1 the named values (recommended H_renew 120 s, R_min 30 s, R_max 5, W_max 60 s, B 0.5 s x2 to 10 s, L_ends 5, W_super 10 s, N_buf 64, D_lang 512, T_idle 45 s, T_req 10 s); Q2 node:https; Q3 the trust store (checked here: tls.getCACertificates('system') returns 0 certificates on macOS with Node 24.22.3 and 26.13.0, bundled 118; recommended system plus bundled plus the CA); Q4 ESM only, built with tsc; Q5 C-10 by a script reusing the vendored generator, agent side only, every envelope member optional; Q6 a peer dependency on @opentelemetry/api ^1.9.0, tested at 1.10.0 and 1.9.0, messaging conventions at semantic conventions 1.45.0 (released 2026-11-06, past the cooldown) as constants; Q7 conformance-typescript on Node 24 and 26 with OBL-04's second user, e2e-typescript on Node 24 (JOB-06), package-typescript (pack, install, the agent file copied); Q8 NFR-01 shown by design and request counts, no benchmark. Awaiting the user's answers."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements, awaiting answers
+
+---
+
+## U3 NFR Requirements — answers
+**Timestamp**: 2026-11-19T04:55:32Z
+**User Input**: "Answers for U3's NFR Requirements: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q7 A, Q8 A.
+
+Q4, one detail: Node 24's require() of ESM resolves the package's exports map with the "require" condition. An exports map with only an "import" entry would make require('@soorma/sdk') fail, despite what Q4 promises CommonJS callers. Give the exports map a "default" entry (types first), and have package-typescript prove both: in the fresh project, one file that imports the package and one CommonJS file that require()s it, each constructing an AgentClient.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Requirements artifacts, decide whether U3's NFR Design stage runs, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U3-NFR-Q1 A; U3-NFR-Q2 A; U3-NFR-Q3 A; U3-NFR-Q4 A, with the user's detail (the exports map has a \"default\" entry, \"types\" first; package-typescript proves an ESM import and a CommonJS require() in the fresh project, each constructing an AgentClient); U3-NFR-Q5 A; U3-NFR-Q6 A; U3-NFR-Q7 A; U3-NFR-Q8 A. Generating the NFR Requirements artifacts and deciding on NFR Design."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements answers (U3-NFR-Q1 to Q8)
+
+---
+
+## U3 NFR Requirements — artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T04:57:00Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements for typescript-harness: nfr-requirements.md (NFR-U3-01 to 27: the harness profile carried from PF §11 and §14; performance on the request path, shown by design and request counts; the named values H_renew 120 s, R_min 30 s, R_max 5, W_max 60 s, B 0.5 s x2 to 10 s, L_ends 5, W_super 10 s, N_buf 64, D_lang 512, T_idle 45 s, T_req 10 s in one module; one retry policy; one validity check (CDI-06); resources released, no unhandled rejection; TLS with the OS store, Node's bundled store and the CA; hygiene; the secret not retained; REN-07's flood bounds; CC-SEC-05 in CI with the second user (OBL-04); one runtime peer dependency @opentelemetry/api ^1.9.0, tested at 1.10.0 and 1.9.0; semantic conventions 1.45.0; ESM only with an exports map of types then default, so require() works under Node 24 (the user's Q4 detail); generated types from the vendored generator, agent side only; packaging guard on typescript/ and the tarball; package-typescript proving an ESM import and a CommonJS require() each constructing an AgentClient, and the agent file copied in; conformance-typescript on Node 24 and 26; e2e-typescript on Node 24, over 8 minutes reopens the stage; the README's contents). tech-stack-decisions.md (TS-U3-01 to 13; the jobs added and changed). Decision: NFR Design runs for U3 (the retry policy, the single validity check, the subscription supervisor's state machine, the clock seam for tests, the trust-store composition, the CI user helper). No PRD gap. Presented the completion message: Request Changes, or Continue to Next Stage (NFR Design)."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements complete, awaiting approval
+
+---
+
+## U3 NFR Requirements — the user approves, with a correction
+**Timestamp**: 2026-11-19T05:02:26Z
+**User Input**: "Continue to Next Stage: U3 NFR Requirements approved.
+
+One correction, to make in NFR Design's compliance summary and in nfr-requirements.md: SECURITY-12 isn't N/A as a whole. Its password, session, MFA and lockout clauses are server-side and N/A for a client library. Its no-hardcoded-credentials clause applies, and U3 complies with it, as your Functional Design said:
+- secrets come only through a provider (fileSecret);
+- the example's settings block names a secret file, never a secret;
+- the lint rule refuses process.env in the package;
+- tests and fixtures use generated or clearly fake values.
+Record SECURITY-12 per clause, like that.
+
+Log this message word for word in audit.md, then start U3's NFR Design."
+**AI Response**: "NFR Requirements APPROVED. SECURITY-12 recorded per clause in nfr-requirements.md (a new Security Compliance section): password policy, credential storage, MFA, session management and brute-force protection N/A (server-side; a client library); no hardcoded credentials Compliant (secrets only through a provider, fileSecret; the example's block names a secret file, never a secret; the lint rule refuses process.env in the package; tests and fixtures use generated or clearly fake values). The same per-clause record goes into NFR Design's compliance summary. Starting NFR Design."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements APPROVED; NFR Design next
+
+---
+
+## U3 NFR Design — questions written
+**Timestamp**: 2026-11-19T05:03:24Z
+**User Input**: (none)
+**AI Response**: "NFR Design plan with 3 questions written to construction/working/typescript-harness-nfr-design-plan.md (git-ignored). Decided as technology, not asked: one retry policy function used by the keeper and the subscription, holding the classification table, Retry-After first, backoff, R_max and W_max, aborted by close(), never used by publish; one validity check, keeper.isUsable(), with its four callers (CDI-06) and a source check against any other expiresAt and Date.now() comparison; the CI user helper as a conformance-typescript step (sudo useradd soorma-foreign, then --foreign-user soorma-foreign; U1's runner already chowns with sudo -n). Questions: U3-NFR-D-Q1 the clock seam (one internal clock.ts driven by Vitest's fake timers, recommended); Q2 the supervisor (an explicit state machine with a bounded queue and socket pause, recommended); Q3 when the CA file is read (at start(), TransportError ca-file, the store fixed for the client's life, recommended). Awaiting the user's answers."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design, awaiting answers
+
+---
+
+## U3 NFR Design — answers
+**Timestamp**: 2026-11-19T05:13:36Z
+**User Input**: "Answers for U3's NFR Design: Q1 A, Q3 A. Q2: A, with three changes.
+
+Pausing a socket when the queue is full is the right way to meet SUB-06, but as designed it conflicts with two timers:
+- T_idle: while a socket is paused, the SDK reads nothing, heartbeats included. A consumer slower than 45 s would make T_idle declare the stream dropped. The SDK would then yield an end with no code and resubscribe, losing the events still in the paused socket. SUB-06 says the opposite: a slow consumer lets the platform's buffer fill, and the platform's overflow end is surfaced.
+- W_super: during a replacement, held Deliveries from the new stream count against N_buf. If they fill it, the old stream is paused too and can't deliver its remaining items or its superseded end. W_super then expires and the old stream is closed with its unread items discarded.
+
+Changes:
+1. T_idle and W_super count only while their stream's socket is being read. A stream paused for backpressure can't time out; the platform's overflow end is the signal for that case. Resume restarts T_idle from zero.
+2. During a replacement, pause the new stream once it's open (after its started is queued per STR-05), until the old stream has ended or W_super, counted as in item 1, has expired. The new stream's Deliveries then wait upstream instead of using the buffer, so they can't starve the old stream. STR-05 allows this: it only says Deliveries read early are held.
+3. Put these in U1's spec, since they're language-neutral: a sentence in STR-02 ("silence while the SDK is reading the stream") and one in STR-05 (the timers pause with backpressure, and the new stream may be paused until the old one ends). Add conformance cases:
+   - a consumer that doesn't pull for longer than T_idle gets no end with code null and no resubscribe, and receives every Delivery once it pulls;
+   - a replacement with a full buffer yields the old stream's remaining Deliveries, then its superseded end, then the new stream's, with no W_super close.
+   Record them as changes to an earlier unit's tests (F42), and have the reference driver declare them if it can; the self-test's fault sets stay unchanged.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Design artifacts and present the completion message."
+**AI Response**: "Answers recorded by question ID: U3-NFR-D-Q1 A; U3-NFR-D-Q2 A with the three changes (T_idle and W_super count only while their stream's socket is read; resume restarts T_idle; during a replacement the new stream is paused once open until the old stream ends or W_super expires; STR-02 and STR-05 sentences added to U1's specification; two conformance cases; F42; the reference driver declares them if it can; the fault sets unchanged); U3-NFR-D-Q3 A. Reading of change 2: STR-05 orders the new stream's started after the old stream's ended, so the new stream's started is held and queued in that order while its socket stays paused. Generating the NFR Design artifacts."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design answers (U3-NFR-D-Q1 to Q3)
+
+---
+
+## U3 NFR Design — artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T05:16:00Z
+**User Input**: (none)
+**AI Response**: "NFR Design for typescript-harness: nfr-design-patterns.md (P-01 the retry policy and its classification table; P-02 the validity check keeper.isUsable() with its four callers and a source check (CDI-06); P-03 renewal scheduling with REN-07; P-04 the supervisor: states opening, open, replacing, backingOff, terminal, closed, a transition table, the bounded queue with socket pause, and the user's three changes: T_idle and W_super count only while their stream's socket is read, a resume restarts T_idle, the new stream paused once open during a replacement until the old stream ends or W_super expires, its started held and queued after the old stream's ended (STR-05's order); the sentences for STR-02 and STR-05; CC-STR-12 and CC-STR-13 (CC-STR-11 already exists); CC-STR-12 waits out T_idle, 45 s, the suite budget checked at Code Generation; P-05 the clock seam, clock.ts with Vitest fake timers; P-06 the trust store built at start(), TransportError ca-file; P-07 resource release, no unhandled rejection; P-08 hygiene: a retried bootstrap calls the provider once per attempt, as U1's reference driver does, so SEC-02 holds between attempts and SEC-01 reads as once per attempt; P-09 the iterative scanner and payload check; P-10 the CI user helper; the security compliance summary with SECURITY-12 per clause, as the user recorded it; the invariant compliance), logical-components.md (the package's modules and their one-way dependencies; lint rules; the private packages; the changes to U1's components; the CI components; NFR to component). Functional Design kept consistent: TH-F42-02 gains the STR-02 and STR-05 sentences and CC-STR-12, CC-STR-13; business-logic-model §6's open and same-lineage rows. No PRD gap. Presented the completion message: Request Changes, or Continue to Next Stage (QA test specs, construction enrichment)."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design complete, awaiting approval
+
+---
+
+## U3 NFR Design — the user approves, with an addition to the F42 list
+**Timestamp**: 2026-11-19T05:24:09Z
+**User Input**: "Continue to Next Stage: U3 NFR Design approved, with one addition to the F42 list.
+
+P-08's reading of SEC-01 (once per bootstrap attempt) is right: holding the secret through a backoff wait would break SEC-02. But it changes what SEC-01 says, and it's language-neutral, so it belongs in the spec, not only in TypeScript's design. A Python implementation following SEC-01 literally would hold the secret between attempts, and no case would catch it, because the cases count requests on a retried bootstrap, not provider calls.
+
+Add to the F42 list:
+- SEC-01 reworded: the SDK calls the provider exactly once per bootstrap attempt, and never at client creation, renewal, publish or subscribe. A retried bootstrap calls it again, and no reference to an earlier attempt's secret remains during the backoff wait (SEC-02).
+- A conformance case, CC-ACQ next number: the stub answers a bootstrap with 503 and Retry-After, then 200. The driver reports exactly two provider calls and two requests. If the driver protocol can do it, the CDI-02 heap check after the first attempt's request finds no copy of the secret during the wait.
+- The reference driver declares it if it already behaves that way (it does, per P-08); the self-test's fault sets stay unchanged.
+
+Log this message word for word in audit.md, then go on to QA enrichment for U3."
+**AI Response**: "NFR Design APPROVED. Added to the F42 list (business-rules TH-F42-02, logical-components §3, nfr-design-patterns P-08, domain-entities §7): SEC-01 reworded (exactly once per bootstrap attempt; never at creation, renewal, publish or subscribe; a retried bootstrap calls it again; no reference to an earlier attempt's secret during the backoff wait, SEC-02); a new case, the next CC-ACQ number (503 with Retry-After, then 200; exactly two provider calls and two requests; the CDI-02 heap check during the wait if the protocol can do it); the reference driver declares it; the fault sets unchanged. Going on to QA enrichment for typescript-harness."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design APPROVED; QA enrichment next
+
+---
+
+## U3 QA test specs — construction enrichment
+**Timestamp**: 2026-11-19T05:26:56Z
+**User Input**: (none)
+**AI Response**: "Construction enrichment for typescript-harness (qa-test-cases §2): sources construction/typescript-harness/functional-design/, nfr-requirements/, nfr-design/ (no infrastructure design). test-specs-narrative.md enriched in place: 29 cases modified with their IDs and forward links unchanged (TC-TH-003, 004, 006, 008, 011, 013, 015, 017, 018, 019, 021, 026, 027, 037, 040, 041, 044, 050, 054, 055, 056, 058, 059, 061, 062, 063, 064, 065, 066), among them TC-TH-058 (package-typescript: an ESM import and a CommonJS require each constructing an AgentClient), TC-TH-059 (the matrix, OBL-04's second user, the added cases, CDI-05's rule), TC-TH-061 (the fast Date, one real renewal, none before R_min), TC-TH-063 (the decoy span); TC-TH-067 to 080 added with forward links to construction/typescript-harness/code/ (the eight planned at Functional Design, and 076 CDI-06, 077 CC-STR-12, 078 CC-STR-13, 079 CC-ACQ-08, 080 the CA file). test-case-index.md: 14 rows added. enrichment-delta.md written (git-ignored). 80 cases. Next: the Construction Design PR gate."
+**Context**: CONSTRUCTION — U3 typescript-harness, QA enrichment complete
+
+---
+
+## U3 Construction Design PR gate — the user confirms the branch
+**Timestamp**: 2026-11-19T05:32:43Z
+**User Input**: "Yes, open U3's Construction Design PR, dev → main, as for #9 and #16. Wait for every check, including DCO and dependency review, record its state with the run IDs, and stop with the PR number. Don't record it merged until I tell you it is and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Opening the design PR from dev to main. Instructions written to construction/working/typescript-harness-design-pr-checkpoint-instructions.md (git-ignored); gate recorded PENDING in aidlc-state.md. Committing signed off, pushing, opening the PR, then waiting for every check (CI, DCO, dependency review) and recording the state with the run IDs. Stopping with the PR number; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U3 typescript-harness, Construction Design PR gate (pr-checkpoint §5); branch confirmed: dev → main
+
+---
+
+## U3 Construction Design PR gate — PR #18 opened, checks green
+**Timestamp**: 2026-11-19T05:35:38Z
+**User Input**: (none)
+**AI Response**: "Design commit 1bc3c54 (signed off) pushed to dev. PR soorma-ai/soorma-sdk#18 (dev → main) opened 2026-11-19T05:33:14Z. Every check green at head 1bc3c54 by 2026-11-19T05:35:24Z: CI run 44465960245 (pull request: unit, checks, conformance self-test, changes, dependency review; e2e skipped, aidlc-docs/ only), DCO run 44465960292 (Check sign-off), CI run 44465951245 (push to dev; e2e skipped). Recorded CHECKS_GREEN in aidlc-state.md. Stopping for the user's merge; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U3 typescript-harness, Construction Design PR gate, CHECKS_GREEN
+
+---
