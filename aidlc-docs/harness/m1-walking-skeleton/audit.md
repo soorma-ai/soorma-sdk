@@ -1175,3 +1175,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G4
 
 ---
+
+## U2 Code Generation — G5 gate green; the local run
+**Timestamp**: 2026-11-19T03:51:26Z
+**User Input**: (none)
+**AI Response**: "G5 (Steps 21 to 25). ci.yml: job changes (soorma-core's diff script, output e2e; skipped on a push to main) and job e2e (needs changes, if e2e == 'true'; ubuntu-24.04; 20 minutes; Node 26.13.0 then its path kept, then Node 24; frozen install; core-up --core-node \"$CORE_NODE\" through env; setup --agents agent-a,agent-b; prove-stack; core-down with if: always(), --logs unless job.status is success; no cache, no artifact, no secret). e2e/src/workflow.test.ts (11 tests: TC-ES-008(b) running the step's script with a fake pnpm for success, failure, cancelled; TC-ES-009; TC-ES-010 running the changes script in a temporary git repository). DEPENDENCIES.md: the approved text verbatim under 'The end-to-end stack'. README.md: e2e/ row and 'The end-to-end stack' section (prerequisites, commands, side effects, refusal). e2e/README.md. Gate green on Node 24.22.3: 185 tests; self-test pass (84 s). Local run (the user approved; checked first at 2026-11-19T03:47:57Z: no soorma-local project or volume, ports 8441 to 8447 free, so not stopped): (a) core-up 0 (38 s), setup 0, prove-stack 0 (agent-a, agent-b 200 pass), core-down 0 (16 services searched, clean); (b) core-up, setup, prove-stack all 0, core-down --logs 0 (16 services searched, clean, printed; the gateways' logs hold the run's operations as events: signin.issued, signin.ended, credential.issued, grant.made, registration.created x2, secret.issued x2, credential.ended, credential.refused, and two bootstraps); (c) setup --agents agent-a,agent-a exit 1 'the agent identifiers must be distinct', marker still present, core-down 0. After each: no soorma-local project or volume, .e2e/ empty. The soorma/*:local images were rebuilt (the documented side effect)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G5
+
+---

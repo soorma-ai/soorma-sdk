@@ -27,6 +27,25 @@ affected package is no longer installed, and the exception is then removed in a 
 
 - **`@types/node` stays on `engines.node`'s major** (Node 24). Types for a newer major would let code use APIs Node 24 does not have, so `.github/dependabot.yml` ignores `@types/node`'s semver-major updates; minor and patch updates still arrive. Its major is changed by hand, in the same change that moves `engines.node`.
 
+## The end-to-end stack
+
+**soorma-core's dependencies, in the end-to-end stack.** `e2e/core-up` installs soorma-core at
+`contract-v0.1.0` with its own frozen lock file. This repository does not audit those packages,
+for these reasons:
+
+- **No install scripts run.** soorma-core's `pnpm-workspace.yaml` at the tag sets
+  `strictDepBuilds: true` and `allowBuilds: {}`. `core-up` checks both and refuses a clone
+  without them.
+- **Short-lived and unprivileged.** The clone runs only as a stack inside a job with
+  `contents: read` and no repository secrets, and `e2e/core-down` takes it down.
+- **Kept apart.** Its packages never enter this repository's packages, lock file or audit.
+- **Frozen at the tag.** soorma-core's own CI audits soorma-core's latest code, not the lock
+  file at the tag, so it is no check for the tag. An advisory against the tag is soorma-core's to
+  fix and reaches this repository only through a new contract tag. It is not chased here.
+
+**Known instance**: the tag's lock file holds `picomatch@4.0.7`, affected by
+GHSA-fc5q-39xc-vjpf (soorma-core#35). It also fails soorma-core's own audit today.
+
 ## Install scripts
 
 None allowed (`strictDepBuilds: true`, `allowBuilds: {}`).

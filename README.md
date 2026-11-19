@@ -30,6 +30,7 @@ does as a courtesy the platform independently re-checks.
 | [`contract/`](contract/) | soorma-core's wire contract at `contract-v0.1.0`, byte for byte; never edited (see [`contract.md`](contract.md)) |
 | [`spec/`](spec/) | The [behaviour specification](spec/behaviour.md) every language implements, and the [name table](spec/names.md) |
 | [`conformance/`](conformance/) | The conformance suite: cases, runner, stub, and the test-only reference driver ([README](conformance/README.md)) |
+| [`e2e/`](e2e/) | The end-to-end stack: a fresh soorma-core at the contract tag, with agents registered, for the end-to-end tests ([README](e2e/README.md)); never part of a package |
 | [`tools/`](tools/) | Repository checks: contract drift, SPDX, workflows, generated types, names, packaging, DCO, audit exceptions |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | Every exception to the dependency policy |
 
@@ -58,6 +59,41 @@ read-only permissions.
 authored by `dependabot[bot]` **and** verified (GitHub signs Dependabot's commits); a failed
 lookup fails the check. Dependabot updates npm packages and actions weekly, after a 7-day
 cooldown, into `dev`.
+
+### The end-to-end stack
+
+The end-to-end tests run against a fresh soorma-core at `contract-v0.1.0`, brought up from
+soorma-core's own code and taken down again ([`e2e/`](e2e/README.md)). The same four commands run
+in CI's `e2e` job and on your machine:
+
+```sh
+pnpm e2e:core-up --core-node "$(nvm which 26.13.0)"   # clone soorma-core at the tag, build, start
+pnpm e2e:setup --agents agent-a,agent-b              # register the agents; write their secret files
+pnpm e2e:prove-stack                                 # one bootstrap per agent: the stack works
+pnpm e2e:core-down                                   # search soorma-core's logs, then take it all down
+```
+
+**Prerequisites**: Linux or macOS (Windows is not supported in M1); Docker Engine 26 or later and
+Docker Compose 2.26.0 or later (soorma-core's floor); `git`; and **Node.js 26.13.0** for
+soorma-core's own steps, passed as `--core-node` (this repository's tooling stays on Node 24).
+`core-up` checks each before it creates anything.
+
+**What it does to your machine**:
+
+- It **rebuilds the `soorma/org-gateway:local`, `soorma/control-gateway:local`,
+  `soorma/data-gateway:local` and `soorma/event-ingest:local` images**, replacing any you built
+  yourself.
+- While the stack is up, it uses the **`soorma-local`** Compose project and **ports 8441 to
+  8447** on loopback.
+- **`core-up` refuses rather than stop a stack it did not start**: if a `soorma-local` project or
+  its volumes exist (your own soorma-core stack, for example), it stops and tells you; remove
+  them yourself.
+- Everything it writes is under `.e2e/` (git-ignored), and `core-down` removes it, with the
+  stack and its volumes.
+
+`core-down` searches every service's log for credentials and secrets before it takes the stack
+down, and fails if it finds one (a soorma-core logging defect, to raise against soorma-core) or
+cannot read a log. `core-down --logs` also prints the logs when they are clean.
 
 ## Licence
 
