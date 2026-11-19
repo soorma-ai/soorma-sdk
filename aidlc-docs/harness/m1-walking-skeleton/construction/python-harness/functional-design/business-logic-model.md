@@ -100,14 +100,19 @@ scan(line):                                       # explicit stack, no recursion
   expect end of line
   require exactly one envelope (object), seal (string), payload (any)
 envelope = deep_freeze(json.loads(envelope_text))  # only if depth <= D_lang, else DeliveryError
-payload  = json.loads(payload_text) if depth <= D_lang else absent; payload_parsed = depth <= D_lang
+payload  = json.loads(payload_text) if depth <= D_lang else absent    # a ValueError (digit limit) or
+           # RecursionError here also leaves it absent: payload_parsed False (PH-RD-06)
+# an envelope that fails json.loads after the scan: DeliveryError envelope-unparsed (PH-RD-03)
 ```
 
 Text alternative: as U3's reader, written for Python. One pass records each top-level member's
 exact text and depth without building a value, so `json.loads` only ever sees text within
 `D_lang`, which is set at NFR Requirements well under CPython's recursion limit. The envelope is
 deeply frozen (mapping proxies and tuples); the payload is plain JSON types, fresh for each
-Delivery. Anything malformed, including the non-standard tokens `NaN` and `Infinity`, becomes a
+Delivery. **A payload that passed the scan but still fails to parse** (an integer longer than
+the process's digit limit, which `json.loads` refuses since Python 3.11, or `RecursionError`) is
+left unparsed exactly as a too-deep one, and reading `payload` then raises `PayloadNotParsed`. The
+SDK never changes the process-global digit limit. Anything malformed, including the non-standard tokens `NaN` and `Infinity`, becomes a
 `DeliveryError`, and the stream continues.
 
 ## 6. Subscribing and Stream Supervision (SUB, STR; P-04 as U3's)
@@ -195,7 +200,7 @@ CC-REN-06, CC-REN-07, CC-ACQ-08, CC-STR-12, CC-STR-13 among the cases), TC-PH-06
 | TC-PH-067 | `file_secret` is refused on Windows without opening the path | PH-SEC-02; SEC-09 |
 | TC-PH-068 | A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error | PH-RD-02 |
 | TC-PH-069 | Every member of the `Envelope` type is optional, and the envelope is read only | PH-RD-03, PH-RD-05; RCV-08; CDI-04 |
-| TC-PH-070 | `publish` refuses a payload JSON cannot carry exactly, naming the path, never the value; a very deep payload is sent | PH-PUB-01 |
+| TC-PH-070 | `publish` refuses a payload JSON cannot carry exactly (an over-long `int` included), naming the path, never the value; a very deep payload is sent | PH-PUB-01 |
 | TC-PH-071 | Leaving `async with` closes the subscription; a process whose main coroutine returns exits | PH-LIFE-02, PH-LIFE-04 |
 | TC-PH-072 | A client whose clock runs fast renews at most once per `R_min` and warns once per lineage | PH-REN-01, PH-REN-03 |
 | TC-PH-073 | An envelope nested deeper than `D_lang` is a delivery error; the stream continues | PH-RD-03 |
@@ -204,6 +209,7 @@ CC-REN-06, CC-REN-07, CC-ACQ-08, CC-STR-12, CC-STR-13 among the cases), TC-PH-06
 | TC-PH-076 | An unclosed subscription or client, collected, closes its socket synchronously and emits a `ResourceWarning` naming it | PH-LIFE-03 |
 | TC-PH-077 | With warnings set to error, the skew path still renews at the floor | PH-REN-04 |
 | TC-PH-078 | A module binding `time.time`, `time.time_ns` or `datetime.now` at import fails the clock check | PH-CLK-02 |
+| TC-PH-079 | A payload holding a 5000-digit integer, on 3.11 and the newest release: `payload_parsed` is `False`, `payload` raises `PayloadNotParsed`, `payload_text` exact, the envelope and seal intact and forwardable; `sys.get_int_max_str_digits()` unchanged; publishing such an `int` is refused with the path, never the value | PH-RD-06, PH-RD-07, PH-PUB-01 |
 
 ## 12. Values Left to NFR Requirements
 

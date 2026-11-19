@@ -43,7 +43,7 @@ protocol members, not table rows.
 | `TraceContext` | frozen dataclass: `traceparent: str`, `tracestate: str \| None` | DRF-02 |
 | `Subscription` | class (U4-FD-Q2): async iterator (`__aiter__`, `__anext__`) of `SubscriptionItem`; async context manager (`__aexit__` closes); `async close()`; a finalizer that, if the subscription is collected unclosed, aborts its socket and cancels its timers synchronously and emits a `ResourceWarning` | SUB-01, SUB-07, PRB-07 |
 | `SubscriptionItem` | `Delivery \| DeliveryError \| StreamStarted \| StreamEnded`, told apart **by class** (the name table's Python cell for the item kind: "the class") | STR-01, STR-02, RCV-07 |
-| `Delivery` | class: `envelope: Envelope` (read only); `envelope_text: str`; `seal: str`; `payload: JsonValue` (absent beyond `D_lang`: the attribute raises `AttributeError`; check `payload_parsed`); `payload_text: str`; `payload_parsed: bool`; `async publish(payload) -> PublishAccepted` (forwards) | RCV-02, RCV-05, RCV-06, FWD-01 |
+| `Delivery` | class: `envelope: Envelope` (read only); `envelope_text: str`; `seal: str`; `payload: JsonValue` (absent when not parsed, beyond `D_lang` or on a parse failure: the attribute raises `PayloadNotParsed`; check `payload_parsed`); `payload_text: str`; `payload_parsed: bool`; `async publish(payload) -> PublishAccepted` (forwards) | RCV-02, RCV-05, RCV-06, FWD-01 |
 | `DeliveryError` | frozen dataclass: `reason: str`, `text: str` | RCV-07 |
 | `StreamStarted` | frozen dataclass, no fields | STR-01 |
 | `StreamEnded` | frozen dataclass: `code: str \| None`, `terminal: bool` | STR-02, STR-03, STR-07 |
@@ -54,6 +54,7 @@ protocol members, not table rows.
 | `TransportError` | `reason: str`: `tls`, `connection`, `timeout`, `unusable-response`, `ca-file`, an open set; no response body | CFG-04, ACQ-08, PRB-08 to PRB-10 |
 | `SecretSourceError` | `reason: str` (`not-regular-file`, `owned-by-another-user`, `readable-by-others`, `writable-by-group`, `writable-by-others`, `unreadable`, `unsupported-platform`, `provider-failed`); `path: str \| None` | SEC-05, SEC-08, SEC-09 |
 | `ClientStateError` | `state: str` (`created`, `starting`, `closed`, `revoked`, `subscribed`); `problem: ProblemError \| None` when revoked | ACQ-07, REN-05, SUB-04 |
+| `PayloadNotParsed` | **new name-table row, Python only** (the user, at the Functional Design approval): `AttributeError` subclass raised by `Delivery.payload` when the payload was not parsed; its message says so and points to `payload_parsed` and `payload_text`, holding no payload text | RCV-06 |
 | `SoormaWarning` | **new name-table row, Python only** (U4-FD-Q7, approved as a change to U1's spec): `UserWarning` subclass with `code: str` (`"SOORMA_CLOCK_SKEW"`); the category tenant code filters on | REN-07 |
 
 **Not exported**: no draft builder, transport, keeper, clock or reader; no S1 or S2 type; the
@@ -77,7 +78,7 @@ values hook.
 | `_subscription.py` | C-17 | `Subscription`: the pull buffer (`N_buf`), stream supervision (P-04 as U3's), replacement, boundaries, ends, backoff, `L_ends`, `W_super`, `T_idle`; the finalizer | `Last-Event-ID`; any continuity claim |
 | `_reader.py` | C-18 | The iterative delivery-line scanner (U4-FD-Q3); `Delivery`, `DeliveryError`; deep freezing of the envelope | Schema validation; recursion |
 | `_tracing.py` | C-19 | Send and receive spans through `opentelemetry-api` only (SPN-01 to SPN-07; DEC-U1-01) | An exporter, sampler or provider |
-| `_errors.py` | C-20 | The five error classes, and `SoormaWarning` | A secret, credential or payload in a message |
+| `_errors.py` | C-20 | The five error classes, `PayloadNotParsed` and `SoormaWarning` | A secret, credential or payload in a message |
 | `__init__.py` | — | `__all__`: exactly the name table's Python column | Any other public name |
 
 ## 4. The Client's States
@@ -121,5 +122,6 @@ from any state makes it *closed*. `async with` closes on exit but does not start
 | Item | Kind | Where |
 |---|---|---|
 | **`SoormaWarning` row** | Name table: `\| warning category \| — \| \`SoormaWarning\` \|`, the TypeScript cell without a backticked name (approved by the user with U4-FD-Q7, like `state`) | `spec/names.md` |
+| **`PayloadNotParsed` row** | Name table: `\| payload not parsed \| — \| \`PayloadNotParsed\` \|`; TypeScript leaves `payload` `undefined` instead (approved at the Functional Design approval) | `spec/names.md` |
 | Python idioms in the names check | The Python driver reports public names only (no leading underscore), so dunders never reach the check; `IDIOMS` already lists the async dunders | `tools/names/drivers.json` gains the Python driver |
 | Any case found wrong when first run under Python | Judged under CDI-05; never edited quietly; class 3 stops for the user | — |

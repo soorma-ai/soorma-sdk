@@ -1735,3 +1735,27 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: Construction, U4 python-harness, Functional Design Step 6 and 7
 
 ---
+
+## U4 python-harness — Functional Design: approved, with two changes
+**Timestamp**: 2026-11-19T21:02:53Z
+**User Input**: "Continue to Next Stage: U4 Functional Design approved, with two changes recorded before NFR Requirements.
+
+1. Python's own limit on integer length. Since Python 3.11, json.loads raises ValueError on an integer longer than sys.get_int_max_str_digits() (4300 by default); I confirmed it on 3.12 and 3.13. A delivery whose payload holds such a number is valid JSON. If that ValueError escapes, the Delivery's envelope and seal are lost, which RCV-06 forbids for a too-deep payload. Rule: any failure to parse a payload that already passed the scanner's syntax check (the digit limit, RecursionError) is treated like RCV-06. The payload is left unparsed, payload_parsed is False, payload_text is kept, and the envelope and seal are intact and forwardable. Never change sys.set_int_max_str_digits: it's process-global and belongs to the tenant. Add a test case: a payload holding a 5000-digit integer, on 3.11 and the newest release. On the publish side, an int whose decimal form exceeds the limit is refused like the other unsendable values (path named, never the value), since str() would raise there too.
+
+2. Delivery.payload on an unparsed payload: raise a named subclass of AttributeError, PayloadNotParsed (or similar), whose message says the payload wasn't parsed and to check payload_parsed or use payload_text. hasattr() still works. If it's exported, add it to the name table's Python column, as with SoormaWarning.
+
+The other choices you made are accepted: the frozen keyword-only options dataclass, lone surrogates escaped as \uXXXX (as JSON.stringify does), and NaN and Infinity refused in deliveries.
+
+Log this message word for word in audit.md, update the artifacts, commit signed off, push, wait for CI, then start U4's NFR Requirements."
+**AI Response**: "Functional Design approved with two changes, made in the artifacts before NFR Requirements: (1) a payload that passed the scanner but fails to parse (the integer digit limit, RecursionError) is treated as RCV-06; sys.set_int_max_str_digits is never changed; a planned test case with a 5000-digit integer on 3.11 and the newest release; on publish, an int whose decimal form exceeds the process's limit is refused with the path, never the value. (2) Delivery.payload on an unparsed payload raises PayloadNotParsed, an exported AttributeError subclass, with a name-table row (Python only), as SoormaWarning. The frozen keyword-only options dataclass, lone surrogates escaped, and NaN and Infinity refused in deliveries are accepted as made."
+**Context**: Construction, U4 python-harness, Functional Design approval with changes
+
+---
+
+## U4 python-harness — Functional Design: the two changes made
+**Timestamp**: 2026-11-19T21:03:37Z
+**User Input**: (none)
+**AI Response**: "Made in the artifacts: business-rules.md PH-RD-06 (any failure to parse a payload that passed the scanner, the digit limit or RecursionError, is treated as RCV-06; sys.set_int_max_str_digits never called), PH-RD-07 (PayloadNotParsed, an exported AttributeError subclass, its message pointing to payload_parsed and payload_text, no payload text; hasattr stays False), PH-PUB-01 (an int whose decimal form exceeds the process's limit refused with the path, never the value), PH-API-01 and PH-F42-02 (the PayloadNotParsed name-table row, Python only); domain-entities.md (Delivery.payload, PayloadNotParsed, the F42 row); business-logic-model.md (the reader; TC-PH-079, a 5000-digit integer on 3.11 and the newest release; TC-PH-070 extended). One related case decided here, flagged to the user: an envelope that passed the scanner but fails to parse (an over-long integer in an unknown member) is a DeliveryError, envelope-unparsed, and the stream continues, as an envelope too deep is (PH-RD-03), since an envelope the SDK cannot parse cannot be exposed read only. Functional Design marked approved in aidlc-state.md."
+**Context**: Construction, U4 python-harness, Functional Design complete
+
+---
