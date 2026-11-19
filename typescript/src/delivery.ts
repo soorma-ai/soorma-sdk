@@ -5,6 +5,13 @@
 import { ClientStateError } from './errors.ts';
 import type { Envelope, JsonValue, PublishAccepted } from './types.ts';
 
+/** @internal How a Delivery forwards: the client's internal publish. */
+export type Forwarder = (
+  payload: JsonValue,
+  inbound: { envelopeText: string; seal: string },
+  receivedTrace: unknown,
+) => Promise<PublishAccepted>;
+
 export class Delivery {
   readonly kind = 'delivery' as const;
   readonly envelope: Envelope;
@@ -13,27 +20,36 @@ export class Delivery {
   readonly payload?: JsonValue;
   readonly payloadText: string;
   readonly payloadParsed: boolean;
+  readonly #forward: Forwarder | undefined;
 
   /** @internal Deliveries are made by the SDK only. */
-  constructor(parts: {
-    envelope: Envelope;
-    envelopeText: string;
-    seal: string;
-    payload?: JsonValue;
-    payloadText: string;
-    payloadParsed: boolean;
-  }) {
+  constructor(
+    parts: {
+      envelope: Envelope;
+      envelopeText: string;
+      seal: string;
+      payload?: JsonValue;
+      payloadText: string;
+      payloadParsed: boolean;
+    },
+    forward?: Forwarder,
+  ) {
     this.envelope = parts.envelope;
     this.envelopeText = parts.envelopeText;
     this.seal = parts.seal;
     if (parts.payload !== undefined) this.payload = parts.payload;
     this.payloadText = parts.payloadText;
     this.payloadParsed = parts.payloadParsed;
+    this.#forward = forward;
   }
 
-  /** Publishes, forwarding this Delivery's context: the default path (FWD-01). */
+  /** Publishes, forwarding this Delivery's context: the default path (FWD-01, FWD-06). */
   publish(payload: JsonValue): Promise<PublishAccepted> {
-    void payload;
-    return Promise.reject(new ClientStateError('not-implemented'));
+    if (!this.#forward) return Promise.reject(new ClientStateError('closed'));
+    return this.#forward(
+      payload,
+      { envelopeText: this.envelopeText, seal: this.seal },
+      (this.envelope as { traceContext?: unknown }).traceContext,
+    );
   }
 }

@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U3 typescript-harness, Code Generation Part 2: G1 `89aa962`, G2 `eb57cf0` pushed; G3 (secrets, transport, retry, keeper) gate green; next: G4
+- **Current Stage**: CONSTRUCTION - U3 typescript-harness, Code Generation Part 2: G1 `89aa962`, G2 `eb57cf0`, G3 `fdd2613` pushed; G4 (publish, forward, tracing) gate green; next: G5
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
