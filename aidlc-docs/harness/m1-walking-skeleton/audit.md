@@ -1183,3 +1183,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G5
 
 ---
+
+## U2 Code Generation — G6: summary and coverage
+**Timestamp**: 2026-11-19T03:57:22Z
+**User Input**: (none)
+**AI Response**: "G5 pushed as c68065c; CI run 44454329278 (push) green, the e2e job's first run: 1 min 39 s, core-up 69 s; setup's calls each as expected, the ends 204 then 401 for both credentials; prove-stack agent-a and agent-b 200 pass; core-down (no --logs) 16 services searched, clean. G6 Steps 26 and 27: construction/e2e-stack/code/code-summary.md (files, commands, groups and runs, the local run with the search's outcome per service and no log text, the two class 2 changes to U1's checks with their diffs and the refusal sweep, deviations); l1-coverage-matrix.md (5 rows Implemented, Verified; 0 Missing, 0 Unverified) and invariant-coverage-matrix.md (9 Implemented, Verified; I4, I11 N/A; I9 reviewed: soorma-core's values only in e2e/src/stack.ts plus one example URL in a doc comment; I10 confirmed: setup and prove-stack reference no Docker, Compose or host). Gate green on Node 24.22.3: 185 tests; self-test pass. This commit touches aidlc-docs/ only: its push is TC-ES-010's real case (the e2e job skipped). Next: the code PR (Step 28)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G6
+
+---
