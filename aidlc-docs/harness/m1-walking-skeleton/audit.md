@@ -1344,3 +1344,28 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements complete, awaiting approval
 
 ---
+
+## U3 NFR Requirements — the user approves, with a correction
+**Timestamp**: 2026-11-19T05:02:26Z
+**User Input**: "Continue to Next Stage: U3 NFR Requirements approved.
+
+One correction, to make in NFR Design's compliance summary and in nfr-requirements.md: SECURITY-12 isn't N/A as a whole. Its password, session, MFA and lockout clauses are server-side and N/A for a client library. Its no-hardcoded-credentials clause applies, and U3 complies with it, as your Functional Design said:
+- secrets come only through a provider (fileSecret);
+- the example's settings block names a secret file, never a secret;
+- the lint rule refuses process.env in the package;
+- tests and fixtures use generated or clearly fake values.
+Record SECURITY-12 per clause, like that.
+
+Log this message word for word in audit.md, then start U3's NFR Design."
+**AI Response**: "NFR Requirements APPROVED. SECURITY-12 recorded per clause in nfr-requirements.md (a new Security Compliance section): password policy, credential storage, MFA, session management and brute-force protection N/A (server-side; a client library); no hardcoded credentials Compliant (secrets only through a provider, fileSecret; the example's block names a secret file, never a secret; the lint rule refuses process.env in the package; tests and fixtures use generated or clearly fake values). The same per-clause record goes into NFR Design's compliance summary. Starting NFR Design."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements APPROVED; NFR Design next
+
+---
+
+## U3 NFR Design — questions written
+**Timestamp**: 2026-11-19T05:03:24Z
+**User Input**: (none)
+**AI Response**: "NFR Design plan with 3 questions written to construction/working/typescript-harness-nfr-design-plan.md (git-ignored). Decided as technology, not asked: one retry policy function used by the keeper and the subscription, holding the classification table, Retry-After first, backoff, R_max and W_max, aborted by close(), never used by publish; one validity check, keeper.isUsable(), with its four callers (CDI-06) and a source check against any other expiresAt and Date.now() comparison; the CI user helper as a conformance-typescript step (sudo useradd soorma-foreign, then --foreign-user soorma-foreign; U1's runner already chowns with sudo -n). Questions: U3-NFR-D-Q1 the clock seam (one internal clock.ts driven by Vitest's fake timers, recommended); Q2 the supervisor (an explicit state machine with a bounded queue and socket pause, recommended); Q3 when the CA file is read (at start(), TransportError ca-file, the store fixed for the client's life, recommended). Awaiting the user's answers."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design, awaiting answers
+
+---

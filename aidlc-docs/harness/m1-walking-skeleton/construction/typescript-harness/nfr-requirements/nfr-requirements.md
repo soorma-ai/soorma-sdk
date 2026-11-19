@@ -97,6 +97,22 @@
 |---|---|---|---|
 | NFR-U3-27 | **The package README** documents:<br>- the client, configuration and errors;<br>- `fileSecret`'s file settings (Kubernetes `defaultMode: 0440` with `fsGroup`; Docker `0400` or `0440`), and that Windows tenants supply their own provider;<br>- delivery is live only;<br>- the span shape is unstable, with DEC-U1-01's deviation;<br>- REN-07's clock-skew warning and what to do about it (fix the clock);<br>- Node 24 or later, ESM, and `require()` support | FR-20; US-11; SPN-06; SUB-03 | Review at Code Generation; TC-TH-066 |
 
+## Security Compliance, Per Clause (SECURITY-12)
+
+SECURITY-12 is **not N/A as a whole** (the user, at this stage's approval). Its clauses:
+
+| Clause | Outcome | Rationale |
+|---|---|---|
+| Password policy | N/A | Server-side: the SDK authenticates no user and holds no password |
+| Credential storage (adaptive hashing) | N/A | Server-side: the SDK stores no password. The agent credential is held in memory only, opaque, and never written (CRD-01) |
+| Multi-factor authentication | N/A | Server-side: no user login in a client library |
+| Session management (expiry, invalidation, cookie attributes) | N/A | Server-side: no sessions or cookies. The credential's expiry is the platform's, and the SDK uses no cookie (contract *No cookies*) |
+| Brute-force protection | N/A | Server-side: S3 bounds bootstrap attempts (`too_many_attempts`). The SDK never retries `429` or `403` (PRB-06), and REN-07 bounds its renewals and bootstraps |
+| **No hardcoded credentials** | **Compliant** | Secrets come only through a provider (`fileSecret`, or the tenant's own function; SEC-01, SEC-03). The example's configuration block names a **secret file**, never a secret (TH-E2E-01). The lint rule refuses `process.env` in the package (TS-U3-13). Tests and fixtures use generated or clearly fake values (U1's `soorma_ac_token.one`-style fixtures; U2's and U3's per-run secrets) |
+
+The other rules' outcomes are in the stage's completion message, and in NFR Design's compliance
+summary.
+
 ## NFR Design: Runs for U3
 
 **It runs**, as the execution plan has it. Unlike U2, U3 has patterns the requirements fix but do
