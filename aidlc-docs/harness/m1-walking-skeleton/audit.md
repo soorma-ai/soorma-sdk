@@ -1832,3 +1832,25 @@ Log this message word for word in audit.md, update the NFR Requirements artifact
 **Context**: Construction, U4 python-harness, NFR Design Steps 1 to 4
 
 ---
+
+## U4 python-harness — NFR Design: answers
+**Timestamp**: 2026-11-19T22:55:56Z
+**User Input**: "Answers for U4's NFR Design: Q1 A, Q2 A.
+
+Your five decisions are accepted: handles over internal cores with weakref.finalize, the ast clock check, the TLS hint only when the default store was empty, the same event limit in both languages, and the stub generating the large body at send time.
+
+One test to add for the handles: a forgotten AgentClient and a forgotten Subscription are actually collected. Drop the last reference, run gc.collect(), and assert a weakref to the handle is dead, the finalizer ran (sockets aborted, timers cancelled) and one ResourceWarning was emitted. That guards against the finalizer callback holding a reference to the handle, which would keep it alive forever.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Design artifacts and present the completion message."
+**AI Response**: "Answers recorded by question ID: U4-NFR-D-Q1: A. U4-NFR-D-Q2: A. The five decisions accepted (handles over internal cores with weakref.finalize; the ast clock check; the TLS hint only when the default store was empty; the same event limit in both languages; the stub generating the large body at send time). Added at the user's direction, word for word: \"a forgotten AgentClient and a forgotten Subscription are actually collected. Drop the last reference, run gc.collect(), and assert a weakref to the handle is dead, the finalizer ran (sockets aborted, timers cancelled) and one ResourceWarning was emitted. That guards against the finalizer callback holding a reference to the handle, which would keep it alive forever.\" Generating the NFR Design artifacts."
+**Context**: Construction, U4 python-harness, NFR Design Step 5: answers collected
+
+---
+
+## U4 python-harness — NFR Design: artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T22:57:44Z
+**User Input**: (none)
+**AI Response**: "NFR Design artifacts generated in construction/python-harness/nfr-design/: nfr-design-patterns.md (P-01 retry policy; P-02 validity check; P-03 renewal and the guarded warning, warned set before the emit; P-04 the supervisor in asyncio; P-05 the clock seam and its ast check; P-06 the trust store and the hint from the default store's CA count; P-07 the asyncio.Protocol over the sans-IO ResponseParser, its states, bounds and reasons, table-driven and fuzz tests; P-08 the event and body bounds in both languages, the TypeScript fix, the stub's generated-body directive; P-09 the reader and the payload walk; P-10 handles over cores, weakref.finalize with a module-level callback taking the core and a name, never the handle, detached by close(), and the user's collection test (weakref dead after gc.collect(), sockets aborted, timers cancelled, exactly one ResourceWarning); P-11 resource release and task exceptions; P-12 hygiene; P-13 the values hook kept out; P-14 the floor run from conflicting groups in one lock; P-15 the CI user helper; security and invariant compliance) and logical-components.md (the package's modules, the components outside the distribution, the F42 changes to U1 and the TypeScript fix, the CI components, NFR to component). Approval prompt presented: Request Changes or Continue to Next Stage (QA enrichment)."
+**Context**: Construction, U4 python-harness, NFR Design Steps 6 and 7
+
+---
