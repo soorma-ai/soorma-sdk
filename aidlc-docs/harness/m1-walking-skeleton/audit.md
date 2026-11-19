@@ -1424,3 +1424,13 @@ Log this message word for word in audit.md, then go on to QA enrichment for U3."
 **Context**: CONSTRUCTION — U3 typescript-harness, QA enrichment complete
 
 ---
+
+## U3 Construction Design PR gate — the user confirms the branch
+**Timestamp**: 2026-11-19T05:32:43Z
+**User Input**: "Yes, open U3's Construction Design PR, dev → main, as for #9 and #16. Wait for every check, including DCO and dependency review, record its state with the run IDs, and stop with the PR number. Don't record it merged until I tell you it is and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Opening the design PR from dev to main. Instructions written to construction/working/typescript-harness-design-pr-checkpoint-instructions.md (git-ignored); gate recorded PENDING in aidlc-state.md. Committing signed off, pushing, opening the PR, then waiting for every check (CI, DCO, dependency review) and recording the state with the run IDs. Stopping with the PR number; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U3 typescript-harness, Construction Design PR gate (pr-checkpoint §5); branch confirmed: dev → main
+
+---

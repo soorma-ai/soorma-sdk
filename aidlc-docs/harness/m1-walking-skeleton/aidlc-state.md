@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U3 typescript-harness, QA enrichment done; next: Construction Design PR gate
+- **Current Stage**: CONSTRUCTION - U3 typescript-harness, Construction Design PR gate PENDING (design PR dev → main); next after merge: Code Generation
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -154,6 +154,13 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Checks at `8892fcc`**: CI run 44455207562 (pull request): unit, repository checks, conformance self-test, **changes, e2e (1 min 41 s)** and **dependency review** green; DCO run 44455207572 (Check sign-off) green; CI run 44454972332 (push to dev) green, with `e2e` **skipped** (`changes`: `e2e=false`, the push touched `aidlc-docs/` only: TC-ES-010's real case)
 - **Final head `b5a000b`** (the bookkeeping commit): CI run 44455550563 (pull request) green, `e2e` and dependency review included; DCO run 44455550601 green; CI run 44455544010 (push) green, `e2e` skipped (`aidlc-docs/` only)
 - **Merged**: merge commit `3f4883c2566c2bfbf5d1ddefb7724207bdc8b864` on `main`, 2026-11-19T04:08:31Z, parents `d3ab234` (main) and `b5a000b` (PR head); dev fast-forwarded to it
+
+### Construction Design PR Gate — typescript-harness
+- **Status**: PENDING
+- **Branch**: dev (the user's standing instruction; confirmed for this gate 2026-11-19T05:32:43Z: dev → main, as for #9 and #16)
+- **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/typescript-harness-design-pr-checkpoint-instructions.md
+- **Created**: 2026-11-19T05:33:09Z
+- **Approved**: —
 
 ## Extension Configuration
 
