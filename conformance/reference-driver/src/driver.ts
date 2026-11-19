@@ -10,12 +10,13 @@ import { namesFromTable } from '../../../tools/names/check.ts';
 import {
   Client,
   DriverError,
+  type Fault,
   fileProvider,
+  type Item,
   readCa,
   testProvider,
-  type Fault,
-  type Item,
   type Values,
+  WARNINGS,
 } from './client.ts';
 import { secretRetained } from './heap.ts';
 import { readFileSecret, SecretRefusal } from './secret.ts';
@@ -45,6 +46,13 @@ export const COVERAGE = [
   'CC-SPN-01',
   'CC-NEV-01',
   'CC-NAM-01',
+  // Added at U3 (REN-07, SEC-01 reworded). CC-STR-13 is not declared: the
+  // skip-boundary fault drops a superseded stream's end, so declaring it would
+  // change that fault's declared set.
+  'CC-REN-06',
+  'CC-REN-07',
+  'CC-ACQ-08',
+  'CC-STR-12',
 ];
 export const FAULTS = [
   'retain-secret',
@@ -65,6 +73,7 @@ const DEFAULTS: Values = {
   N_buf: 64,
   T_idle: 20000,
   T_req: 5000,
+  R_min: 1000,
 };
 const DEPTH = 64;
 const faultArg = process.argv.indexOf('--fault');
@@ -174,6 +183,8 @@ async function handle(op: string, args: Record<string, unknown>): Promise<Record
     }
     case 'newInstanceId':
       return { value: crypto.randomUUID() };
+    case 'warnings':
+      return { warnings: WARNINGS };
     case 'inspect': {
       const checks = (args.checks as string[] | undefined) ?? [];
       const out: Record<string, unknown> = {};

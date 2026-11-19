@@ -16,7 +16,8 @@
     "W_super": 1000,
     "N_buf": 8,
     "T_idle": 1500,
-    "T_req": 2000
+    "T_req": 2000,
+    "R_min": 1
   },
   "script": {
     "exchanges": [

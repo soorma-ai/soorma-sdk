@@ -18,6 +18,7 @@ export const NAMED_VALUES = [
   'N_buf',
   'T_idle',
   'T_req',
+  'R_min',
 ] as const;
 export type NamedValue = (typeof NAMED_VALUES)[number];
 export type Values = Partial<Record<NamedValue, number>>;

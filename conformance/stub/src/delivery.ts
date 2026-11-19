@@ -19,7 +19,7 @@ function setAt(obj: J, pointer: string, value: J): void {
 /** A JSON value's text: `text` as is, `json` compact, `fixture` (optionally edited) compact. */
 export function valueText(src: Record<string, J>): string {
   if (typeof src.text === 'string') return src.text;
-  if ('json' in src) return JSON.stringify(src.json);
+  if ('json' in src) return JSON.stringify(atSend(src.json as J));
   if (typeof src.fixture === 'string') {
     const v = JSON.parse(readFileSync(join(FIXTURES, src.fixture), 'utf8')) as J;
     for (const [p, val] of Object.entries((src.set ?? {}) as Record<string, J>)) setAt(v, p, val);
@@ -27,6 +27,25 @@ export function valueText(src: Record<string, J>): string {
   }
   if (typeof src.deep === 'number') return deepPayload(src.deep);
   throw new Error('a value needs text, json, fixture or deep');
+}
+
+/**
+ * Values resolved when the stub sends, not at case start (added at U3 for
+ * CC-REN-06): an object `{"$expiresIn": ms}` becomes the ISO time `ms` after
+ * now, so each response's expiry is relative to that response. Everything else
+ * is returned unchanged.
+ */
+export function atSend(v: J, now: number = Date.now()): J {
+  if (Array.isArray(v)) return v.map((x) => atSend(x, now));
+  if (v !== null && typeof v === 'object') {
+    const keys = Object.keys(v);
+    const ms = (v as Record<string, J>).$expiresIn;
+    if (keys.length === 1 && typeof ms === 'number') return new Date(now + ms).toISOString();
+    const out: Record<string, J> = {};
+    for (const [k, x] of Object.entries(v)) out[k] = atSend(x, now);
+    return out;
+  }
+  return v;
 }
 
 /** A payload nested `depth` levels: {"n":{"n":...{"n":1}}}. */

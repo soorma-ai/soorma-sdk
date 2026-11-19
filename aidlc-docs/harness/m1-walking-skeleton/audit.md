@@ -1468,3 +1468,72 @@ Log this message word for word in audit.md."
 **Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 1, awaiting approval
 
 ---
+
+## U3 Code Generation — Part 1 plan approved, with a clarification
+**Timestamp**: 2026-11-19T06:55:43Z
+**User Input**: "Plan approved, with one clarification on 1.1, the values hook.
+
+The direction of the import matters. test-values.ts is left out of the tarball, so no published module may import it, or every installed copy of @soorma/sdk fails to load. limits.ts holds a module-private slot and a setter; test-values.ts (unpublished) imports limits.ts and calls the setter. Published code never imports test-values. limits.ts uses the slot only when it has been set, otherwise NFR Requirements' constants, and captures the values when a client is constructed. Add a lint or source check that nothing under typescript/src except test-values.ts imports internal/test-values. package-typescript's construct-from-the-tarball test then proves the package works without the hook.
+
+Points 2 to 5 are approved as proposed. Approving this plan counts as the stop for the three class 3 changes (SEC-01, STR-02, STR-05), each recorded with its before and after. Run the local end-to-end in G8 as for U2, stopping if a soorma-local project or volume exists.
+
+Log this message word for word in audit.md, then start G1."
+**AI Response**: "Plan approved. 1.1 clarified in the plan: limits.ts holds a module-private slot and a setter; internal/test-values.ts (unpublished) imports limits.ts and calls the setter; no published module imports test-values; limits.ts uses the slot only when set, else NFR Requirements' constants, and the values are captured when a client is constructed; a source check (Step 14) fails if anything under typescript/src other than test-values.ts imports internal/test-values; package-typescript's construct-from-the-tarball test proves the package works without the hook. Points 2 to 5 approved; plan approval is the stop for the class 3 changes SEC-01, STR-02, STR-05, each recorded with its before and after. Starting G1."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 1 APPROVED; Part 2, G1
+
+---
+
+## U3 Code Generation — G1: the F42 changes to U1, each with its class (Step 9)
+**Timestamp**: 2026-11-19T07:03:59Z
+**User Input**: (none)
+**AI Response**: "Changes to an earlier unit's tests and specification (F42), each recorded with its class:
+1. Step 1, class 1 (items added): spec/behaviour.md §0 gains R_min; §4 gains REN-07 (the floor on a monotonic clock; one clock-skew warning per lineage; after it the lineage's expiry is S3's to judge); the runner's NAMED_VALUES and the case schema's values enum gain R_min; the reference driver's Values and DEFAULTS gain R_min (1000 ms).
+2. Step 2, class 3 (the plan's approval is the stop, the user, 2026-11-19T06:55:43Z). SEC-01 before: | SEC-01 | A secret provider is a function supplied by tenant code that returns the registration secret. The SDK calls it **exactly once per bootstrap**, and **never** at client creation, renewal, publish or subscribe | D-09; FR-04 | CC-ACQ-01, CC-REN-03 |
+   SEC-01 after: | SEC-01 | A secret provider is a function supplied by tenant code that returns the registration secret. The SDK calls it **exactly once per bootstrap attempt**, and **never** at client creation, renewal, publish or subscribe. **A retried bootstrap (PRB-05, PRB-08, PRB-09) calls it again**, and no reference to an earlier attempt's secret remains during the backoff or `Retry-After` wait (SEC-02). *Reworded at U3 (the user, 2026-11-19): it read "exactly once per bootstrap"* | D-09; FR-04; U3 NFR Design P-08 | CC-ACQ-01, CC-REN-03, CC-ACQ-08 |
+3. Step 3, class 3 (the same stop). STR-02 before: | STR-02 | When a stream ends, the iterator yields **stream ended** with the `end` event's `code`, or `code: null` when the connection ended without one (including after `T_idle` of silence) or the `end` data carries no string `code` | FR-11 | CC-STR-01, CC-STR-02 |
+   STR-02 after: | STR-02 | When a stream ends, the iterator yields **stream ended** with the `end` event's `code`, or `code: null` when the connection ended without one (including after `T_idle` of silence) or the `end` data carries no string `code`. **`T_idle` is silence while the SDK is reading the stream**: a stream paused because tenant code has not pulled items (SUB-06) does not time out, and a resume restarts `T_idle`; a consumer too slow for the platform is told by the platform's `overflow` end. *Sentence added at U3 (the user, 2026-11-19)* | FR-11; SUB-06 | CC-STR-01, CC-STR-02, CC-STR-12 |
+   STR-05 before: | STR-05 | **Boundary order on replacement** (Q3, DEC-U1-03): the iterator yields the old stream's Deliveries read before its end, then **stream ended (old)**, then **stream started (new)**, then the new stream's Deliveries. Deliveries read from the new stream before the old one's end are **held**, counting against `N_buf`. **If the old stream's end has not arrived within `W_super`** after the new stream opened, the SDK **closes the old stream itself**, yields its *stream ended* with `code: null`, then *stream started* and the held Deliveries. On a **lineage change** (REN-03, REN-04, REN-06), no `superseded` will come: the SDK closes the old stream as soon as the new one opens, and yields the same sequence. **At every replacement, renewal or lineage change, a Delivery accepted while both streams are open may be read on both**: the SDK yields it from the old stream (before *stream ended*) and again from the new one (after *stream started*), and **suppresses neither**; nothing identifies a duplicate (DEC-U1-12) | Q3; DEC-U1-03, DEC-U1-12 | CC-STR-04, CC-STR-05, CC-STR-06, CC-STR-11 |
+   STR-05 after: | STR-05 | **Boundary order on replacement** (Q3, DEC-U1-03): the iterator yields the old stream's Deliveries read before its end, then **stream ended (old)**, then **stream started (new)**, then the new stream's Deliveries. Deliveries read from the new stream before the old one's end are **held**, counting against `N_buf`. **If the old stream's end has not arrived within `W_super`** after the new stream opened, the SDK **closes the old stream itself**, yields its *stream ended* with `code: null`, then *stream started* and the held Deliveries. On a **lineage change** (REN-03, REN-04, REN-06), no `superseded` will come: the SDK closes the old stream as soon as the new one opens, and yields the same sequence. **At every replacement, renewal or lineage change, a Delivery accepted while both streams are open may be read on both**: the SDK yields it from the old stream (before *stream ended*) and again from the new one (after *stream started*), and **suppresses neither**; nothing identifies a duplicate (DEC-U1-12). **`W_super` counts only while the old stream is being read**, as `T_idle` does (STR-02). The SDK **may pause the new stream from its opening until the old stream ends** or `W_super` expires, so that the new stream's Deliveries wait upstream rather than in the buffer, and cannot starve the old stream of buffer room. *Sentences added at U3 (the user, 2026-11-19)* | Q3; DEC-U1-03, DEC-U1-12; SUB-06 | CC-STR-04, CC-STR-05, CC-STR-06, CC-STR-11, CC-STR-13 |
+4. Step 4, class 1 (an added command): conformance/README.md gains warnings (and R_min in the values list); the case schema's op enum gains warnings.
+5. Step 5, class 1 (an added capability; existing scripts unchanged): the stub resolves {\"$expiresIn\": ms} when it sends a response (atSend in conformance/stub/src/delivery.ts), with a unit test; the stub's other 8 tests pass unchanged.
+6. Step 6, shown to behave as before (so class 1 under the rule's exception): the reference driver schedules renewal at max(R_min, target) and records one clock-skew warning per lineage; warnings answered. The self-test passed: 26 declared cases, and each faulted run's failed set equal to its declared set, faults.json unchanged.
+7. Step 7, class 1 (added cases): CC-REN-06, CC-REN-07, CC-ACQ-08, CC-STR-12, CC-STR-13, each naming the one statement that names it (REN-07, REN-07, SEC-01, STR-02, STR-05: U1's links are two-way). CC-ACQ-08 checks two provider calls and two requests; it has no heap check, because the protocol runs commands one at a time and start returns only after the retry (no check can run during the wait), and after start the check is CC-SEC-01's, which here would add a knock-on to the retain-secret fault's declared set. The reference driver declares CC-REN-06, CC-REN-07, CC-ACQ-08 and CC-STR-12 (it passes CC-STR-12, which no fault touches; it reads eagerly, so its pass does not exercise pausing). CC-STR-13 passes against it but is not declared: the skip-boundary fault drops a superseded stream's end, so declaring it would change that fault's declared set.
+8. Step 7a (added to the plan during G1, before it was made), class 1 (one item added to each case's values): R_min: 1 in the 13 existing cases that script a renewal (CC-CFG-03, CC-NEV-03, CC-PRB-08, CC-REN-01 to 05, CC-STR-04, 05, 06, 10, 11), because the runner merges the driver's values under a case's and these cases set every value but R_min; 1 ms leaves every scheduled renewal where it was.
+9. Step 8, the static budget estimate under the TypeScript values: 95 cases, 33.5 s of scripted waits, no loader-rule violation; at the reference run's rate of about 0.9 s per case, a passing full run is about 1.5 minutes against the runner's 5-minute budget per run; the sum of all timeouts (1443 s) is reached only if cases time out.
+Refusal sweep: no new refusal is added to an earlier unit's checks."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G1 records
+
+---
+
+## U3 Code Generation — G1 gate: a class 3 change the plan did not list; stopped for the user
+**Timestamp**: 2026-11-19T07:05:29Z
+**User Input**: (none)
+**AI Response**: "G1's gate failed at pnpm test on two of U1's assertions, which count the specification and the case catalogue: conformance/runner/src/spec.test.ts line 12 expects(statements).toHaveLength(103), now 104 with REN-07; conformance/runner/src/__tests__/cases.test.ts line 30 expects(loaded.cases).toHaveLength(90) in 'holds the 90 cases of the approved catalogue, with no problem', now 95. Replacing an expected value is class 3 even when the approved design requires it, and these two were not among the plan's listed class 3 changes (1.2), so the change is not made: stopped for the user. Proposed: 103 to 104 ('103 at U1, plus REN-07 at U3'); 90 to 95, retitled 'holds U1's 90 cases and the 5 added at U3, with no problem', also asserting the five new ids are present. Everything else in G1 is uncommitted until the gate passes. Also recorded: my prettier --write over whole directories reformatted Markdown the repository does not format (spec/behaviour.md, spec/names.md, conformance/README.md, a runner fixture); all four were restored from HEAD and only the intended edits re-applied (behaviour.md 8 lines, README.md 5); from now on Prettier runs only on the formatted types (ts, js, json, yml)."
+**Context**: CONSTRUCTION — U3 typescript-harness, G1 gate, stopped for a class 3 change
+
+---
+
+## U3 Code Generation — G1: the user approves the two class 3 changes
+**Timestamp**: 2026-11-19T07:09:13Z
+**User Input**: "Yes, make both changes, with one addition to the cases test.
+
+- spec.test.ts: 104, commented "103 at U1, plus REN-07 at U3".
+- cases.test.ts: 95, titled as you proposed, and checking the five new IDs are present. Also check that all 90 of U1's original case IDs are still present. A count alone would pass if one case were deleted and another added. Read the 90 from a fixed list in the test, not from the directory.
+
+Record both as class 3 changes with their before and after, covered by this message. The other adjustments are accepted: Step 7a (R_min: 1 in the 13 cases), no heap check in CC-ACQ-08, and the reference driver not declaring CC-STR-13 (the TypeScript driver must still pass it).
+
+Log this message word for word in audit.md, run G1's gate, commit signed off, push, and wait for CI before G2."
+**AI Response**: "Making both changes as class 3 (covered by this message), with the 90 original ids as a fixed list in the cases test; recording before and after; then G1's gate, commit, push, CI."
+**Context**: CONSTRUCTION — U3 typescript-harness, G1, class 3 changes approved
+
+---
+
+## U3 Code Generation — G1: two class 3 changes to U1's tests, made
+**Timestamp**: 2026-11-19T07:09:40Z
+**User Input**: (none)
+**AI Response**: "Class 3, covered by the user's message of 2026-11-19T07:09:13Z.
+1. conformance/runner/src/spec.test.ts. Before: it('holds the 103 statements of the approved design, in 16 areas', () => { expect(statements).toHaveLength(103); ... After: it('holds the 104 statements of the approved design, in 16 areas', () => { // 103 at U1, plus REN-07 at U3 (class 3, approved by the user 2026-11-19T07:09:13Z). expect(statements).toHaveLength(104); ... The 16-area check is unchanged.
+2. conformance/runner/src/__tests__/cases.test.ts. Before: it('holds the 90 cases of the approved catalogue, with no problem', () => { expect(loaded.problems).toEqual([]); expect(loaded.cases).toHaveLength(90); }). After: it(\"holds U1's 90 cases and the 5 added at U3, with no problem\", ...): problems [], 95 cases, and each of U1's 90 ids present (a fixed list U1_CASES in the test, taken from HEAD's conformance/cases, never read from the directory) and each of the 5 U3 ids (CC-ACQ-08, CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13). Both tests pass."
+**Context**: CONSTRUCTION — U3 typescript-harness, G1, class 3 changes recorded
+
+---

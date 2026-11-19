@@ -44,7 +44,7 @@ reply    {"id": 7, "ok": true,  "result": {...}}
 ```
 
 A driver uses **only its package's public interface**, except for `describe`'s values, `inspect`,
-`spans`, `env`, `docs` and the timing hook.
+`spans`, `env`, `docs`, `warnings` and the timing hook.
 
 ### Commands
 
@@ -62,6 +62,7 @@ A driver uses **only its package's public interface**, except for `describe`'s v
 | `fileSecret` | `path`, `timeoutMs` | `{length}`, never the value |
 | `newInstanceId` | — | `{value}` |
 | `inspect` | `checks`: `secretRetained`, `providerCalls`, `openResources` | `secretRetained: {found, count}`; `providerCalls: n`; `openResources: {sockets, streams, timers}` |
+| `warnings` | — | `warnings`: `[{code}]`, every warning the SDK emitted since `create`, in order; `code` is `clock-skew` for REN-07's warning (added at U3). Never a credential or a secret |
 | `spans` | — | `spans`: `[{name, kind ('producer'/'consumer'), traceId, spanId, parentSpanId?, links: [{traceId, spanId}], status ('ok'/'error'/'unset'), attributes}]`; `providerIsNoop` |
 | `names` | — | `names`: every exported name |
 | `surface` | — | `members`: the options' fields and every settable member |
@@ -89,7 +90,7 @@ state}`.
 
 `describe.values` reports the SDK's named values (`spec/behaviour.md` §0) in milliseconds or
 items: `H_renew`, `R_max`, `W_max`, `B_init`, `B_factor`, `B_cap`, `L_ends`, `W_super`, `N_buf`,
-`T_idle`, `T_req`. A case may pass `values` in `create`; the driver applies them through **a test
+`T_idle`, `T_req`, `R_min` (added at U3, REN-07). A case may pass `values` in `create`; the driver applies them through **a test
 hook that is not part of the public interface** (not exported, not in the name table). Cases
 assert relative to the values in force.
 

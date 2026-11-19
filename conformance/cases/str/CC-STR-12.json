@@ -1,0 +1,334 @@
+{
+  "id": "CC-STR-12",
+  "title": "A stream paused for backpressure does not time out; every Delivery arrives once pulled",
+  "statements": ["STR-02"],
+  "timeoutMs": 15000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 2,
+    "T_idle": 1000,
+    "T_req": 2000
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "d1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d1"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d2",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d2"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d3",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d3"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d4",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d4"
+                  }
+                }
+              }
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 2500
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d1",
+          "sealOf": "d1"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d2",
+          "sealOf": "d2"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d3",
+          "sealOf": "d3"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d4",
+          "sealOf": "d4"
+        }
+      ]
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/subscriptions"
+      },
+      "count": 1
+    }
+  ],
+  "$comment": "N_buf 2: the client reads only as the case pulls, so its socket is paused through the 2500 ms wait, longer than T_idle (1000 ms). The heartbeats it cannot read while paused would not save it, so a paused stream that counted T_idle would end with code null and resubscribe."
+}
