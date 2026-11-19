@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U3 typescript-harness, Construction Design PR gate PENDING (design PR dev → main); next after merge: Code Generation
+- **Current Stage**: CONSTRUCTION - U3 typescript-harness, Construction Design PR gate: #18 CHECKS_GREEN, awaiting merge; next after merge: Code Generation
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -156,9 +156,11 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **Merged**: merge commit `3f4883c2566c2bfbf5d1ddefb7724207bdc8b864` on `main`, 2026-11-19T04:08:31Z, parents `d3ab234` (main) and `b5a000b` (PR head); dev fast-forwarded to it
 
 ### Construction Design PR Gate — typescript-harness
-- **Status**: PENDING
+- **Status**: CHECKS_GREEN 2026-11-19T05:35:24Z (awaiting the user's merge; not recorded merged until the user says so and GitHub shows it)
 - **Branch**: dev (the user's standing instruction; confirmed for this gate 2026-11-19T05:32:43Z: dev → main, as for #9 and #16)
 - **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/typescript-harness-design-pr-checkpoint-instructions.md
+- **PR**: soorma-ai/soorma-sdk#18 (dev → main), opened 2026-11-19T05:33:14Z; head `1bc3c54` at CHECKS_GREEN (the run IDs below are for that head; the commit recording this state is bookkeeping only)
+- **Checks at `1bc3c54`**: CI run 44465960245 (pull request): unit, repository checks, conformance self-test, changes, and **dependency review** green; `e2e` skipped (`aidlc-docs/` only); DCO run 44465960292 (Check sign-off) green; CI run 44465951245 (push to dev) green, `e2e` skipped
 - **Created**: 2026-11-19T05:33:09Z
 - **Approved**: —
 
