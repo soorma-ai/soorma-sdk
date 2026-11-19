@@ -99,6 +99,7 @@ Problem. `close()` from any state makes it *closed*. Operations other than `star
 | credential | the opaque token, presented as `Authorization: Bearer` (CRD-01, CRD-02) |
 | details | `agent`, `instance`, `environment`, `expiresAt`, as returned (CRD-03) |
 | lineage | a counter, incremented by each bootstrap; the clock-skew warning is once per lineage (REN-07) |
+| clock-skew warned | set when the lineage's warning fires; from then on, the lineage's expiry is judged by S3 (`401 credential_expired`), never by the wall clock (REN-07) |
 | received at | the monotonic time (`performance.now()`) of the response that delivered the credential |
 | renewal timer | the next renewal, at `max(received at + R_min, now + (expiresAt − H_renew − Date.now()))` (REN-01, REN-07); `unref`'d (U3-FD-Q3) |
 | previous expiry | for REN-03's "no later expiry" test |
@@ -114,9 +115,10 @@ Problem. `close()` from any state makes it *closed*. Operations other than `star
 
 | Item | Kind | Where |
 |---|---|---|
-| **REN-07** | New statement: the monotonic renewal floor `R_min`, and one clock-skew warning per lineage | `spec/behaviour.md` §4; `R_min` added to §0's named values |
-| **CC-REN-06** | New conformance case | `conformance/cases/ren/CC-REN-06.json` |
-| The reference driver | Implements REN-07 and declares CC-REN-06 | `conformance/reference-driver/` |
+| **REN-07** | New statement: the monotonic renewal floor `R_min`; one clock-skew warning per lineage; after it, the lineage's expiry is S3's to judge | `spec/behaviour.md` §4; `R_min` added to §0's named values |
+| **CC-REN-06** | New conformance case: the renewal floor and the warning | `conformance/cases/ren/CC-REN-06.json` |
+| **CC-REN-07** | New conformance case: after the warning, S3 decides the expiry; one bootstrap on `credential_expired` | `conformance/cases/ren/CC-REN-07.json` |
+| The reference driver | Implements REN-07 and declares CC-REN-06 and CC-REN-07 | `conformance/reference-driver/` |
 | The driver protocol | How a driver reports a warning (business-logic-model §9) | `conformance/README.md`, the runner |
 
 These are changes to an earlier unit's tests and specification (F42). They are recorded with

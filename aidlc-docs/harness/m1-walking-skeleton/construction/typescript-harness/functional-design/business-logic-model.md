@@ -41,22 +41,37 @@ floor    = receivedAt + R_min                                   # monotonic
 due      = max(target, floor)
 if expiresAt - H_renew <= Date.now() and not warnedThisLineage:
     process.emitWarning(clock-skew)                             # once per lineage, no credential
-    warnedThisLineage = true
+    warnedThisLineage = true                                    # from now on S3 judges this lineage's expiry
 setTimeout(renew, due - monotonicNow).unref()
+
+before each operation:                                          # REN-06, limited by REN-07
+    if not warnedThisLineage and expiresAt <= Date.now(): bootstrap first
+    else: use the held credential                               # S3's 401 credential_expired decides
 ```
 
 Text alternative: the renewal is due at `expiresAt − H_renew` by the wall clock, but never
 sooner than `R_min` after the credential arrived, by the monotonic clock. If the target has
 already passed for a credential just received, the client's clock is ahead of the platform's. The
-SDK then warns once in that lineage and renews at the floor. Without REN-07, such a client renews
-as fast as the network allows (the user, 2026-11-19T04:23:22Z).
+SDK then warns once in that lineage, renews at the floor, and **stops judging that lineage's
+expiry on the wall clock**: it uses the credential until S3 answers `401 credential_expired`,
+then bootstraps once (REN-04). Without REN-07, such a client renews as fast as the network allows
+(the user, 2026-11-19T04:23:22Z). Without its addition, a client more than a lifetime ahead
+would bootstrap before every operation instead (the user, 2026-11-19T04:38:24Z).
 
 **Constraints on the named values, from REN-07** (for NFR Requirements to check):
-1. **`R_min` < `H_renew`**. A credential received with `expiresAt` inside `H_renew` is then still valid, on the client's own clock, when the floored renewal falls due. Otherwise REN-06 would make the next operation bootstrap instead.
-2. **The end-to-end test's offset** must make the target already past and still leave the floor inside the credential's life, both on the client's clock:
-   - `lifetime − H_renew` ≤ offset < `lifetime − R_min`, where `lifetime` is soorma-core's 15 minutes.
-   - **The user's 14 minutes fits when `H_renew` ≥ 1 minute and `R_min` < 1 minute**, less the test's margin.
-   - If NFR Requirements sets values outside that, the offset becomes `lifetime − H_renew`, and the change is recorded.
+1. **`R_min` < `H_renew` no longer applies** (the user, 2026-11-19T04:38:24Z). It was needed only
+   while REN-06 judged a skewed credential's expiry on the client's clock: a floored renewal
+   arriving after that clock's expiry would have made the next operation bootstrap. Since the
+   warning hands that lineage's expiry to S3, the client's clock no longer decides it, whatever
+   `R_min` is.
+2. **What does apply: `R_min` well under the platform's credential lifetime** (15 minutes at
+   the tag), so a skewed client still renews before S3's expiry. If it did not, each lineage would
+   end in `401 credential_expired`. That is one bootstrap per lineage, at most one per `R_min`:
+   bounded, not a flood.
+3. **The end-to-end test's offset** needs only to make the target already past on the client's
+   clock, so that the warning fires: offset ≥ `lifetime − H_renew`. **The user's 14 minutes fits
+   when `H_renew` is at least 1 minute.** The earlier upper bound (offset < `lifetime − R_min`) is
+   gone with point 1.
 
 **Renew**:
 1. `POST {S3}/agent-credentials/current/renewal` with the bearer credential, no body (REN-02).
@@ -66,7 +81,7 @@ as fast as the network allows (the user, 2026-11-19T04:23:22Z).
 3. `401 credential_expired`: bootstrap (REN-04).
 4. `401 credential_refused`, including on a retried renewal (GAP-CAC-001): revoked (REN-05).
 5. `503`, or a connection failure, while the credential is valid: retried per PRB-05, PRB-08 and PRB-09.
-6. Any other failure: none here. If the credential expires unrenewed, the next operation bootstraps first (REN-06).
+6. Any other failure: none here. If the credential expires unrenewed, the next operation bootstraps first (REN-06), **unless the lineage's clock-skew warning has fired**: then only S3's `401 credential_expired` ends it (REN-07).
 
 ## 4. Publishing and Forwarding (PUB, FWD, DRF, TRC; TH-PUB)
 
@@ -119,15 +134,15 @@ except during a replacement (STR-09).
 ```text
 client.publish:        send span   parent = active context            links: none
 delivery.publish:      send span   parent = received context (parsed) links: active span if valid and != received
-yield Delivery:        receive span parent = received context (parsed) links: none (TH-SPN-04, open point)
+yield Delivery:        receive span parent = received context (parsed) links: none
 received unparseable:  root span (receive or send), linking the active span if any (SPN-03)
 ```
 
 Text alternative: a client publish follows ambient parenting. A forwarding publish and a
 receive are children of the context the envelope carried, parsed by the SDK itself, so an
 ambient span can never become their parent. A forwarding publish links tenant code's active
-span when it differs; the receive span links nothing, which is SPN-03's text. Whether the
-receive span should also link the active span is the open point in TH-SPN-04.
+span when it differs; the receive span links nothing, as SPN-03 says (the user's ruling,
+2026-11-19T04:38:24Z).
 
 ## 8. Closing (TH-LIFE; PRB-07)
 
@@ -163,6 +178,20 @@ timer is `unref`'d, so only open sockets keep the process alive.
   - no request carries anything but the contract's renewal shape.
 
   Its statements: REN-07, REN-01. The reference driver declares it, and **the self-test's four fault sets are unchanged**.
+- **CC-REN-07 (new; the user's addition)**: the expiry is left to S3 after the warning.
+  - **The stub's script**:
+    1. It answers the bootstrap with an `expiresAt` **already past** on the client's clock (`${TIME:-…}`, before the case's start).
+    2. It answers several publishes `202`.
+    3. It answers the floored renewal `401 credential_expired`.
+    4. It answers the second bootstrap with an ordinary expiry, and a last publish `202`.
+  - **The commands**: `create`, `start`, `publish` three times (spaced within `R_min`), wait for the renewal, `publish` once more, `warnings`.
+  - **The expectations**:
+    - **exactly two bootstraps**, so the provider is called twice;
+    - no bootstrap before any of the first three publishes, which all present the first credential;
+    - one renewal, answered `credential_expired`;
+    - the last publish presents the second credential;
+    - exactly one `clock-skew` warning.
+  - Its statements: REN-07, REN-04, REN-06. The reference driver declares it; the fault sets are unchanged. If U1's templates cannot give a time before the case's start, the stub gains that (TH-F42-02).
 
 ## 10. The Example and the End-to-End Test (C-22; FR-19, FR-20; JOB-06)
 
@@ -185,7 +214,7 @@ configuration block and `run(config)` (TH-E2E-01). The README names `e2e/core-up
 | 5 | Start a **decoy span**; inside it, B subscribes and starts its loop; wait for *stream started* | — |
 | 6 | A publishes `{ "hello": "B" }` outside the decoy | `PublishAccepted` with a `traceparent` (done when 5) |
 | 7 | B receives the Delivery | Envelope and seal present; the envelope's `traceContext.traceparent` equals A's draft's (done when 3, 5) |
-| 8 | Read the exporter | B's receive span: trace id equals A's; parent span id is A's send span id; **parent is not the decoy**; links as TH-SPN-04 says |
+| 8 | Read the exporter | B's receive span: trace id equals A's; parent span id is A's send span id; **the decoy is neither its parent nor linked from it** (TH-SPN-04) |
 | 9 | `close()` both | Nothing left open |
 
 The `e2e-typescript` job (JOB-06) is U2's job, renamed, with the scenario after `prove-stack`.
@@ -204,17 +233,18 @@ It adds these, with these numbers:
 | TC-TH-067 | `fileSecret` is refused on Windows without opening the path | TH-SEC-02; SEC-09 |
 | TC-TH-068 | A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error | TH-RD-02 |
 | TC-TH-069 | Every member of the `Envelope` type is optional | TH-RD-05; RCV-08; CDI-04 |
-| TC-TH-070 | `publish` refuses a payload JSON cannot carry, naming the path, never the value | TH-PUB-01 |
+| TC-TH-070 | `publish` refuses a payload JSON cannot carry exactly, naming the path, never the value; a very deep payload is sent, unless serializing it overflows the stack, which is refused the same way | TH-PUB-01 |
 | TC-TH-071 | Leaving a loop closes the subscription; the renewal timer alone does not keep the process alive | TH-LIFE-02, TH-LIFE-03 |
 | TC-TH-072 | A client whose clock runs fast renews at most once per `R_min` and warns once per lineage (REN-07; CC-REN-06) | TH-REN-01 to 03 |
 | TC-TH-073 | An envelope nested deeper than `D_lang` is a delivery error; the stream continues | TH-RD-03 |
 | TC-TH-074 | An unknown option, such as a misspelt TLS switch, is refused | TH-API-03 |
+| TC-TH-075 | A client whose clock runs more than a lifetime ahead does not bootstrap before each operation; it uses the credential until S3 answers `credential_expired`, then bootstraps once (REN-07; CC-REN-07) | TH-REN-01, TH-REN-05 |
 
 ## 12. Values Left to NFR Requirements
 
 These come from the harness profile (PF §11 *Harness Surface*, §14 *Harness Surface
 Register*):
-- `H_renew`, `R_min` (new: `R_min` < `H_renew`; the end-to-end offset constraint in §3; weighed against the end-to-end job's time, about `2 × R_min`, and AD-13);
+- `H_renew`, `R_min` (new: well under the platform's 15-minute lifetime; `H_renew` at least 1 minute for the end-to-end offset; §3's constraints; `R_min` weighed against the end-to-end job's time, about `2 × R_min`, and AD-13);
 - `R_max`, `W_max`, `B_init`, `B_factor`, `B_cap`, `L_ends`, `W_super`, `N_buf`, `D_lang`, `T_idle`, `T_req`.
 
 Also left to NFR Requirements:

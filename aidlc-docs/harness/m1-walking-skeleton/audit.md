@@ -1276,3 +1276,27 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: CONSTRUCTION — U3 typescript-harness, Functional Design complete, awaiting approval
 
 ---
+
+## U3 Functional Design — the user requests changes
+**Timestamp**: 2026-11-19T04:38:24Z
+**User Input**: "Request Changes: two rulings and one addition to REN-07.
+
+Ruling 1 (the decoy span): follow SPN-03. The link to tenant code's active span is on the send span of a forward only. The receive span is a child of the received context and links nothing. The test asserts the decoy is neither the receive span's parent nor linked from it. No spec change.
+
+Ruling 2 (Q5's depth refusal): drop the depth part. PUB-04 says any JSON value, sent as given, and the contract sets no limit on payload depth. D_lang limits parsing, and RCV-06 already handles a payload deeper than a receiver can parse (kept as text, still forwardable). Refusing at publish would make TypeScript stricter than the spec. Keep Q5's refusals for values JSON can't carry exactly. If JSON.stringify overflows the stack on a very deep payload, catch that RangeError and refuse the same way: name the problem, never the value. Update TH-PUB-01 and its test cases.
+
+Addition to REN-07: it fixes the renewal loop, but not the bootstrap loop. TH-REN-05 keeps REN-06 as stated: an unrenewed expiry, judged on the wall clock, makes the next operation bootstrap. A client whose clock runs more than the credential lifetime ahead sees every fresh credential as already expired, so every publish or subscribe would bootstrap first: a secret-provider call and a new lineage each time. That's the same flood, through bootstrap. Add to REN-07: once the clock-skew warning has fired for a lineage, the SDK stops judging that lineage's expiry on the wall clock and relies on S3. It keeps renewing at the floor, and a 401 credential_expired bootstraps as REN-04 already says. Add to CC-REN-06, or a second case: the stub issues a credential whose expiresAt is already past on the client's clock. The client doesn't bootstrap before each operation, uses the credential until the stub answers credential_expired, then bootstraps once. Drop the R_min < H_renew constraint from business-logic-model §5 if it no longer applies, and say why.
+
+Log this message word for word in audit.md, update the artifacts, commit signed off, push, wait for CI, then present the completion message again."
+**AI Response**: "Applying: ruling 1 (SPN-03 governs; the receive span links nothing; the test asserts the decoy neither parent nor linked; no spec change); ruling 2 (TH-PUB-01 without the depth refusal; a RangeError from JSON.stringify on a very deep payload caught and refused the same way, naming the problem, never the value; TC-TH-070 updated); REN-07 extended (after the lineage's clock-skew warning, its expiry is no longer judged on the wall clock: S3 decides; renewing at the floor; 401 credential_expired bootstraps per REN-04), as a second case CC-REN-07; the R_min < H_renew constraint reviewed in business-logic-model §3 (where the constraints were written; the user's message says §5)."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design, Request Changes
+
+---
+
+## U3 Functional Design — changes applied; approval prompt
+**Timestamp**: 2026-11-19T04:39:39Z
+**User Input**: (none)
+**AI Response**: "Changes applied. Ruling 1: TH-SPN-04 follows SPN-03 (the forward's send span links tenant code's active span; the receive span links nothing; no specification change); TH-E2E-03 and business-logic-model §7 and §10 step 8 assert the decoy is neither the receive span's parent nor linked from it. Ruling 2: TH-PUB-01 refuses only values JSON cannot carry exactly; depth is not limited (PUB-04; RCV-06); a RangeError from JSON.stringify on a very deep payload is caught and refused as a TypeError naming the problem, never the value; TC-TH-070 updated. REN-07 extended (TH-REN-01, TH-REN-05; business-logic-model §3 algorithm and Renew step 6; domain-entities §5 'clock-skew warned', §7): after the lineage's warning, its expiry is no longer judged on the wall clock; the credential is used until S3 answers 401 credential_expired, then one bootstrap (REN-04). New case CC-REN-07 (bootstrap with expiresAt already past; three publishes on the first credential, no bootstrap before them; the floored renewal answered credential_expired; exactly two bootstraps; one warning), added to TH-F42-02, TH-DRV-03, the L1 rows L1-13 and L1-16, and TC-TH-075 planned. Constraints in business-logic-model §3 (the user's message says §5; the constraints are in §3): R_min < H_renew dropped, because the warning hands the lineage's expiry to S3 so the client's clock no longer decides it; what remains is R_min well under the 15-minute lifetime (otherwise one bootstrap per lineage, bounded), and the 14-minute offset needs H_renew of at least 1 minute (the upper bound on the offset is gone). Misuse table: the bootstrap flood added. Presented the completion message again: Request Changes, or Continue to Next Stage (NFR Requirements)."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design revised, awaiting approval
+
+---

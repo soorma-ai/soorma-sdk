@@ -28,10 +28,10 @@ Rows are numbered as in U1's and U2's matrices.
 | L1-10 | Chain appending and `maxChainDepth` enforcement | N/A | — | — | N/A: the perimeter's; the SDK enforces nothing (NEV-04) |
 | L1-11 | Populate agent-asserted fields only; enforce nothing (PF §7b; §11; FR-023) | Yes | `draft.ts`; `reader.ts` (no validation); `keeper.ts` (`agent`, `instance` sent as given, ACQ-09) | CC-NEV-02, CC-RCV-08, CC-ACQ-07 | Covered |
 | L1-12 | Exchange bootstrap material, once per instance (PF §9; §11) | Yes | `keeper.ts` (§2 of the logic model; TH-SEC-04), `secrets.ts` | CC-ACQ-01, CC-SEC-01; **end-to-end**: TC-TH-061 (both agents bootstrap on U2's stack) | Covered |
-| L1-13 | Renew credential: periodic, a still-valid credential required (PF §9; §11; §14) | Yes | `keeper.ts` (REN-01 to REN-07, TH-REN-01 to 05) | CC-REN-01 to CC-REN-06; **end-to-end**: TC-TH-061 (one real S3 renewal, the fast clock) | Covered |
+| L1-13 | Renew credential: periodic, a still-valid credential required (PF §9; §11; §14) | Yes | `keeper.ts` (REN-01 to REN-07, TH-REN-01 to 05) | CC-REN-01 to CC-REN-07; **end-to-end**: TC-TH-061 (one real S3 renewal, the fast clock) | Covered |
 | L1-14 | Read revocation state (per request) | N/A | — | — | N/A: the perimeter's operation |
 | L1-15 | Material unrecognised, or bound to a retired or revoked agent: denied (PF §9) | Yes | `keeper.ts` (ACQ-03: `ProblemError`, not retried) | CC-ACQ-02; TC-TH-009 | Covered |
-| L1-16 | Credential expired: renew, or bootstrap when lapsed (PF §9) | Yes | `keeper.ts` (REN-04, REN-06), `subscription.ts` (SUB-05) | CC-REN-03, CC-REN-05, CC-SUB-05; TC-TH-018 | Covered |
+| L1-16 | Credential expired: renew, or bootstrap when lapsed (PF §9) | Yes | `keeper.ts` (REN-04, REN-06; REN-07: after the clock-skew warning, S3's `credential_expired` decides), `subscription.ts` (SUB-05) | CC-REN-03, CC-REN-05, CC-REN-07, CC-SUB-05; TC-TH-018, 075 | Covered |
 | L1-17 | Credential revoked: denied, terminal (PF §9; §17; FR-011) | Yes | `keeper.ts` (REN-05; TH-REN-04, GAP-CAC-001), `subscription.ts` (STR-07), `client.ts` (*revoked*) | CC-REN-04, CC-STR-09; TC-TH-019, 042 | Covered |
 | L1-18 | Revocation state unavailable: cache, then denied (PF §9) | Yes, as seen by a client | `transport.ts` (`503` retried, PRB-05), `subscription.ts` (`end unavailable` non-terminal) | CC-PRB-04, CC-STR-01; TC-TH-011 | Covered |
 | L1-19 | Chain depth exceeded: rejected (PF §9) | Yes | `errors.ts`, `transport.ts` (FWD-05: surfaced, not retried) | CC-FWD-07; TC-TH-031 | Covered |
