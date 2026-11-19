@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "description": "The test-only reference driver that proves the conformance runner. Part of no package; never published.",
   "dependencies": {
-    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/api": "1.10.0",
     "@opentelemetry/sdk-trace-base": "2.12.0"
   }
 }
