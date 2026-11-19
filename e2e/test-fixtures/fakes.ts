@@ -38,13 +38,20 @@ export interface Invocation {
   env: string[];
 }
 
+/** The commands a test may fake: docker, git, pnpm, and a Node for --core-node. */
+export type FakeName = 'docker' | 'git' | 'pnpm' | 'core-node';
+
 export interface Fakes {
   root: string;
   bin: string;
   /** PATH for the commands under test: the fakes first. */
   path: string;
-  scenario(command: 'docker' | 'git', scenario: Scenario): void;
-  calls(command: 'docker' | 'git'): Invocation[];
+  /** The fake Node's path, for --core-node. */
+  coreNode: string;
+  scenario(command: FakeName, scenario: Scenario): void;
+  calls(command: FakeName): Invocation[];
+  /** Forgets every recorded invocation. */
+  clearCalls(): void;
   cleanup(): void;
 }
 
@@ -53,24 +60,34 @@ const FAKE = join(import.meta.dirname, 'fake-command.mjs');
 export function makeFakes(): Fakes {
   const root = mkdtempSync(join(tmpdir(), 'soorma-e2e-test-'));
   const bin = join(root, 'bin');
+  // The fake Node lives apart from bin/: only --core-node names it.
+  const coreBin = join(root, 'core-bin');
   mkdirSync(bin);
-  for (const name of ['docker', 'git']) {
-    copyFileSync(FAKE, join(bin, name));
-    chmodSync(join(bin, name), 0o755);
+  mkdirSync(coreBin);
+  const where = (name: FakeName): string => (name === 'core-node' ? coreBin : bin);
+  for (const name of ['docker', 'git', 'pnpm', 'core-node'] as const) {
+    copyFileSync(FAKE, join(where(name), name));
+    chmodSync(join(where(name), name), 0o755);
   }
   return {
     root,
     bin,
     path: `${bin}${delimiter}${process.env.PATH ?? ''}`,
+    coreNode: join(coreBin, 'core-node'),
     scenario: (command, scenario) =>
-      writeFileSync(join(bin, `${command}.json`), JSON.stringify(scenario)),
+      writeFileSync(join(where(command), `${command}.json`), JSON.stringify(scenario)),
     calls: (command) => {
-      const log = join(bin, `${command}.log`);
+      const log = join(where(command), `${command}.log`);
       if (!existsSync(log)) return [];
       return readFileSync(log, 'utf8')
         .trim()
         .split('\n')
         .map((l) => JSON.parse(l) as Invocation);
+    },
+    clearCalls: () => {
+      for (const name of ['docker', 'git', 'pnpm', 'core-node'] as const) {
+        rmSync(join(where(name), `${name}.log`), { force: true });
+      }
     },
     cleanup: () => rmSync(root, { recursive: true, force: true }),
   };

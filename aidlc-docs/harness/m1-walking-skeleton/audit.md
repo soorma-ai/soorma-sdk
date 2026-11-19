@@ -1159,3 +1159,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G2
 
 ---
+
+## U2 Code Generation — G3 gate green
+**Timestamp**: 2026-11-19T03:33:17Z
+**User Input**: (none)
+**AI Response**: "G3 (Steps 13 to 16). Created: e2e/src/core-up.ts (CU-01 record refusal; CU-11 prerequisites: Docker Engine 26+, Compose 2.26.0+, git, --core-node runs; CU-02 project and volume refusal; CU-03 record 0600 exclusive; CU-04 clone depth 1 at the tag; CU-05 HEAD equals contract.pin.json's commit; CU-12 strictDepBuilds true and allowBuilds {}; CU-13 --core-node version equals .node-version, pnpm equals packageManager; CU-06 to CU-08 install, the four docker build lines, stack:init, stack:up with --core-node's directory first on PATH, no output printed from stack:init on; CU-09 marker last; each step under its TS-U2-11 limit), e2e/src/core-down.ts (CD-01 to CD-07: the search on every run, down -v by the clone's Compose file or by project, removal with the record last, a failed or timed-out teardown keeps the record and the clone), e2e/src/cli/options.ts, cli/core-up.ts, cli/core-down.ts, root scripts e2e:core-up and e2e:core-down, e2e/src/core.test.ts (20 tests: TC-ES-002, 003, 008 unit part, 015 core-down part, 018 with LS-12, 021, 023, the CLI's fixed values). fakes.ts covers pnpm and a --core-node Node. Test fixes before commit: repeated runs in one test reset .e2e/ and the recorded calls; macOS /var vs /private/var compared by realpath; 30 s timeout for the two test groups. CLI checked by hand: core-down without a record prints the no-stack line and exits 0; a usage error exits 2. Gate green on Node 24.22.3: 154 tests; self-test pass (84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G3
+
+---
