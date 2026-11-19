@@ -116,3 +116,12 @@ listener `refuse`), the driver `commands`, and the `expect`ed assertions (`reque
 `request-shape`, `request-count`, `request-timing`, `observation`, `item-sequence`,
 `runtime-check`, `span`, `surface`, `absence`). Placeholders (`${S3}`, `${CA}`, `${FILE:x}`,
 `${TIME:+H_renew+2000}`, `${DEPTH+8}`, …) are resolved at case start (`runner/src/template.ts`).
+
+### Rules for case authors
+
+- **`T_idle` exceeds every silence.** A case's `T_idle` must exceed the longest silence on any
+  stream it keeps open, including the wait for a renewal or a replacement, unless the case is
+  testing the idle timeout itself (as CC-STR-02 is). The stub cannot script heartbeats during a
+  wait, so a shorter `T_idle` lets an SDK end the stream as idle (STR-02), rightly, and the case
+  then fails, or passes through a path it does not test, depending on how fast the driver starts.
+  CC-STR-04, 05, 06, 10 and 11 and CC-PRB-08 each had this flaw.
