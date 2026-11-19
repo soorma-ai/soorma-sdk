@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "name": "@soorma/sdk",
+    "generate": ["node", "typescript/scripts/generate.ts", "{out}"],
+    "committed": "typescript/src/generated"
+  }
+]

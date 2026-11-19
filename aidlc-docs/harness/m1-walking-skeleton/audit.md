@@ -1537,3 +1537,11 @@ Log this message word for word in audit.md, run G1's gate, commit signed off, pu
 **Context**: CONSTRUCTION — U3 typescript-harness, G1, class 3 changes recorded
 
 ---
+
+## U3 Code Generation — G2 gate green
+**Timestamp**: 2026-11-19T07:24:09Z
+**User Input**: (none)
+**AI Response**: "G1 pushed as 89aa962, CI run 44477890224 green (the e2e job included). G2 (Steps 10 to 15, and 11a added before it was made): typescript/package.json (@soorma/sdk 0.1.0, ESM, engines >=24, exports types then default, files dist without dist/internal plus README, LICENSE, NOTICE; peer @opentelemetry/api ^1.9.0, development 1.10.0), tsconfig.build.json, the workspace entry; root tsconfig, vitest, .gitignore (typescript/dist, *.tgz), .prettierignore (dist, src/generated); limits.ts (NFR Requirements' values; the module-private slot and setLimitsSlot; captureLimits at construction; D_LANG 512), internal/test-values.ts (imports limits.ts; nothing published imports it), clock.ts, errors.ts (five classes; message, JSON and inspect forms with no secret), types.ts (the public types; Envelope deep-optional over the generated type), skeletons of client, subscription, delivery, secrets, options (newInstanceId), index.ts. Step 11a: openapi-typescript 7.13.0 added as a root development dependency (the version soorma-core pins at the tag with TypeScript 6.0.3); typescript/scripts/generate.ts reuses the vendored generator; its three files are byte-identical to contract/generated/. tools/generated-types/packages.json and tools/packaging/packages.json list the package (names/drivers.json in G6). ESLint rules for typescript/src (no process.env, host reads, console, Date.now, performance.now, setTimeout, clearTimeout outside clock.ts; no import of internal/test-values). Tests (7): the values and the hook, the source check on imports, the generated files, the errors' forms, the Envelope type. pnpm pack checked: no dist/internal in the tarball. Gate fixes before commit: two unused-parameter lint errors in stubs; two test bugs (the import check matched a comment; the type test executed its line). Gate green on Node 24.22.3: 193 tests; checks find 1 package for generated types and packaging; self-test pass (132 s); the package builds."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G2
+
+---

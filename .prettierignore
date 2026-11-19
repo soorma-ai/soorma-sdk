@@ -2,3 +2,5 @@ contract/
 aidlc-docs/
 pnpm-lock.yaml
 .e2e/
+typescript/dist/
+typescript/src/generated/
