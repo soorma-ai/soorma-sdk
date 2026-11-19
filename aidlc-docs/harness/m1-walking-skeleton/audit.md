@@ -1225,3 +1225,27 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack COMPLETE; U3 next
 
 ---
+
+## U3 Unit Initialization
+**Timestamp**: 2026-11-19T04:17:58Z
+**User Input**: (none)
+**AI Response**: "Unit Initialization: loaded extension rules for [security-baseline (local-only; hosted clauses carried), soorma-platform-invariants, pr-checkpoint, qa-test-cases (comprehensive), tickets] (unit: typescript-harness). prd-gap-classification.md stays active (PRD Intake present). Shape: harness (face: none; data face only, S3 and S4); NFR profile source PF §11 Harness Surface and §14 Harness Surface Register @ prd-platform-foundations-v1.3, seeded at NFR Requirements (Step 1.5). Ticket soorma-ai/soorma-sdk#6."
+**Context**: CONSTRUCTION — U3 typescript-harness, Unit Initialization
+
+---
+
+## U3 L1 Domain Coverage Gate
+**Timestamp**: 2026-11-19T04:17:58Z
+**User Input**: (none)
+**AI Response**: "L1 sources: PF @ prd-platform-foundations-v1.3 (the most authoritative; §7b, FR-004 to FR-006, §9, §11, §17), as U1's matrix registers them (L1-01 to L1-30); ID @ prd-identity-v1.0: no L1 source, its §11 prohibitions bind as constraints. U3 carries U1's applicable rows to TypeScript code and a passing run: 25 applicable (each to get a TypeScript implementation target and a verification target: its conformance case under the TypeScript driver, and the end-to-end test where it applies), 5 N/A (L1-08, L1-10, L1-14, L1-21 the platform's; L1-28 the SDK has no human operation). Result at the gate: covered 0 of 25 yet (written at Functional Design Step 6), non-applicable 5, missing 0 as unresolved design; the Functional Design matrix is blocking."
+**Context**: CONSTRUCTION — U3 typescript-harness, L1 gate
+
+---
+
+## U3 Functional Design — questions written
+**Timestamp**: 2026-11-19T04:17:58Z
+**User Input**: (none)
+**AI Response**: "Functional Design plan with 9 questions written to construction/working/typescript-harness-functional-design-plan.md (git-ignored): U3-FD-Q1 reading a payload deeper than D_lang (a scanner over the delivery line, recommended); Q2 fileSecret on Windows (refused, SEC-09); Q3 closing and process lifetime (close, Symbol.asyncDispose, iterator return, the renewal timer unref'd); Q4 the typed envelope (every member optional, CDI-04); Q5 a payload JSON cannot carry (refused before sending, path named, never the value); Q6 the example's configuration (a marked block, run(config)); Q7 the end-to-end test's processes (one process, two clients, one in-memory exporter); Q8 one renewal on the real stack (soorma-core's agent credential lifetime is a 15-minute code constant at the tag: a fast Date in the test, recommended); Q9 the driver's heap check (import U1's heap.ts). Carried without asking: DEC-U1-01, CDI-01 to CDI-04, GAP-CAC-001, GAP-INT-001, GAP-INT-002; to NFR Requirements and Code Generation: OBL-04, JOB-06, CDI-05. The named values (H_renew, R_max, W_max, B_*, L_ends, W_super, N_buf, D_lang, T_idle, T_req) are NFR Requirements'. Awaiting the user's answers."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design, awaiting answers
+
+---
