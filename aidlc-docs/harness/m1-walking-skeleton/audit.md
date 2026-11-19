@@ -1687,3 +1687,27 @@ Log this message word for word in audit.md."
 **Context**: Construction, typescript-harness: Code Generation approved; U3 complete. Start of U4 python-harness
 
 ---
+
+## U4 python-harness — Unit Initialization
+**Timestamp**: 2026-11-19T18:36:38Z
+**User Input**: "(none: U4 starts under the user's message above)"
+**AI Response**: "Unit Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets] (unit: python-harness). prd-gap-classification.md loaded (PRD Intake exists). Unit context: U4 python-harness, harness shape (face: none; S3 and S4 only), ticket soorma-ai/soorma-sdk#7; depends on U1 and U2, after U3; proves every case on Python 3.11 and the newest release, and done when 2, 3, 5."
+**Context**: Construction, U4 python-harness, Unit Initialization
+
+---
+
+## U4 python-harness — L1 Domain Coverage Gate
+**Timestamp**: 2026-11-19T18:36:38Z
+**User Input**: (none)
+**AI Response**: "L1 sources: PF @ prd-platform-foundations-v1.3 (the rows L1-01 to L1-30 in U1's and U3's matrices); ID @ prd-identity-v1.0 has no L1 source in this repository's scope (its §11 binds as constraints). U4 carries the same rows to Python as U3 did to TypeScript: 25 applicable (each to get a Python implementation target and a verification target: its cases through the Python driver on 3.11 and the newest release, plus e2e-python where named), 5 N/A (L1-08, L1-10, L1-14, L1-21: the platform's; L1-28: no human operation). Missing: 0. The matrix is written at Functional Design's generation step."
+**Context**: Construction, U4 python-harness, L1 gate: covered 25 / non-applicable 5 / missing 0
+
+---
+
+## U4 python-harness — Functional Design: questions
+**Timestamp**: 2026-11-19T18:37:46Z
+**User Input**: (none)
+**AI Response**: "Functional Design plan written (construction/working/python-harness-functional-design-plan.md, git-ignored), carrying U1's and U3's language-neutral settlements as listed by the user (REN-07 and R_min with the skew rule, CDI-06, SEC-01 per attempt, STR-02 and STR-05, the values hook out of the package, the state row and Python's idioms, CDI-01 to CDI-05, the case authors' T_idle rule, GAP-CAC-001, GAP-INT-001, GAP-INT-002, PUB-04's unlimited depth, U3's example and end-to-end answers; OBL-04, e2e-python with prove-stack, the named values with D_lang first, the packed-distribution check carried to NFR Requirements and Code Generation). Eight questions, each Awaiting Answer: U4-FD-Q1 the concurrency model (A: asyncio only); Q2 leaving a loop and closing (A: async with as the closing idiom, garbage collection a safety net, __aenter__ does not start); Q3 the deep-payload reader (A: U3's iterative scanner); Q4 file_secret on Windows (A: refused); Q5 the typed envelope and payload (A: TypedDict, every member optional, read-only envelope, plain payload); Q6 payloads JSON cannot carry (A: exact types only, iterative serializer); Q7 REN-07's warning (A: SoormaWarning exported, once per lineage, a name-table row); Q8 the end-to-end clock (A: patch time.time only). Two Python facts drive Q2 and Q7: break out of async for calls nothing on a plain async iterator; the warnings module's default filter shows a warning once per code location."
+**Context**: Construction, U4 python-harness, Functional Design Step 3 and 4: questions awaiting answers
+
+---
