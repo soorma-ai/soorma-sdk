@@ -94,9 +94,15 @@ export function startSend(forwarding: boolean, receivedTc?: unknown): SendSpan {
     parent,
   );
   const sc = span.spanContext();
+  // Without an OpenTelemetry SDK the no-op tracer returns the parent's own
+  // context: that is not this hop's span, so it is never the draft's (TRC-04).
+  const parentSc = trace.getSpanContext(parent);
+  const own =
+    trace.isSpanContextValid(sc) &&
+    !(parentSc && parentSc.traceId === sc.traceId && parentSc.spanId === sc.spanId);
   let traceparent: string;
   let tracestate: string | undefined;
-  if (trace.isSpanContextValid(sc)) {
+  if (own) {
     traceparent = `00-${sc.traceId}-${sc.spanId}-${flags(sc.traceFlags)}`;
     const ts = sc.traceState?.serialize();
     if (ts) tracestate = ts;

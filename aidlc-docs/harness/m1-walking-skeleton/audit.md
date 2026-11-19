@@ -1577,3 +1577,11 @@ Log this message word for word in audit.md, run G1's gate, commit signed off, pu
 **Context**: Construction, typescript-harness, Code Generation Part 2, commit group G5
 
 ---
+
+## Code Generation: typescript-harness, G6 (the driver; the first full suite run; CDI-05 judging)
+**Timestamp**: 2026-11-19T08:37:53Z
+**User Input**: "(none: G6 continues the approved plan)"
+**AI Response**: "G5's CI run 44485162024 green on 80e931b. Step 29: the TypeScript conformance driver (typescript/conformance-driver/: driver.ts, names.ts reading names and surface from dist/index.d.ts, spans.ts), and typescript/README.md's Delivery and Spans sections. Step 30, the first full suite run, the committed runner: Node 26.13.0, 74 passed, 20 failed, 1 not run (CC-SEC-05, locally), 220 s; after Step 30a, Node 24.22.3 and 26.13.0 each 77 passed, 17 failed, 1 not run, 219 s: within the 5-minute budget. Step 30a (added when the run found them): CC-FWD-05, the SDK (TRC-04: without an OpenTelemetry SDK the no-op tracer returns the parent's context, so a forward repeated the received span id; startSend now uses a span context only when it is a new span); CC-CRD-01, the SDK (CDI-04: the credential's environment now kept as sent, unknown members included); CC-PRB-03, the driver (an absent title or detail reported as null, as the protocol says). Unit tests for both SDK fixes. Step 31 judging, recorded in the plan's CDI-05 log, four items stopped for the user and nothing changed in U1: (1) the runner never sends a case's values to the driver, against conformance/README.md; adding them to create is class 3 (scratch evidence, never committed: 3 failures then remain, and the self-test passes with its fault sets unchanged, 142 s); (2) CC-STR-04 and CC-STR-11 script a silence longer than their own T_idle (1500 ms), so the SDK ends the stream as STR-02 requires: raising T_idle is class 3 (both pass at 10000 in scratch); (3) CC-PRB-08 has no exchange for the replacement subscribe STR-04 requires: adding one is class 3; (4) the names check: state and toJSON are exported but not in spec/names.md, a specification question; tools/names/drivers.json is unchanged until it is answered. Gate green: 272 tests, checks, build, self-test (127 s)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G6 (part one); stopped for the user at Step 31
+
+---

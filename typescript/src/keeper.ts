@@ -69,7 +69,9 @@ export function parseCredential(body: string): Held {
       details: Object.freeze({
         agent: c.agent,
         instance: c.instance,
+        // As sent, unknown members kept (CDI-04); the three it needs are checked above.
         environment: Object.freeze({
+          ...env,
           organization: env.organization,
           project: env.project,
           environment: env.environment,

@@ -308,4 +308,19 @@ describe('spans (SPN-02 to SPN-04, SPN-07; DEC-U1-01)', () => {
     );
     await c.close();
   });
+
+  it('without an OpenTelemetry SDK a forward continues the received trace with a new span id (TRC-03, TRC-04; CC-FWD-05)', async () => {
+    const c = await started();
+    trace.disable();
+    replies = [() => accepted];
+    const r = await delivery(c).publish({ r: 1 });
+    const [, traceId, spanId] = TP.split('-');
+    expect(r.traceContext.traceparent).toMatch(
+      new RegExp(`^00-${traceId}-(?!${spanId})(?!0{16})[0-9a-f]{16}-01$`),
+    );
+    trace.setGlobalTracerProvider(
+      new BasicTracerProvider({ spanProcessors: [new SimpleSpanProcessor(exporter)] }),
+    );
+    await c.close();
+  });
 });

@@ -29,7 +29,7 @@ vi.mock('./transport.ts', async (orig) => {
   };
 });
 
-const { Keeper, CLOCK_SKEW_CODE } = await import('./keeper.ts');
+const { Keeper, CLOCK_SKEW_CODE, parseCredential } = await import('./keeper.ts');
 
 const iso = (ms: number) => new Date(ms).toISOString();
 const cred = (token: string, expiresAt: number): Reply => ({
@@ -123,6 +123,27 @@ describe('bootstrap (ACQ; SEC-01; P-08)', () => {
       .catch((x: unknown) => x);
     expect((e as ProblemError).code).toBe('authentication_failed');
     expect(providerCalls).toBe(1);
+  });
+});
+
+describe('the credential response (ACQ-08; CDI-04)', () => {
+  it('keeps the environment as sent, unknown members included (CC-CRD-01)', () => {
+    const c = parseCredential(
+      JSON.stringify({
+        credential: 'soorma_ac_x',
+        agent: 'a',
+        instance: 'a-1',
+        environment: { organization: 'o', project: 'p', environment: 'e', region: 'r' },
+        expiresAt: '2026-11-19T08:15:00Z',
+      }),
+    );
+    expect(c.details.environment).toEqual({
+      organization: 'o',
+      project: 'p',
+      environment: 'e',
+      region: 'r',
+    });
+    expect(Object.isFrozen(c.details.environment)).toBe(true);
   });
 });
 
