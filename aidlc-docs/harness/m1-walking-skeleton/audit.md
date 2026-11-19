@@ -1616,3 +1616,25 @@ Then finish G6: the full runs on Node 24 and 26, judging any remaining failures 
 **Context**: Construction, typescript-harness, Code Generation Part 2, commit group G7; stopped for the user at Step 33b
 
 ---
+
+## Code Generation: typescript-harness, G7 Step 33b — the user's decision
+**Timestamp**: 2026-11-19T15:58:14Z
+**User Input**: "Approved: T_idle 10000 in CC-STR-05, CC-STR-06 and CC-STR-10, class 3, each in its own commit with the same $comment as CC-STR-04 and CC-STR-11, covered by this message. The self-test must show every fault set unchanged.
+
+Five cases have now had this flaw, so add one rule to conformance/README.md's guidance for case authors, as a class 1 documentation change: a case's T_idle must exceed the longest silence on any stream it keeps open, including the wait for a renewal or replacement, unless the case is testing the idle timeout itself (as CC-STR-02 is).
+
+Your OpenTelemetry 1.9.0 approach is accepted: the locked alias in tools/package.json and use-floor.ts with its single-copy check.
+
+Then push, confirm every conformance-typescript entry is green and shows CC-SEC-05 passed (Step 34), record the run ID, and go on to G8. Log this message word for word in audit.md."
+**AI Response**: "Proceeding: three commits (T_idle 10000 with the $comment in CC-STR-05, CC-STR-06, CC-STR-10), one class 1 README rule for case authors, then push, Step 34, and G8."
+**Context**: Construction, typescript-harness, Code Generation Part 2, G7 Step 33b: user approval
+
+---
+
+## Code Generation: typescript-harness, G7 complete (Steps 33b to 35)
+**Timestamp**: 2026-11-19T16:10:49Z
+**User Input**: "(none: G7 continues under the user's approval above)"
+**AI Response**: "Class 3, one commit each, CC-STR-04's $comment: 2c70ed4 (CC-STR-05), fb6233f (CC-STR-06), ec74d30 (CC-STR-10), T_idle 1500 to 10000; each passes under the TypeScript driver; self-test after each pass (145-146 s), every fault set as declared, faults.json unchanged. Class 1: 3549c29, conformance/README.md 'Rules for case authors': a case's T_idle exceeds the longest silence on any stream it keeps open, including the wait for a renewal or a replacement, unless the case tests the idle timeout itself (as CC-STR-02 does). Step 34: push run 44562488457 (head 3549c29) green on every job; conformance-typescript on Node 24.22.3 with @opentelemetry/api 1.9.0, Node 24.22.3 with 1.10.0, and Node 26.13.0 with 1.10.0: each 95 passed, 0 failed, 0 not run, so CC-SEC-05 passed, not skipped (101-102 s); the 1.9.0 entry logged one copy of the API at 1.9.0 seen by the package and both OpenTelemetry SDK packages. Step 35: unit ran 278 tests, the package's included; checks found the package. OBL-04 is discharged at the code PR's run. Next: G8."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G7 complete
+
+---
