@@ -1824,3 +1824,11 @@ Log this message word for word in audit.md, update the NFR Requirements artifact
 **Context**: Construction, U4 python-harness, NFR Requirements complete
 
 ---
+
+## U4 python-harness — NFR Design: questions
+**Timestamp**: 2026-11-19T22:04:06Z
+**User Input**: (none)
+**AI Response**: "NFR Design plan written (construction/working/python-harness-nfr-design-plan.md, git-ignored). Carried from U3's NFR Design: P-01, P-02, P-03, P-04, P-08, P-10. Decided without asking, shown for review: public AgentClient and Subscription as thin handles over internal cores, so collection can close an open subscription (weakref.finalize on the handle, detached by close()); the clock check as an ast walk in the tests; the TLS hint from the default context's CA count recorded at start(); per-event byte counting with a discard mode past L_event, the same in both languages; a stub directive generating a large body at send time (F42 class 1). Two questions, each Awaiting Answer: U4-NFR-D-Q1 the I/O layer (A: an asyncio.Protocol feeding the sans-IO parser); U4-NFR-D-Q2 the opentelemetry-api floor run (A: two conflicting dependency groups in the one uv.lock)."
+**Context**: Construction, U4 python-harness, NFR Design Steps 1 to 4
+
+---
