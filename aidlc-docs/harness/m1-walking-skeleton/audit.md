@@ -1300,3 +1300,27 @@ Log this message word for word in audit.md, update the artifacts, commit signed 
 **Context**: CONSTRUCTION — U3 typescript-harness, Functional Design revised, awaiting approval
 
 ---
+
+## U3 Functional Design — the user approves
+**Timestamp**: 2026-11-19T04:45:45Z
+**User Input**: "Continue to Next Stage: U3 Functional Design approved, as revised in 8c65ed1.
+
+One instruction for Code Generation. "While the credential is valid" appears in more places than REN-06's bootstrap:
+- REN-06's retry of a 503 on renewal;
+- PRB-09's renewal retry while unexpired;
+- the stream supervisor's resubscribe (S-3).
+On a skewed lineage, a wall-clock check in any of them would end retries or resubscription while S3 still accepts the credential. Implement a single validity check that every such place uses: on a lineage with the clock-skew warning it answers valid until S3 says credential_expired, and otherwise uses the wall clock. Nowhere else compares expiresAt with Date.now() to decide validity. Add a unit test: on a skewed lineage, a 503 on renewal is retried, and a dropped stream is resubscribed, without a bootstrap. Note it in the Code Generation plan when you write it.
+
+Log this message word for word in audit.md, then start U3's NFR Requirements."
+**AI Response**: "Functional Design APPROVED as revised in 8c65ed1. The instruction is recorded for Code Generation as CDI-06 under Carried Design Inputs (one validity check in keeper.ts used by REN-06's bootstrap, REN-06's 503 retry on renewal, PRB-09's renewal retry, and the stream supervisor's resubscribe; on a warned lineage valid until S3 answers credential_expired, otherwise the wall clock; nothing else compares expiresAt with Date.now() to decide validity; a unit test for a skewed lineage's 503 renewal retry and dropped-stream resubscribe without a bootstrap), to be noted in U3's Code Generation plan. Starting NFR Requirements."
+**Context**: CONSTRUCTION — U3 typescript-harness, Functional Design APPROVED
+
+---
+
+## U3 NFR Requirements — questions written
+**Timestamp**: 2026-11-19T04:48:15Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements plan with 8 questions written to construction/working/typescript-harness-nfr-requirements-plan.md (git-ignored). Step 1.5 (harness): seeded from PF §11 Harness Surface and §14 Harness Surface Register read at prd-platform-foundations-v1.3 (80dd7c98): every operation advisory; compatibility additive; the renewal precondition part of the contract; no server-side property; no number set by the PRD; the initiative's NFR-01 to NFR-11 carry it. Questions: U3-NFR-Q1 the named values (recommended H_renew 120 s, R_min 30 s, R_max 5, W_max 60 s, B 0.5 s x2 to 10 s, L_ends 5, W_super 10 s, N_buf 64, D_lang 512, T_idle 45 s, T_req 10 s); Q2 node:https; Q3 the trust store (checked here: tls.getCACertificates('system') returns 0 certificates on macOS with Node 24.22.3 and 26.13.0, bundled 118; recommended system plus bundled plus the CA); Q4 ESM only, built with tsc; Q5 C-10 by a script reusing the vendored generator, agent side only, every envelope member optional; Q6 a peer dependency on @opentelemetry/api ^1.9.0, tested at 1.10.0 and 1.9.0, messaging conventions at semantic conventions 1.45.0 (released 2026-11-06, past the cooldown) as constants; Q7 conformance-typescript on Node 24 and 26 with OBL-04's second user, e2e-typescript on Node 24 (JOB-06), package-typescript (pack, install, the agent file copied); Q8 NFR-01 shown by design and request counts, no benchmark. Awaiting the user's answers."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements, awaiting answers
+
+---
