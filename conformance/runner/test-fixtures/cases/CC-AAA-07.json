@@ -1,0 +1,11 @@
+{
+  "id": "CC-AAA-07",
+  "title": "create receives no values when the case has none",
+  "statements": ["AAA-01"],
+  "timeoutMs": 5000,
+  "script": { "exchanges": [] },
+  "commands": [{ "op": "create", "label": "create", "args": {} }],
+  "expect": [
+    { "kind": "observation", "command": "create", "ok": true, "result": { "/hasValues": false } }
+  ]
+}
