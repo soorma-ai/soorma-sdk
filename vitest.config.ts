@@ -6,7 +6,7 @@ export default defineConfig({
   // soorma-core's tsconfig.json, which extends a file only soorma-core has.
   tsconfig: './tsconfig.json',
   test: {
-    include: ['conformance/**/*.test.ts', 'tools/**/*.test.ts'],
+    include: ['conformance/**/*.test.ts', 'e2e/**/*.test.ts', 'tools/**/*.test.ts'],
     exclude: ['**/node_modules/**', 'contract/**', 'aidlc-docs/**'],
   },
 });

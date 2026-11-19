@@ -1,0 +1,10 @@
+{
+  "name": "@soorma-sdk/e2e",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "The end-to-end stack: core-up, setup, prove-stack and core-down bring soorma-core up at the contract tag, register the agents and take it down. Test infrastructure; never published, never imported by a package.",
+  "dependencies": {
+    "yaml": "2.9.1"
+  }
+}

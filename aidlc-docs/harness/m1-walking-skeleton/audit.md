@@ -1143,3 +1143,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G0
 
 ---
+
+## U2 Code Generation — G1 gate green
+**Timestamp**: 2026-11-19T03:16:44Z
+**User Input**: (none)
+**AI Response**: "G1 (Steps 1 to 9). Created: e2e/package.json (@soorma-sdk/e2e, private; yaml 2.9.1, already locked), e2e/src/stack.ts (soorma-core's local stack values at the tag, the .e2e layout, TS-U2-11's limits, readPin), e2e/src/child.ts (spawn without a shell, an explicit environment, SIGTERM then SIGKILL on the process group, captured output), e2e/src/https.ts (node:https, the stack's CA only, agent: false, contract version header, bearer credential, a limit through the whole response; failure reduced to step, status, Problem code, request id), e2e/src/contract-ops.ts (operation and status to the vendored contract's response schema; checked with U1's validator), e2e/src/shared.test.ts (14 tests). Changed: pnpm-workspace.yaml, tsconfig.json, vitest.config.ts, pnpm-lock.yaml (importer entry only, no new package). Class 2 changes to U1's code, recorded: tools/packaging/check.ts forbids e2e/ (path segment, @soorma-sdk/e2e, a spec naming e2e) with 2 added tests; tools/workflows/check.ts refuses an upload naming .e2e and a secrets. reference in the end-to-end jobs (changes, e2e, e2e-*), with 2 added tests; no existing assertion changed. Plan notes: the e2e:* scripts arrive with their commands (G3, G4); spawn with shell: false instead of execFile, for the process-group kill; child output captured, a failure's output tail only for steps before stack:init. Gate fixes before commit: constructor parameter properties refused by erasableSyntaxOnly (https.ts), a comma expression refused by lint (shared.test.ts). Gate green on Node 24.22.3: frozen install, typecheck, lint, format, 116 tests, audit, audit exceptions, checks, conformance self-test (pass, 84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G1
+
+---

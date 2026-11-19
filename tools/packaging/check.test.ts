@@ -44,4 +44,20 @@ describe('packaging guard (NFR-U1-23)', () => {
       'p: devDependencies names test-only @soorma-sdk/tools@workspace:*',
     ]);
   });
+
+  // U2 (GEN-03): the end-to-end stack's raw calls stay outside both packages.
+  it('catches an e2e/ file in the published files', () => {
+    mkdirSync(join(dir, 'src', 'e2e'), { recursive: true });
+    writeFileSync(join(dir, 'src', 'e2e', 'setup.ts'), 'export {};\n');
+    expect(checkPackage(dir)).toEqual(['@soorma/sdk-fixture: would publish src/e2e/setup.ts']);
+  });
+
+  it('catches a files entry or a dependency reaching the end-to-end stack', () => {
+    manifest({ name: 'p', files: ['src', '../e2e/src'] });
+    expect(checkPackage(dir)).toEqual(['p: files lists ../e2e/src']);
+    manifest({ name: 'p', files: ['src'], dependencies: { '@soorma-sdk/e2e': 'workspace:*' } });
+    expect(checkPackage(dir)).toEqual([
+      'p: dependencies names test-only @soorma-sdk/e2e@workspace:*',
+    ]);
+  });
 });

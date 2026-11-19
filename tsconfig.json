@@ -16,6 +16,6 @@
     "types": ["node"],
     "noEmit": true
   },
-  "include": ["conformance/**/*.ts", "tools/**/*.ts", "*.config.ts"],
+  "include": ["conformance/**/*.ts", "e2e/**/*.ts", "tools/**/*.ts", "*.config.ts"],
   "exclude": ["node_modules", "**/node_modules", "contract", "aidlc-docs"]
 }
