@@ -1399,3 +1399,28 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: CONSTRUCTION — U3 typescript-harness, NFR Design complete, awaiting approval
 
 ---
+
+## U3 NFR Design — the user approves, with an addition to the F42 list
+**Timestamp**: 2026-11-19T05:24:09Z
+**User Input**: "Continue to Next Stage: U3 NFR Design approved, with one addition to the F42 list.
+
+P-08's reading of SEC-01 (once per bootstrap attempt) is right: holding the secret through a backoff wait would break SEC-02. But it changes what SEC-01 says, and it's language-neutral, so it belongs in the spec, not only in TypeScript's design. A Python implementation following SEC-01 literally would hold the secret between attempts, and no case would catch it, because the cases count requests on a retried bootstrap, not provider calls.
+
+Add to the F42 list:
+- SEC-01 reworded: the SDK calls the provider exactly once per bootstrap attempt, and never at client creation, renewal, publish or subscribe. A retried bootstrap calls it again, and no reference to an earlier attempt's secret remains during the backoff wait (SEC-02).
+- A conformance case, CC-ACQ next number: the stub answers a bootstrap with 503 and Retry-After, then 200. The driver reports exactly two provider calls and two requests. If the driver protocol can do it, the CDI-02 heap check after the first attempt's request finds no copy of the secret during the wait.
+- The reference driver declares it if it already behaves that way (it does, per P-08); the self-test's fault sets stay unchanged.
+
+Log this message word for word in audit.md, then go on to QA enrichment for U3."
+**AI Response**: "NFR Design APPROVED. Added to the F42 list (business-rules TH-F42-02, logical-components §3, nfr-design-patterns P-08, domain-entities §7): SEC-01 reworded (exactly once per bootstrap attempt; never at creation, renewal, publish or subscribe; a retried bootstrap calls it again; no reference to an earlier attempt's secret during the backoff wait, SEC-02); a new case, the next CC-ACQ number (503 with Retry-After, then 200; exactly two provider calls and two requests; the CDI-02 heap check during the wait if the protocol can do it); the reference driver declares it; the fault sets unchanged. Going on to QA enrichment for typescript-harness."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Design APPROVED; QA enrichment next
+
+---
+
+## U3 QA test specs — construction enrichment
+**Timestamp**: 2026-11-19T05:26:56Z
+**User Input**: (none)
+**AI Response**: "Construction enrichment for typescript-harness (qa-test-cases §2): sources construction/typescript-harness/functional-design/, nfr-requirements/, nfr-design/ (no infrastructure design). test-specs-narrative.md enriched in place: 29 cases modified with their IDs and forward links unchanged (TC-TH-003, 004, 006, 008, 011, 013, 015, 017, 018, 019, 021, 026, 027, 037, 040, 041, 044, 050, 054, 055, 056, 058, 059, 061, 062, 063, 064, 065, 066), among them TC-TH-058 (package-typescript: an ESM import and a CommonJS require each constructing an AgentClient), TC-TH-059 (the matrix, OBL-04's second user, the added cases, CDI-05's rule), TC-TH-061 (the fast Date, one real renewal, none before R_min), TC-TH-063 (the decoy span); TC-TH-067 to 080 added with forward links to construction/typescript-harness/code/ (the eight planned at Functional Design, and 076 CDI-06, 077 CC-STR-12, 078 CC-STR-13, 079 CC-ACQ-08, 080 the CA file). test-case-index.md: 14 rows added. enrichment-delta.md written (git-ignored). 80 cases. Next: the Construction Design PR gate."
+**Context**: CONSTRUCTION — U3 typescript-harness, QA enrichment complete
+
+---

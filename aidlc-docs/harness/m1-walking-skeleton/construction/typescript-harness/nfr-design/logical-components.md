@@ -62,10 +62,10 @@ No module depends on the client; nothing reaches back up.
 
 | U1 component | Change |
 |---|---|
-| `spec/behaviour.md` | REN-07 and `R_min` (§0); the sentences in STR-02 and STR-05 (P-04) |
-| `conformance/cases/` | CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13 |
+| `spec/behaviour.md` | REN-07 and `R_min` (§0); the sentences in STR-02 and STR-05 (P-04); **SEC-01 reworded**: once per bootstrap attempt (P-08; the user, 2026-11-19T05:24:09Z) |
+| `conformance/cases/` | CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13, CC-ACQ-08 |
 | The driver protocol (`conformance/README.md`) and the runner | The `warnings` report; if needed, stub times relative to each response or before the case's start |
-| The reference driver | Implements REN-07 and declares CC-REN-06 and CC-REN-07; declares CC-STR-12 and CC-STR-13 if it can |
+| The reference driver | Implements REN-07 and declares CC-REN-06 and CC-REN-07; declares CC-ACQ-08 (it already calls the provider per attempt); declares CC-STR-12 and CC-STR-13 if it can |
 | `tools/generated-types/packages.json`, `tools/names/drivers.json`, `tools/packaging/packages.json` | List `typescript/` and its driver |
 
 The class of each, and the refusal sweep, are Code Generation's. **The self-test's fault sets

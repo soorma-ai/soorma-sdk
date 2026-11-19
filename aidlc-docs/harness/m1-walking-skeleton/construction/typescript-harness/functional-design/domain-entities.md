@@ -118,6 +118,9 @@ Problem. `close()` from any state makes it *closed*. Operations other than `star
 | **REN-07** | New statement: the monotonic renewal floor `R_min`; one clock-skew warning per lineage; after it, the lineage's expiry is S3's to judge | `spec/behaviour.md` §4; `R_min` added to §0's named values |
 | **CC-REN-06** | New conformance case: the renewal floor and the warning | `conformance/cases/ren/CC-REN-06.json` |
 | **CC-REN-07** | New conformance case: after the warning, S3 decides the expiry; one bootstrap on `credential_expired` | `conformance/cases/ren/CC-REN-07.json` |
+| **SEC-01**, reworded | Once per bootstrap attempt; no earlier attempt's secret held during the wait (NFR Design P-08) | `spec/behaviour.md` §2 |
+| **CC-ACQ-08** | New conformance case: a retried bootstrap calls the provider per attempt | `conformance/cases/acq/CC-ACQ-08.json` |
+| **STR-02, STR-05** sentences; **CC-STR-12**, **CC-STR-13** | Timers count only while a stream is read; the new stream paused during a replacement (NFR Design P-04) | `spec/behaviour.md` §11; `conformance/cases/str/` |
 | The reference driver | Implements REN-07 and declares CC-REN-06 and CC-REN-07 | `conformance/reference-driver/` |
 | The driver protocol | How a driver reports a warning (business-logic-model §9) | `conformance/README.md`, the runner |
 

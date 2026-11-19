@@ -62,6 +62,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - The conformance runner and stub (U1)
 - The TypeScript conformance driver
+- The CA file is read at `start()`, before the bootstrap; the trust store is the system store, plus Node's bundled store, plus the CA (NFR-U3-11)
 
 **Scenario**: a tester, under the preconditions above, exercises “A supplied CA is trusted; an untrusted certificate fails” and observes the outcome below.
 
@@ -69,7 +70,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Create a client with `caFile` set to the run's CA and bootstrap against the stub.
 2. Repeat against a stub presenting a certificate from a different CA.
 
-**Expected outcome**: The first bootstrap succeeds; the second fails with a `TransportError` naming a TLS verification failure, and no request body reaches the second server.
+**Expected outcome**: With the run's CA supplied, `start()` succeeds over TLS. A server certificate from the untrusted CA fails the call with `TransportError` before any body is sent. A missing, unreadable or non-PEM CA file fails `start()` with `TransportError` (reason `ca-file`, naming the path, never its contents), and no request is sent (TC-TH-080). Cases: CC-CFG-04.
 
 **Scope**: negative · **Priority**: High
 
@@ -77,7 +78,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 **Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/`
 
-**Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`
+**Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`, construction/typescript-harness/nfr-design/nfr-design-patterns.md (P-06)
 
 ---
 
@@ -93,7 +94,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Search the options and the package for any setting that disables certificate verification.
 
-**Expected outcome**: None exists.
+**Expected outcome**: `AgentClientOptions` has no member that turns verification off, and an unknown option member (a misspelt `rejectUnauthorized`, for example) is a `TypeError` at construction (TC-TH-074). Every request is made with verification on. Cases: CC-CFG-04.
 
 **Scope**: negative · **Priority**: High
 
@@ -138,6 +139,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - The conformance runner and stub (U1)
 - The TypeScript conformance driver
+- ESLint refuses `process.env`, `os.hostname`, `os.networkInterfaces` and `console` in `typescript/src/` (TS-U3-13)
 
 **Scenario**: a tester, under the preconditions above, exercises “Nothing is derived from the host or environment variables” and observes the outcome below.
 
@@ -145,7 +147,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Run the driver under two different hostnames and with unrelated environment variables set.
 2. Create a client with an instance from `newInstanceId()` and bootstrap.
 
-**Expected outcome**: The bootstrap's `instance` equals the supplied value; no request carries the hostname or any environment variable's value; `newInstanceId()` returns a UUID v4 that differs between calls.
+**Expected outcome**: No request carries anything derived from the host or the process environment; the instance identifier is the one supplied; the lint rule passes on `typescript/src/` and fails on a fixture that reads `process.env`. Cases: CC-CFG-06.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -199,7 +201,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Call `start()`.
 3. Ask the driver to `inspect` the runtime for the secret.
 
-**Expected outcome**: The provider was called exactly once; the runtime check finds no reference to the secret's value after the request was sent (TypeScript: after forced garbage collection, a heap snapshot holds no occurrence of the value).
+**Expected outcome**: The provider is called once for the bootstrap; after the request is written, the heap check (CDI-02, U1's `heap.ts`, imported by the TypeScript driver) finds no copy of the secret; `providerCalls` is 1. On a retried bootstrap the provider is called once per attempt and no earlier attempt's secret is held during the wait (SEC-01 reworded; TC-TH-079). Cases: CC-ACQ-01, CC-SEC-01, CC-ACQ-08.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -207,7 +209,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 **Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/`
 
-**Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`
+**Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`, construction/typescript-harness/nfr-design/nfr-design-patterns.md (P-08)
 
 ---
 
@@ -278,7 +280,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Call `start()`.
 3. Repeat with `503` beyond the retry bound.
 
-**Expected outcome**: The first run succeeds after three requests spaced at least one second apart; the second fails with the last `ProblemError` once the bound is reached, with no request after it.
+**Expected outcome**: The bootstrap is retried after the `Retry-After` value, then succeeds. Without `Retry-After`, backoff is 0.5 s, 1 s, 2 s, 4 s (`B_init` 0.5 s, `B_factor` 2, `B_cap` 10 s). Retries stop at 5 attempts (`R_max`) or 60 s total wait (`W_max`), surfacing the last error. Each attempt calls the provider once. Cases: CC-PRB-04, CC-PRB-05, CC-ACQ-08.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -286,7 +288,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 **Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/`
 
-**Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`
+**Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`, construction/typescript-harness/nfr-requirements/nfr-requirements.md (the named values), construction/typescript-harness/nfr-design/nfr-design-patterns.md (P-01)
 
 ---
 
@@ -321,6 +323,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 **Preconditions**:
 - Files with: mode 0604 (others can read); mode 0620 (group can write); mode 0602 (others can write); owned by another non-root user
+- `fileSecret` opens with `O_RDONLY | O_NONBLOCK` and checks the opened handle before reading (TH-SEC-01)
 
 **Scenario**: a tester, under the preconditions above, exercises “`fileSecret` refuses an unsafe file without reading it” and observes the outcome below.
 
@@ -372,6 +375,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - A named pipe (FIFO) at the path with no writer
 - On Linux, a path to a character device such as `/dev/zero`
+- The open is non-blocking (`O_NONBLOCK`); the handle is checked with `stat()` before any read (TH-SEC-01)
 
 **Scenario**: a tester, under the preconditions above, exercises “`fileSecret` refuses a named pipe or device without blocking” and observes the outcome below.
 
@@ -430,7 +434,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Call `start()` and wait past the first `expiresAt`.
 3. Publish.
 
-**Expected outcome**: `POST /agent-credentials/current/renewal` with the current credential and no body was sent before the first `expiresAt`; the publish presents the renewed credential; the details show the new `expiresAt`.
+**Expected outcome**: Renewal was sent `H_renew` (120 s) before the first `expiresAt` by the wall clock, and no sooner than `R_min` (30 s) after the credential arrived, by the monotonic clock (REN-07), with the current credential and no body. The publish presents the renewed credential; the details show the new `expiresAt`. Cases: CC-REN-01.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -444,7 +448,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 ### TC-TH-018 — At the end of a lineage the client bootstraps again
 
-**Context**: The 24-hour lineage cap is reached by long-running agents. Covers FR-05.
+**Context**: The 24-hour lineage cap is reached by long-running agents. Covers FR-05. After construction design, the bootstrap decision goes through the one validity check (CDI-06).
 
 **Preconditions**:
 - The conformance runner and stub (U1)
@@ -483,7 +487,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Let renewal run.
 3. Then call `publish`.
 
-**Expected outcome**: No new bootstrap is sent; `publish` fails with a `ClientStateError` carrying the refusal's Problem.
+**Expected outcome**: The client becomes revoked: no bootstrap follows, every later operation raises `ClientStateError` carrying the Problem, and an open subscription ends terminally. `credential_refused` on a **retried** renewal is treated the same way, terminal (soorma-sdk GAP-CAC-001, soorma-ai/soorma-core#34). Cases: CC-REN-04, CC-PRB-08.
 
 **Scope**: negative · **Priority**: High
 
@@ -537,7 +541,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Bootstrap, publish, then provoke a Problem on each call.
 3. Render the client, the details and each error as a string.
 
-**Expected outcome**: Neither the secret nor the credential string appears in any log line, error message, or string form.
+**Expected outcome**: No log is written by the SDK. The credential and the secret appear in no error message, `toString`, `toJSON` or `util.inspect` form of the client, `CredentialInfo` or any error class; the one diagnostic, the clock-skew warning, holds neither. Cases: CC-CRD-02.
 
 **Scope**: negative · **Priority**: High
 
@@ -667,7 +671,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Publish twice.
 2. Read both recorded `traceparent` values.
 
-**Expected outcome**: Each is a valid version-00 `traceparent` with a non-zero trace id and parent id.
+**Expected outcome**: The draft carries a valid `traceparent`: version `00`, a random trace id and span id from `crypto.randomBytes`, never all-zero, flags `00`. Cases: CC-TRC-02.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -681,7 +685,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 ### TC-TH-027 — A forwarded call asserts its own trace context
 
-**Context**: The forwarded envelope's trace context is evidence of the previous hop, not this hop's assertion. Covers FR-08, FR-09.
+**Context**: The forwarded envelope's trace context is evidence of the previous hop, not this hop's assertion. Covers FR-08, FR-09. The SDK parses the received `traceparent` itself, never through the global propagator, which may be unset (TH-SPN-02).
 
 **Preconditions**:
 - The conformance runner and stub (U1)
@@ -956,7 +960,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Script a stream with heartbeat comments between two deliveries.
 2. Read the items.
 
-**Expected outcome**: Only the stream-started item and the two Deliveries are yielded.
+**Expected outcome**: Heartbeat comment lines yield nothing and reset `T_idle` (45 s), which counts only while the stream is being read. Cases: CC-SUB-02.
 
 **Scope**: edge/boundary · **Priority**: Medium
 
@@ -1031,7 +1035,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Script a stream that closes the connection without an `end` event.
 
-**Expected outcome**: A stream-ended item with no code is yielded; then, while the credential is valid, a new stream is opened and a stream-started item follows.
+**Expected outcome**: A connection that ends without an `end` event, or 45 s (`T_idle`) of silence while the SDK is reading the stream, yields *stream ended* with `code: null`, then a resubscribe with backoff. A stream paused because tenant code has not pulled does not time out (TC-TH-077). Cases: CC-STR-02.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1058,7 +1062,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Read items across the renewal.
 3. Inspect the second subscribe request.
 
-**Expected outcome**: The replacement subscribe was sent with the renewed credential before the old one expired; a stream-started item and a stream-ended item with code `superseded` are yielded; no `Last-Event-ID` header was sent and nothing claims continuity.
+**Expected outcome**: On renewal the SDK opens the next stream before the credential expires and **pauses it once open**. It yields the old stream's remaining Deliveries, *stream ended* (`superseded`), *stream started*, then the new stream's Deliveries. `W_super` (10 s) counts only while the old stream is read; if it expires, the SDK closes the old stream and yields *stream ended* with `code: null`. Cases: CC-STR-04, CC-STR-05, CC-STR-13.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1123,7 +1127,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 ### TC-TH-044 — A failed subscribe is surfaced; unavailable is retried
 
-**Context**: Subscribe shares bootstrap's retry rule and surfaces every other failure. Covers FR-11, FR-13.
+**Context**: Subscribe shares bootstrap's retry rule and surfaces every other failure. Covers FR-11, FR-13. The resubscribe after a failure decides validity through the one validity check (CDI-06), and retries per the one retry policy (P-01).
 
 **Preconditions**:
 - The conformance runner and stub (U1)
@@ -1287,7 +1291,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. Read the Delivery.
 3. Forward it.
 
-**Expected outcome**: The Delivery is yielded with envelope and seal intact, the payload absent, the payload text present, and the not-parsed flag set; forwarding sends the envelope text byte for byte.
+**Expected outcome**: A payload nested deeper than `D_lang` (512) is yielded with `payloadParsed: false`, `payload` absent, `payloadText` kept, and the envelope and seal intact and forwardable. The scanner is iterative, so a line 10× deeper than `D_lang` neither overflows the stack nor delays the stream. Cases: CC-RCV-06.
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -1388,7 +1392,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Provoke each failure (TLS error, Problem on each operation, dropped stream), then call `close()`.
 2. Ask the driver for open connections, streams and timers.
 
-**Expected outcome**: None remain open.
+**Expected outcome**: After each failure, and after `close()` in every client and subscription state, no socket, request or timer remains (`process.getActiveResourcesInfo()` shows none of the SDK's). `close()` is idempotent: a second call returns the same promise. No unhandled rejection occurs. Cases: CC-PRB-07.
 
 **Scope**: edge/boundary · **Priority**: Medium
 
@@ -1415,7 +1419,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. Publish, receive a Delivery, and forward it.
 2. Read the exported spans.
 
-**Expected outcome**: Spans exist for the publish and the receive, named and attributed per OpenTelemetry's messaging semantic conventions, with no soorma-defined span name or attribute; the forwarding hop's span relates to the received trace as the specification's span rule states.
+**Expected outcome**: Send (producer) and receive (consumer) spans follow OpenTelemetry semantic conventions **1.45.0** for messaging, with `messaging.system` `soorma` and no soorma-defined span name or attribute. Cases: CC-SPN-01.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1440,7 +1444,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 1. List the package's runtime dependencies.
 2. Search the package for exporter or sampler set-up.
 
-**Expected outcome**: It depends on the OpenTelemetry API only, and configures no exporter, sampler or provider.
+**Expected outcome**: `@soorma/sdk` declares `@opentelemetry/api` as a peer dependency (`^1.9.0`) and installs no exporter, sampler or provider. Conformance passes with API 1.10.0 and with 1.9.0. Cases: CC-SPN-07.
 
 **Scope**: negative · **Priority**: High
 
@@ -1484,14 +1488,17 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 **Preconditions**:
 - A clean environment with Node.js 24 and 26
+- The `package-typescript` job (NFR-U3-22)
 
 **Scenario**: a tester, under the preconditions above, exercises “The package builds and installs from the repository, unpublished” and observes the outcome below.
 
 **Steps**:
-1. Build the package and install it into a new project from the repository path.
-2. Import `@soorma/sdk`.
+1. Build the package (`tsc` to `dist/`) and pack it (`pnpm pack`); run the packaging guard over the tarball's file list.
+2. In a fresh project outside the workspace, install the tarball and `@opentelemetry/api`.
+3. Run an ESM file that `import`s `@soorma/sdk` and constructs an `AgentClient`.
+4. Run a CommonJS file that `require()`s `@soorma/sdk` and constructs an `AgentClient`.
 
-**Expected outcome**: It installs and imports on each supported runtime; the package metadata states Apache-2.0; nothing was published to a registry.
+**Expected outcome**: The tarball holds only `dist/`, the README and the licence files, and the guard finds nothing test-only. Both files run on Node 24 and 26; each `AgentClient` is constructed without contacting anything. The `exports` map is `"types"` then `"default"`, so `require()` resolves. The metadata states Apache-2.0; nothing was published.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1510,13 +1517,15 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - The conformance runner and stub (U1)
 - The TypeScript conformance driver
+- The `conformance-typescript` job: Node 24 and 26 with `@opentelemetry/api` 1.10.0, and Node 24 with 1.9.0; the second local user created (`sudo useradd soorma-foreign`) and passed with `--foreign-user` (OBL-04)
 
 **Scenario**: a tester, under the preconditions above, exercises “Every conformance case passes on every supported runtime” and observes the outcome below.
 
 **Steps**:
-1. Run the runner with the TypeScript conformance driver on Node.js 24 and 26.
+1. Run the runner with the TypeScript driver on each matrix entry, with `--foreign-user soorma-foreign`.
+2. Read each run's report.
 
-**Expected outcome**: Every case passes and none is skipped, on each runtime.
+**Expected outcome**: Every case passes and none is skipped, CC-SEC-05 included, on each entry: U1's 90 cases plus CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13 and CC-ACQ-08. Each run stays within the 8-minute suite budget (NFR-U1-02). `--local-skip` is refused in CI. **A case that fails is judged first, SDK or case (CDI-05)**; a case fix is a recorded change to an earlier unit's tests (F42), never a quiet edit.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1560,14 +1569,18 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - A fresh stack and secret files from `e2e/core-up` and `e2e/setup` (U2)
 - The TypeScript end-to-end test with a test-installed in-memory exporter
+- The `e2e-typescript` job (JOB-06), after `prove-stack`, on Node 24; both agents in the test's one process
 
 **Scenario**: a tester, under the preconditions above, exercises “Both agents bootstrap and one renews (done when 2)” and observes the outcome below.
 
 **Steps**:
-1. Start agents A and B with `fileSecret` reading their secret files.
-2. Force one renewal on B.
+1. Before `start()`, fake only `Date` (Vitest `toFake: ['Date']`), 14 minutes ahead.
+2. Start A and B with `fileSecret` reading their secret files from `.e2e/stack.json`.
+3. Wait for B's renewal; then watch for `R_min` (30 s) more.
+4. Collect `process` warnings with code `SOORMA_CLOCK_SKEW`.
+5. Restore the real `Date`.
 
-**Expected outcome**: Both hold credentials naming their agent and environment `e`; B's renewal succeeds.
+**Expected outcome**: Both hold credentials naming their agent and environment `e`. B's `credential.expiresAt` moves once: one real renewal from S3. There is no second renewal within `R_min`, and exactly one clock-skew warning per client lineage. The real `Date` is restored before closing.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1586,6 +1599,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - A fresh stack and secret files from `e2e/core-up` and `e2e/setup` (U2)
 - The TypeScript end-to-end test with a test-installed in-memory exporter
+- Both agents in the test's one process (TH-E2E-02); each reads its own secret file through `fileSecret`
 
 **Scenario**: a tester, under the preconditions above, exercises “B receives what A publishes (done when 3)” and observes the outcome below.
 
@@ -1613,14 +1627,17 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Preconditions**:
 - A fresh stack and secret files from `e2e/core-up` and `e2e/setup` (U2)
 - The TypeScript end-to-end test with a test-installed in-memory exporter
+- A **decoy span**, created by the test and active around B's `subscribe()` and its loop
 
 **Scenario**: a tester, under the preconditions above, exercises “The trace travels and a span is emitted (done when 5)” and observes the outcome below.
 
 **Steps**:
-1. Run the steps of the test case "B receives what A publishes (done when 3)" with the in-memory exporter installed.
-2. Compare the `traceparent` on B's received envelope with the exported spans.
+1. Start the decoy span; inside it, B subscribes and starts its loop.
+2. Outside it, A publishes.
+3. B receives the Delivery.
+4. Read the in-memory exporter.
 
-**Expected outcome**: A span's trace id equals the trace id in the `traceparent` on the envelope B received.
+**Expected outcome**: B's receive span has A's trace id, and its parent span id is A's send span id. Both match the `traceparent` on the envelope B received. **The decoy is neither the receive span's parent nor linked from it** (SPN-03; the user's ruling). A test that could pass on the ambient context would not prove SPN-03.
 
 **Scope**: happy-path · **Priority**: High
 
@@ -1634,7 +1651,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 ### TC-TH-064 — The example runs and prints the envelope and trace id
 
-**Context**: The example is what a developer runs first. Covers FR-20.
+**Context**: The example is what a developer runs first. Covers FR-20. Each agent file has one marked configuration block and exports `run(config)` (TH-E2E-01).
 
 **Preconditions**:
 - A fresh stack and secret files from U2 at the paths the example's configuration names
@@ -1662,6 +1679,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 **Preconditions**:
 - A new, empty TypeScript project
+- The `package-typescript` job: the agent file is copied into the fresh project, type-checked and imported (NFR-U3-22)
 
 **Scenario**: a tester, under the preconditions above, exercises “The agent file copies into a new project” and observes the outcome below.
 
@@ -1694,7 +1712,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Steps**:
 1. Read the README.
 
-**Expected outcome**: It names `e2e/core-up` and `e2e/setup` as the set-up, says delivery is live only (start B before A publishes), and says the span shape is unstable.
+**Expected outcome**: The README says that delivery is live only (start B first), that the span shape is unstable (with DEC-U1-01's deviation), `fileSecret`'s file settings and that Windows tenants supply their own provider, what the `SOORMA_CLOCK_SKEW` warning means (fix the clock), and that the package is ESM, loadable by `require()` on Node 24 or later.
 
 **Scope**: happy-path · **Priority**: Low
 
@@ -1703,3 +1721,359 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 **Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/`
 
 **Technical references**: `inception/application-design/unit-of-work.md`, `construction/typescript-harness/functional-design/`
+
+---
+
+### TC-TH-067 — `fileSecret` is refused on Windows without opening the path
+
+**Context**: SEC-09 leaves Windows to each language; TypeScript refuses rather than read a file it cannot check (TH-SEC-02). Covers FR-04.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+- `process.platform` stubbed as `win32`
+
+**Scenario**: A provider from `fileSecret` is called on Windows.
+
+**Steps**:
+1. Call the provider for an existing path.
+
+**Expected outcome**: `SecretSourceError` with reason `unsupported-platform` and the path; the file was not opened.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: typescript-harness / FR-04
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-SEC-02)
+
+---
+
+### TC-TH-068 — A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error
+
+**Context**: A duplicate member makes the line ambiguous; `JSON.parse` would take the last silently (TH-RD-02). Covers FR-12.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: The scanner reads lines with a duplicated member.
+
+**Steps**:
+1. Feed a line with two `envelope` members; then two `seal`; then two `payload`.
+2. Feed a line with a duplicated unknown member.
+
+**Expected outcome**: Each of the first three is a `DeliveryError` (reason `duplicate-member`) and the stream continues; the last is a Delivery.
+
+**Scope**: negative · **Priority**: Medium
+
+**Source**: typescript-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-RD-02)
+
+---
+
+### TC-TH-069 — Every member of the `Envelope` type is optional
+
+**Context**: The SDK never checks a received envelope, so its type claims no member is present (CDI-04; RCV-08). Covers FR-12.
+
+**Preconditions**:
+- The package's type tests (`tsc --noEmit` over a fixture)
+
+**Scenario**: Tenant code reads an envelope member without a check.
+
+**Steps**:
+1. Compile a fixture that reads `delivery.envelope.eventId.length` without checking it.
+2. Compile one that checks it first.
+
+**Expected outcome**: The first fails to compile (possibly undefined); the second compiles. Unknown members are typed `JsonValue | undefined`.
+
+**Scope**: edge/boundary · **Priority**: Medium
+
+**Source**: typescript-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-RD-05)
+
+---
+
+### TC-TH-070 — `publish` refuses a payload JSON cannot carry exactly, naming the path, never the value
+
+**Context**: JSON would silently change `NaN`, `undefined`, a `Date` or a `Map` (TH-PUB-01). Depth is not limited (PUB-04). Covers FR-10.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: Tenant code publishes values JSON cannot carry exactly.
+
+**Steps**:
+1. Publish payloads holding, in turn: `NaN`, `Infinity`, `undefined`, a function, a symbol, a `bigint`, a cycle, a `Date`, a `Map`.
+2. Publish a payload 10× `D_lang` deep.
+3. Publish one deep enough to overflow `JSON.stringify`'s stack.
+
+**Expected outcome**: Each value in step 1 throws a `TypeError` naming its path (`$.a[2].b`) and kind, never the value, before any request. The step 2 payload is sent as given. Step 3 throws a `TypeError` saying the payload is too deeply nested to serialize, before any request.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: typescript-harness / FR-10
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-PUB-01)
+
+---
+
+### TC-TH-071 — Leaving a loop closes the subscription; the renewal timer alone does not keep the process alive
+
+**Context**: TypeScript's resource idiom (TH-LIFE-02, -03). Covers FR-11.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+- A child Node process for the exit check
+
+**Scenario**: Tenant code breaks out of a `for await` loop; a process closes its client and exits.
+
+**Steps**:
+1. `break` out of a `for await` over a subscription.
+2. In a child process, start a client against the stub, close its subscription, drop the client, and end the script.
+
+**Expected outcome**: The `break` closes the subscription and its stream. The child process exits within a second, without `close()` on the client: the renewal timer is `unref`'d.
+
+**Scope**: edge/boundary · **Priority**: Medium
+
+**Source**: typescript-harness / FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-LIFE-02, -03)
+
+---
+
+### TC-TH-072 — A client whose clock runs fast renews at most once per `R_min` and warns once per lineage
+
+**Context**: REN-07: a fast clock must not make the SDK renew in a tight loop (the user). Covers FR-05.
+
+**Preconditions**:
+- The conformance runner and stub (U1)
+- The TypeScript conformance driver
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: The stub answers each bootstrap and renewal with an `expiresAt` already inside `H_renew` of the client's clock.
+
+**Steps**:
+1. Run CC-REN-06.
+2. Unit test: fake timers, the wall clock moved ahead with `vi.setSystemTime`; start; advance several `R_min`.
+
+**Expected outcome**: Renewals are at least `R_min` (30 s) apart; exactly one `SOORMA_CLOCK_SKEW` warning per lineage, holding no credential.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: typescript-harness / FR-05
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-REN-01 to 03), `construction/typescript-harness/nfr-design/nfr-design-patterns.md` (P-03)
+
+---
+
+### TC-TH-073 — An envelope nested deeper than `D_lang` is a delivery error; the stream continues
+
+**Context**: The platform's envelope must never exhaust the stack (TH-RD-03). Covers FR-12.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: The scanner reads a line whose envelope nests deeper than 512.
+
+**Steps**:
+1. Feed the line, then an ordinary Delivery.
+
+**Expected outcome**: A `DeliveryError` (reason `envelope-too-deep`), then the Delivery.
+
+**Scope**: edge/boundary · **Priority**: Medium
+
+**Source**: typescript-harness / FR-12
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-RD-03)
+
+---
+
+### TC-TH-074 — An unknown option, such as a misspelt TLS switch, is refused
+
+**Context**: No misspelt option can pass silently (TH-API-03). Covers FR-15.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: Tenant code passes an option the client does not have.
+
+**Steps**:
+1. Construct `AgentClient` with an extra `rejectUnauthorized: false` member.
+
+**Expected outcome**: A `TypeError` naming the unknown member; nothing is contacted.
+
+**Scope**: negative · **Priority**: High
+
+**Source**: typescript-harness / FR-15
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-API-03)
+
+---
+
+### TC-TH-075 — A client whose clock runs more than a lifetime ahead uses its credential until S3 answers `credential_expired`, then bootstraps once
+
+**Context**: REN-07's addition: no bootstrap before every operation on a skewed lineage (the user). Covers FR-05.
+
+**Preconditions**:
+- The conformance runner and stub (U1)
+- The TypeScript conformance driver
+
+**Scenario**: The stub issues a credential whose `expiresAt` is already past on the client's clock.
+
+**Steps**:
+1. Run CC-REN-07: start, publish three times within `R_min`, wait for the floored renewal (answered `credential_expired`), publish once more.
+
+**Expected outcome**: Exactly two bootstraps. The first three publishes present the first credential with no bootstrap before them, and the last presents the second. One warning.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: typescript-harness / FR-05
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/functional-design/business-rules.md` (TH-REN-01, -05)
+
+---
+
+### TC-TH-076 — On a skewed lineage, a `503` on renewal is retried and a dropped stream is resubscribed, without a bootstrap
+
+**Context**: CDI-06: one validity check, used everywhere "while the credential is valid" is decided (the user). Covers FR-05, FR-11.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: A lineage with the clock-skew warning meets a `503` on renewal and a dropped stream.
+
+**Steps**:
+1. Fake timers; skew the wall clock past `expiresAt`; answer the renewal `503` then `200`.
+2. Drop the stream.
+3. Search `typescript/src/` for an `expiresAt` comparison outside `keeper.isUsable`.
+
+**Expected outcome**: The renewal is retried and succeeds; the stream is resubscribed; no bootstrap occurs. The search finds no other comparison.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: typescript-harness / FR-05, FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/nfr-design/nfr-design-patterns.md` (P-02); CDI-06
+
+---
+
+### TC-TH-077 — A stream paused for backpressure does not time out; a resume restarts `T_idle`
+
+**Context**: STR-02's added sentence: `T_idle` counts only while the SDK reads (the user). Covers FR-11.
+
+**Preconditions**:
+- The conformance runner and stub (U1)
+- The TypeScript conformance driver
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: A consumer does not pull for longer than `T_idle`.
+
+**Steps**:
+1. Run CC-STR-12: hold the stream unpulled for longer than `T_idle` (45 s), then pull.
+2. Unit test with fake timers: fill the queue, advance past `T_idle`, pull, then stay silent.
+
+**Expected outcome**: No *stream ended* with `code: null` and no second `POST /subscriptions`; every Delivery arrives in order once pulled. After the resume, `T_idle` of silence while reading does count as dropped.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: typescript-harness / FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/nfr-design/nfr-design-patterns.md` (P-04)
+
+---
+
+### TC-TH-078 — A replacement with a full buffer yields the old stream's remaining Deliveries, its `superseded` end, then the new stream's
+
+**Context**: STR-05's added sentence: the new stream is paused until the old one ends (the user). Covers FR-11.
+
+**Preconditions**:
+- The conformance runner and stub (U1)
+- The TypeScript conformance driver
+
+**Scenario**: A renewal opens a replacement while `N_buf` items are unpulled.
+
+**Steps**:
+1. Run CC-STR-13.
+
+**Expected outcome**: The old stream's remaining Deliveries, *stream ended* (`superseded`), *stream started*, then the new stream's Deliveries; no *stream ended* with `code: null` (no `W_super` close).
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: typescript-harness / FR-11
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/nfr-design/nfr-design-patterns.md` (P-04)
+
+---
+
+### TC-TH-079 — A retried bootstrap calls the provider once per attempt and holds no secret during the wait
+
+**Context**: SEC-01 reworded (the user): once per bootstrap attempt, and SEC-02 between attempts. Covers FR-04.
+
+**Preconditions**:
+- The conformance runner and stub (U1)
+- The TypeScript conformance driver
+
+**Scenario**: The stub answers a bootstrap `503` with `Retry-After`, then `200`.
+
+**Steps**:
+1. Run CC-ACQ-08; if the protocol allows, run the heap check during the wait.
+
+**Expected outcome**: Exactly two provider calls and two requests; during the wait the heap check finds no copy of the first attempt's secret.
+
+**Scope**: edge/boundary · **Priority**: High
+
+**Source**: typescript-harness / FR-04
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/nfr-design/nfr-design-patterns.md` (P-08)
+
+---
+
+### TC-TH-080 — A bad CA file fails `start()` before anything is sent
+
+**Context**: The trust store is built at `start()` (P-06). Covers FR-15.
+
+**Preconditions**:
+- The package's unit tests (Vitest), in the `unit` job
+
+**Scenario**: The CA file is missing, unreadable, or not PEM.
+
+**Steps**:
+1. Construct a client with each bad `caFile`; call `start()`.
+
+**Expected outcome**: Construction succeeds (no I/O). `start()` fails with `TransportError` (reason `ca-file`, naming the path, never the contents); no request reaches the stub.
+
+**Scope**: negative · **Priority**: Medium
+
+**Source**: typescript-harness / FR-15
+
+**Construction artifacts**: `aidlc-docs/harness/m1-walking-skeleton/construction/typescript-harness/code/`
+
+**Technical references**: `construction/typescript-harness/nfr-design/nfr-design-patterns.md` (P-06)
+
+---

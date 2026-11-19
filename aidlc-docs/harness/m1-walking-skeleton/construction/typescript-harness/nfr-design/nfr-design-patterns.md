@@ -179,6 +179,8 @@ what U1's reference driver does (`conformance/reference-driver/src/client.ts`: t
 is inside its retry). The cases count requests on a retried bootstrap, not provider calls
 (CC-PRB-04, CC-PRB-08); CC-ACQ-04 and CC-SEC-01 count one call per un-retried bootstrap.
 
+**Moved into the specification** (the user, at this stage's approval, 2026-11-19T05:24:09Z): the reading is language-neutral, so SEC-01 is reworded (once per bootstrap **attempt**; a retried bootstrap calls the provider again; no reference to an earlier attempt's secret during the wait, SEC-02). **CC-ACQ-08** checks it: a `503` with `Retry-After`, then `200`; exactly two provider calls and two requests; the CDI-02 heap check during the wait, if the driver protocol can do it. The reference driver declares it. These are F42 changes; the fault sets are unchanged.
+
 **The credential**: held in one private field of the keeper. `CredentialInfo` is a frozen copy
 without it. Every error and the client define `toJSON` and `[util.inspect.custom]` to show
 nothing secret.
