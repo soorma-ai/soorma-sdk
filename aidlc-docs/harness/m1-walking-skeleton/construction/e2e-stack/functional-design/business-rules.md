@@ -10,6 +10,8 @@ requires no second factor (`org-gateway.openapi.yaml` at `contract-v0.1.0`); `se
 separate `authenticate` call. A second sign-in would be one more live sign-in for `setup` to end,
 and S-6's "ends the environment credential and the sign-in" could not then hold for both.
 
+**Changed after approval** (the user, 2026-11-19T03:03:47Z, at the Code Generation plan approval: "search the logs on every run, print them only on failure"): the log search runs on **every** `core-down` with a stack, before `down -v`; a hit or an unreadable source fails `core-down`, and so the job, on a green run too; `--logs` decides only whether clean logs are printed. Changed: LS-11, CD-02, CD-06, JOB-03; added: LS-12 (follows from the change: no container, no log). Before: the search ran only with `--logs`.
+
 **Verification column**: `TC-ES-001` to `012` are the inception test cases; `TC-ES-013` to `023`
 are **planned here** and added at QA enrichment, with these numbers and titles (business-logic-model
 §7). Entities are in `domain-entities.md`.
@@ -77,14 +79,14 @@ are **planned here** and added at QA enrichment, with these numbers and titles (
 | # | Rule | Source | Verification |
 |---|---|---|---|
 | CD-01 | **Acts only on a stack `core-up` started.** Without `.e2e/owner.json` it removes nothing, prints that no stack started by `core-up` is recorded, and exits `0` | U2-FD-Q2 | TC-ES-018 |
-| CD-02 | With `--logs`, runs the log search (LS) **before** taking the stack down, while the containers and their logs exist | U2-FD-Q7; S-6 ("logs shown first on failure") | TC-ES-013 to TC-ES-016 |
+| CD-02 | **Runs the log search (LS) on every run**, **before** taking the stack down, while the containers and their logs exist. `--logs` only decides whether clean logs are printed (LS-11). *Changed at the Code Generation plan approval* (before: only with `--logs`) | U2-FD-Q7; S-6 ("logs shown first on failure"); the user (2026-11-19T03:03:47Z) | TC-ES-013 to TC-ES-016, TC-ES-015 (without `--logs`) |
 | CD-03 | Runs `docker compose -f .e2e/soorma-core/deploy/local/compose.yaml down -v`; if the clone's Compose file is missing (a `core-up` that failed early), `docker compose -p soorma-local down -v` | AD-10; S-6 | TC-ES-008 |
 | CD-04 | Then removes the stack description, each agent secret file it lists, the default secrets directory, the marker, the clone, and the ownership record **last**. A `--secrets-dir` outside `.e2e/` is not removed; the secret files in it are, by name | U2-FD-Q5; U2-FD-Q2 | TC-ES-008 |
 | CD-05 | Tears down **whatever the log search found**: a hit or an unreadable log changes the exit status, never whether the stack is removed | U2-FD-Q7 (change 3) | TC-ES-013, TC-ES-016 |
-| CD-06 | Exits non-zero if the log search found a hit, could not read a log, or the teardown failed; otherwise `0` | U2-FD-Q7; SECURITY-15 | TC-ES-008, TC-ES-013, TC-ES-016 |
+| CD-06 | Exits non-zero if the log search found a hit or could not read a source, **with or without `--logs`**, or the teardown failed; otherwise `0`. So a leak fails a green job. *Changed at the Code Generation plan approval* | U2-FD-Q7; SECURITY-15; the user (2026-11-19T03:03:47Z) | TC-ES-008, TC-ES-013, TC-ES-015, TC-ES-016 |
 | CD-07 | **A teardown that fails or times out keeps the ownership record** (and the clone), so `core-down` can be run again and `core-up` still refuses (CU-01) until the stack is gone. *Added at the NFR Requirements approval* | GEN-07; U2-FD-Q2 | TC-ES-023 |
 
-## LS — The log search (`core-down --logs`)
+## LS — The log search (every `core-down`)
 
 | # | Rule | Source | Verification |
 |---|---|---|---|
@@ -98,7 +100,8 @@ are **planned here** and added at QA enrichment, with these numbers and titles (
 | LS-08 | **A hit is a soorma-core logging defect.** No log is printed (not even the clean services'). `core-down` prints, per hit, the service and the kind (the contract's name for the prefix, such as "Agent credential" or "registration secret", or "agent secret (exact value)", "enrollment material (exact value)"), **never the value or the line**; tears the stack down (CD-05); and exits non-zero | The user (U2-FD-Q7 change 3) | TC-ES-013, TC-ES-014 |
 | LS-09 | **A hit is raised as a soorma-core issue** naming the service and the tag (`contract-v0.1.0`), and the kind found, never the value. `core-down`'s message says so. This repository never works around it (for example by filtering the logs) | The user (U2-FD-Q7 change 3); the standing rule: never adapt soorma-core locally | stated; the message checked in TC-ES-013 |
 | LS-10 | **An unreadable log fails closed**: if any service's log (including one whose `docker compose logs` runs out of its time limit, GEN-07), any agent secret file the stack description lists, or the handover directory cannot be read, no log is printed, `core-down` names what could not be read, tears the stack down, and exits non-zero | The user (U2-FD-Q7: "an unreadable log (refuse to print, fail closed)"); SECURITY-15 | TC-ES-016 |
-| LS-11 | The search runs only when logs are to be printed (`--logs`). On a green job no log is printed, so none is searched | U2-FD-Q7 (scope: the logs shown on a failure) | TC-ES-015 |
+| LS-11 | **The search runs on every `core-down` that has a stack to take down**, whether or not `--logs` is given, so a leak in soorma-core's logs is caught on every CI run, green ones included. A hit (LS-08) or an unreadable source (LS-10) fails `core-down`. **`--logs` decides only whether clean logs are printed**: with it, a clean search prints the logs service by service (LS-07); without it, one line per service saying it was searched and is clean, and no log text. *Changed at the Code Generation plan approval* (before: the search ran only with `--logs`) | the user (2026-11-19T03:03:47Z): "search the logs on every run, print them only on failure" | TC-ES-015, TC-ES-008 |
+| LS-12 | **No container, no search**: when the `soorma-local` project has no container, stopped ones included (a `core-up` that failed before `stack:up`), there is no log to search; `core-down` says so and reads no value source. A listing that fails is unreadable (LS-10). *Added at the Code Generation plan approval, following from LS-11*: without it, every early `core-up` failure would also fail `core-down` over a handover file `stack:init` never wrote | LS-11; LS-10 | TC-ES-018 (extended: a record and no container) |
 
 ## JOB — The end-to-end job (C-06)
 
@@ -106,7 +109,7 @@ are **planned here** and added at QA enrichment, with these numbers and titles (
 |---|---|---|---|
 | JOB-01 | Triggers: `pull_request`, and `push` to `dev`. **Not** `push` to `main`: a PR's run already tested the merge result | AD-12; S-7 | TC-ES-009 |
 | JOB-02 | **`changes` job**: computes the changed paths (pull request: base to the test merge; push: before to head). Outputs `e2e=false` only when the diff is computable, non-empty, and every path is under `aidlc-docs/`; anything else, including an error, `e2e=true` (fails safe; soorma-core #26) | AD-12; S-7 | TC-ES-010 |
-| JOB-03 | **`e2e` job**: `needs: changes`, `if: needs.changes.outputs.e2e == 'true'`. Steps: check out; toolchains; `core-up`; `setup --agents agent-a,agent-b`; `prove-stack`; then **`core-down`, `if: always()`, with `--logs` when `failure() \|\| cancelled()`**: a job stopped by its timeout or cancelled is reported as cancelled, not failed, and still gets its logs searched and shown | U2-FD-Q6; S-6; the user (2026-11-18T20:54:18Z) | TC-ES-001 to 008 in CI; TC-ES-008 (the condition, read from the workflow) |
+| JOB-03 | **`e2e` job**: `needs: changes`, `if: needs.changes.outputs.e2e == 'true'`. Steps: check out; toolchains; `core-up`; `setup --agents agent-a,agent-b`; `prove-stack`; then **`core-down`, `if: always()`, with `--logs` when `failure() \|\| cancelled()`**: a job stopped by its timeout or cancelled is reported as cancelled, not failed, and still gets its logs shown. **The search itself runs on every run** (LS-11): on a green run `core-down` is called without `--logs`, searches, prints no log, and fails the job on a hit or an unreadable source. *Changed at the Code Generation plan approval* | U2-FD-Q6; S-6; the user (2026-11-18T20:54:18Z); the user (2026-11-19T03:03:47Z) | TC-ES-001 to 008 in CI; TC-ES-008 (the condition, read from the workflow) |
 | JOB-04 | One fresh stack per job; no job shares or reuses a stack | AD-11; S-7 | TC-ES-005 |
 | JOB-05 | `ubuntu-24.04`; actions pinned by commit SHA; `permissions: contents: read`; nothing under `.e2e/` is uploaded as an artifact. U1's workflow check enforces each | NFR-07; U1 NFR-U1-28 | U1's workflow check (`pnpm checks`) |
 | JOB-06 | **After U3**, the `e2e` job becomes `e2e-typescript`: the scenario added after `prove-stack`. U4 adds `e2e-python` on the same steps. `prove-stack` stays in every language job, so a stack failure is told apart from an SDK failure; no job runs a stack only to prove it | U2-FD-Q6 | U3's and U4's code PRs |
@@ -118,7 +121,7 @@ are **planned here** and added at QA enrichment, with these numbers and titles (
 |---|---|
 | `setup` run twice, or against a developer's long-lived stack | ST-03 (single-use marker), CU-09 |
 | `core-down` removing a developer's own `soorma-local` volumes | CD-01, CU-02 |
-| A secret reaching public CI logs through soorma-core's logs | LS-01 to LS-10 |
+| A secret reaching public CI logs through soorma-core's logs | LS-01 to LS-12 (searched on every run) |
 | A secret file another local user can read, or one overwritten | ST-02, ST-08 |
 | The stack built from a branch or a moved tag | CU-05 |
 | Agent code coming to depend on the raw human calls | GEN-03 |

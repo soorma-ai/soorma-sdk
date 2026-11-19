@@ -18,7 +18,7 @@ unchanged.
 
 | Id | Requirement | Source | Verification |
 |---|---|---|---|
-| NFR-U2-04 | **`core-down` always runs** (`if: always()`), and gets **`--logs` when `failure() \|\| cancelled()`**: GitHub reports a job stopped by its timeout, or cancelled, as cancelled rather than failed, and those are the runs whose logs matter most. Without an ownership record it does nothing and exits `0` | CD-01; JOB-03; the user (2026-11-18T20:54:18Z) | TC-ES-008 (the workflow's condition read by a unit test), TC-ES-018 |
+| NFR-U2-04 | **`core-down` always runs** (`if: always()`), and gets **`--logs` when `failure() \|\| cancelled()`**: GitHub reports a job stopped by its timeout, or cancelled, as cancelled rather than failed, and those are the runs whose logs matter most. Without an ownership record it does nothing and exits `0`. **The log search runs on every `core-down`** (LS-11), so a hit or an unreadable source fails the job on a green run too; `--logs` decides only whether clean logs are printed. *Changed at the Code Generation plan approval* | CD-01; JOB-03; the user (2026-11-18T20:54:18Z); the user (2026-11-19T03:03:47Z) | TC-ES-008 (the workflow's condition read by a unit test), TC-ES-018 |
 | NFR-U2-05 | **No retry** inside any command (ST-12, PS-06); a red job is fixed, never rerun until green, except one recorded rerun for a CI-infrastructure cause (code-generation.md Step 12a) | U2-FD-Q8; U1 policy | TC-ES-020 |
 | NFR-U2-06 | **`core-up` checks its prerequisites before writing the ownership record** (Docker Engine 26 or later, Docker Compose 2.26.0 or later, `git`, the `--core-node` executable), so a missing one leaves nothing to tear down (CU-11) | Q5 A | TC-ES-021 (unit, fake `docker`) |
 | NFR-U2-07 | Every failure exits non-zero with one line saying what failed; no stack trace that could carry a request or response body. **A time limit running out is a failure**: one line naming the step and saying it timed out (`setup: registerAgent agent-b timed out after 30 s`), then the command's usual failure path. **Never retried.** `setup` still ends its sign-in and environment credential and checks them refused (ST-09), each of those calls under its own limit | GEN-06, GEN-07; SECURITY-15; the user (2026-11-18T20:54:18Z) | TC-ES-020, TC-ES-022, TC-ES-023 |
@@ -83,7 +83,7 @@ unchanged.
 
 Units Generation (Q3 A) skipped NFR Design for U2 unless NFR Requirements found a pattern to
 design. **It stays skipped.** Each pattern U2 needs is already specified to the level code is
-written from: the fail-closed log search (LS-01 to LS-11), the ownership and marker lifecycle
+written from: the fail-closed log search (LS-01 to LS-12), the ownership and marker lifecycle
 (CU-01 to CU-13, ST-03, CD-01 to CD-06), the refusal check (ST-09), and the validating fake
 (NFR-U2-20). The tech-stack decisions settle the mechanisms. Nothing is left between requirement
 and code that a design stage would decide. The decision can be revisited by NFR-U2-02 if the

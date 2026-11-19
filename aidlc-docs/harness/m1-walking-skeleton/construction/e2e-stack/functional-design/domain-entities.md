@@ -96,7 +96,7 @@ Per agent: the agent, the HTTP status of one bootstrap at E's S3, and pass or fa
 credential the bootstrap returns is validated and dropped; never kept, printed or renewed.
 
 ### E-09 Log search
-Run by `core-down --logs` before the stack is taken down (U2-FD-Q7):
+Run by **every** `core-down` with a stack, before it is taken down (U2-FD-Q7; LS-11, changed at the Code Generation plan approval); `--logs` decides only whether clean logs are printed:
 
 | Part | Source |
 |---|---|
@@ -119,13 +119,13 @@ core-up --writes--> ownership record --> clone --stack:init, stack:up--> stack (
 setup --consumes--> marker; --raw calls--> S1, E's S2 --registers--> agents A, B
    +--writes--> secret files (0600) in secrets dir (0700); stack description (0600)
 prove-stack --reads--> stack description, secret files --bootstrap--> E's S3
-core-down --requires--> ownership record; [--logs] log search; down -v; removes the rest
+core-down --requires--> ownership record; log search (always; [--logs] prints clean logs); down -v; removes the rest
 ```
 
 Text alternative: `core-up` writes the ownership record, clones soorma-core, starts the stack and
 writes the marker last. `setup` consumes the marker, registers A and B through S1 and E's S2, and
 writes the secret files and the stack description. `prove-stack` reads both and bootstraps each
-agent at E's S3. `core-down` acts only with the ownership record: the optional log search, then
+agent at E's S3. `core-down` acts only with the ownership record: the log search, always (printing clean logs only with `--logs`), then
 `down -v`, then removal of everything `core-up` and `setup` wrote.
 
 Cardinality: one ownership record, one clone, one stack per run; one marker, consumed once; one

@@ -18,10 +18,10 @@ Unit abbreviation: ES = e2e-stack
 | TC-ES-012 | The same commands work locally | e2e-stack / FR-19 | happy-path | Medium |
 | TC-ES-013 | The log search finds each typed prefix, naming the service and the kind | e2e-stack / FR-19, FR-16 | negative | High |
 | TC-ES-014 | The log search finds the exact enrollment material and an exact agent secret | e2e-stack / FR-19, FR-16 | negative | High |
-| TC-ES-015 | A clean log is printed; nothing is searched without --logs | e2e-stack / FR-19 | happy-path | Medium |
+| TC-ES-015 | A clean log is printed only with --logs; the search runs on every core-down | e2e-stack / FR-19 | happy-path | Medium |
 | TC-ES-016 | An unreadable log: nothing printed, fail closed, still torn down | e2e-stack / FR-19 | edge/boundary | High |
 | TC-ES-017 | The prefixes come from the vendored contract; none readable fails closed | e2e-stack / FR-19 | edge/boundary | Medium |
-| TC-ES-018 | core-down without an ownership record removes nothing and exits 0 | e2e-stack / FR-19 | negative | High |
+| TC-ES-018 | core-down without an ownership record removes nothing and exits 0; with a record and no container, nothing is searched | e2e-stack / FR-19 | negative | High |
 | TC-ES-019 | setup refuses a bad agent identifier or secrets directory before consuming the marker | e2e-stack / FR-19 | negative | High |
 | TC-ES-020 | setup stops at the first failed call and leaves nothing it opened live | e2e-stack / FR-19 | negative | High |
 | TC-ES-021 | core-up refuses missing prerequisites, install scripts, and a mismatched toolchain | e2e-stack / FR-19 | negative | High |

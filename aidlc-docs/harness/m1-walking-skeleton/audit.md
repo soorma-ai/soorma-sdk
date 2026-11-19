@@ -1119,3 +1119,27 @@ dev's push CI on 85f639d, with all four together, is green: run 44446341525.
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 1, awaiting approval
 
 ---
+
+## U2 Code Generation — Part 1 plan approved, with changes
+**Timestamp**: 2026-11-19T03:03:47Z
+**User Input**: "Plan approved, with these changes:
+
+1. Step 25's run (b) doesn't test the log search on real traffic. \"setup --agents agent-a,agent-a\" is refused by ST-01 before the marker is used, so no call reaches the stack, and core-down --logs searches only startup output. Change (b): core-up, setup --agents agent-a,agent-b, prove-stack, then core-down --logs on that stack. The search then covers logs that saw a first authentication, an environment credential, two registrations, two registration secrets and two bootstraps. Keep the ST-01 refusal as a separate check of the exit status and the marker still being in place. Record the search's outcome per service in the code summary, with no log text.
+
+2. Design change (LS-11, CD-02): search the logs on every run, print them only on failure. core-down always runs the log search before down -v. A hit or an unreadable log fails the command and so the job, on a green run too. --logs only decides whether clean logs are printed. A leak in soorma-core's logs is then caught on every CI run, not only when something else fails. Update LS-11, CD-02, CD-06, NFR-U2-04, JOB-03, TC-ES-015 and TC-ES-008(b), and record the change against the approved Functional Design, citing this message.
+
+3. Point 3 is approved: run it locally on this machine. Stop and tell me if a soorma-local project or volume exists when you start.
+
+Log this message word for word in audit.md, then start G1."
+**AI Response**: "Plan approved with changes. (1) Step 25 (b) becomes core-up, setup --agents agent-a,agent-b, prove-stack, core-down --logs on that stack, with the search's outcome per service recorded in the code summary (no log text); the ST-01 refusal kept as a separate check (exit status non-zero, marker still in place). (2) Design change recorded against the approved Functional Design: the log search runs on every core-down with a stack, before down -v; a hit or an unreadable log fails core-down on a green run too; --logs only decides whether clean logs are printed. LS-11, CD-02, CD-06, NFR-U2-04, JOB-03, TC-ES-015, TC-ES-008(b) updated, with the rules and texts that follow from them. Added to the plan as G0 (a design-records commit) before G1. (3) Local run approved; I will stop if a soorma-local project or volume exists when it starts."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 1 APPROVED with changes; design change to LS-11 and CD-02
+
+---
+
+## U2 Code Generation — G0, the design change recorded
+**Timestamp**: 2026-11-19T03:08:06Z
+**User Input**: (none)
+**AI Response**: "G0 (records only), the user's design change of 2026-11-19T03:03:47Z recorded against the approved Functional Design, citing the message: business-rules.md LS-11 (search on every core-down with a stack; a hit or unreadable source fails it; --logs only decides whether clean logs are printed; without it one 'searched, clean' line per service), CD-02, CD-06, JOB-03, the change note at the top; LS-12 added as following from LS-11 (no container, no search: a core-up that failed before stack:up leaves no log, so no value source is read; otherwise every early core-up failure would also fail core-down over a handover file stack:init never wrote). nfr-requirements.md NFR-U2-04; tech-stack-decisions.md e2e jobs row; business-logic-model.md §1, §5 diagram and text, §5.1 (step 0, clean outcome, step 6), §7 TC-ES-015 row and the TC-ES-008 note; domain-entities.md E-09 and §3. test-specs-narrative.md and test-case-index.md: TC-ES-015 (three steps: --logs clean printed; no --logs clean searched, one line per service; no --logs hit fails, still torn down), TC-ES-008(b), TC-ES-018 (extended for LS-12). Plan updated: G0; Steps 10, 12, 14, 16, 22, 25 (a, b on real traffic, c the ST-01 refusal; stop if a soorma-local project or volume exists), §4. Gate green on Node 24.22.3 (frozen install, typecheck, lint, format, 98 tests, audit, audit exceptions, checks, conformance self-test)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G0
+
+---
