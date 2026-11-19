@@ -27,6 +27,12 @@ describe('names check (US-13 #3)', () => {
     ).toEqual([]);
   });
 
+  it("accepts TypeScript's toJSON as an idiom, not a table row", () => {
+    expect(compareNames(namesFromTable(md, 'TypeScript'), [...ts, 'toJSON'], 'TypeScript')).toEqual(
+      [],
+    );
+  });
+
   it('catches an export that is not in the table, naming it', () => {
     expect(
       compareNames(namesFromTable(md, 'TypeScript'), [...ts, 'setEnvironment'], 'TypeScript'),

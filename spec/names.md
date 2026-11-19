@@ -75,7 +75,9 @@ codes, Problem codes) are data, not exported names, and are not translated.
 | Retry-After | Problem error | `retryAfter` | `retry_after` |
 | whole Problem | Problem error | `problem` | `problem` |
 | path, reason | secret source error | `path`, `reason` | `path`, `reason` |
+| client state | client state error | `state` | `state` |
 
 Language idioms that map to `close` (TypeScript `Symbol.asyncDispose`; Python `__aenter__` and
 `__aexit__`) and to iteration (`Symbol.asyncIterator`; `__aiter__`, `__anext__`) are protocol
-members, listed by the names check as idioms, not table rows.
+members, listed by the names check as idioms, not table rows. So is TypeScript's `toJSON`, which
+`JSON.stringify` calls for an object's JSON form: every error has one, and it is not a table row.
