@@ -1076,3 +1076,20 @@ Log this message word for word in audit.md."
 **Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate, CHECKS_GREEN
 
 ---
+
+## U2 Construction Design PR gate — the user reports #16 merged; Dependabot PRs
+**Timestamp**: 2026-11-19T01:28:22Z
+**User Input**: "soorma-ai/soorma-sdk#16 is merged: merge commit d3ab2344202cf981c292bdc2e2aff881c411d19d on main, 2026-11-19T01:27:13Z, with parents 91d0910 (main) and 9416420 (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record U2's Construction Design PR gate as approved and merged, with the runs at 9416420: CI (pull request) 44412142865, DCO 44412141421, CI (push) 44412132883.
+3. Five Dependabot PRs (#11 to #15) have been open against dev since 17:31 yesterday, all green, and they weren't noted.
+   - OBL-01 is discharged. DCO run 44359586310 on #11 reports \"skip c31d834f … (dependabot[bot], verified by GitHub)\". Confirm that line in the run's log, then record OBL-01 as discharged with that run ID.
+   - #13 bumps @types/node from 24.19.2 to 26.6.6, but package.json's engines is \">=24.22.3 <25\". Types for Node 26 would let code use APIs Node 24 doesn't have. Add an ignore rule to .github/dependabot.yml for @types/node's semver-major updates, so it stays on Node 24's major and moves with engines.node. Do it in a signed-off commit with a line in DEPENDENCIES.md. Then close #13 with a comment saying why.
+   - Don't merge #11, #12, #14 or #15 yourself. I'll merge them into dev with the reviewer. When I tell you they're merged, pull dev with git pull --ff-only.
+4. Log this message word for word in audit.md, commit signed off, push, and wait for CI.
+5. Then stop. Start U2's Code Generation plan only after I confirm the Dependabot merges, so the plan is written against the dev it will build on."
+**AI Response**: "Confirmed on GitHub: #16 MERGED 2026-11-19T01:27:13Z, merge commit d3ab2344202cf981c292bdc2e2aff881c411d19d, parents 91d0910 and 9416420. dev fast-forwarded 9416420..d3ab234 (no merge commit). Construction Design PR gate — e2e-stack recorded APPROVED (merged) with the final-head runs at 9416420 (CI pull request 44412142865, DCO 44412141421, CI push 44412132883). DCO run 44359586310 (on #11, head c31d834f) log line 175 confirmed: 'skip  c31d834f  build(deps): bump pnpm/action-setup from 6.1.0 to 6.1.1  (dependabot[bot], verified by GitHub)'; OBL-01 recorded Discharged with that run ID. Checked tools/dco: merge commits are outside the check (git rev-list --no-merges), so merging the Dependabot PRs into dev adds no unsigned commit to the next dev → main PR. f33145c (signed off): .github/dependabot.yml ignores @types/node's semver-major updates (npm ecosystem; minor and patch still arrive); DEPENDENCIES.md gains an 'Update rules' section saying @types/node stays on engines.node's major and moves by hand with it. Format, repository checks and 98 tests passed locally. #13 closed 2026-11-19T01:29:28Z with a comment giving the reason and citing f33145c. #11, #12, #14, #15 left open for the user and the reviewer. Stopping after CI; U2 Code Generation plan only after the user confirms the Dependabot merges."
+**Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate APPROVED; OBL-01 discharged; Dependabot #13 closed
+
+---
