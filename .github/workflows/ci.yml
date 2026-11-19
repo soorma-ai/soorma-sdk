@@ -179,6 +179,39 @@ jobs:
           "$DRIVER_NODE" --version
           pnpm conformance run --driver "$DRIVER_NODE --expose-gc typescript/conformance-driver/driver.ts" --foreign-user soorma-foreign
 
+  # @soorma/sdk as a tenant receives it (NFR-U3-21, -22): packed; the guard over
+  # the tarball (no test-only code, no values hook); installed offline into a
+  # fresh project outside the workspace, the peer API from the lock; an ESM
+  # import and a CommonJS require(), each constructing an AgentClient; a deep
+  # import of the hook refused; the example's agent files type-checked and
+  # imported. Nothing is fetched from a registry.
+  package-typescript:
+    name: Package, TypeScript (packed, installed fresh, import and require)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Set up Node from .node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build @soorma/sdk
+        run: pnpm --filter @soorma/sdk build
+
+      - name: Pack, guard, install fresh, import and require
+        run: pnpm package:typescript
+
   # The end-to-end stack (U2): soorma-core at the contract tag, fresh per job.
   # Skipped only when every changed file is under aidlc-docs/ (soorma-core's
   # pattern): a push compares with the commit before it, a pull request its
