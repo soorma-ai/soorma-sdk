@@ -1797,3 +1797,30 @@ Log these answers in audit.md under their question IDs, word for word. Then gene
 **Context**: Construction, U4 python-harness, NFR Requirements Steps 6 and 7
 
 ---
+
+## U4 python-harness — NFR Requirements: approved, with an addition reaching U3
+**Timestamp**: 2026-11-19T21:59:36Z
+**User Input**: "Continue to Next Stage: U4 NFR Requirements approved, with one addition that also reaches U3.
+
+The SSE limit has to apply to the whole event, not each line. An event can carry many data: lines, so a 1 MiB limit per line still lets a server send an unbounded event. And TypeScript has no limit at all: typescript/src/subscription.ts appends to `pending` until a blank line arrives, and the socket-pause backpressure doesn't help, because no item is ever completed, so the queue never fills. transport.ts also collects non-stream response bodies with no limit.
+
+Make it language-neutral:
+1. Spec: two named values in §0. L_event is the most bytes one SSE event may hold before its terminating blank line (1 MiB, 16 times the contract's 64 KiB payload limit). B_body is the most bytes a non-stream response body may hold (1 MiB). Add a statement next to RCV-07: an event over L_event is discarded up to its terminating blank line, keeping no more than the bound in memory. It yields a delivery error (reason event-too-large, no text), and the stream continues. A non-stream body over B_body is a TransportError (response-too-large), never the bytes.
+2. Conformance cases: the stub sends one oversized event (many data lines, each under 1 MiB) followed by a normal Delivery. Expect the error, then the Delivery, with the stream still open. A second case: a Problem response body over B_body gives the transport error. The stub may need a way to generate a large body without the case file holding it; if so, add it as a change to U1's stub.
+3. Python: apply the limit per event in the parser (NFR-U4-09). The 1 MiB per-line limit can stay as well.
+4. TypeScript: fix subscription.ts and transport.ts to match, with unit tests. It's a defect fix to merged U3 code, made inside U4's code PR, its own commit, listed in U4's code summary under changes to earlier units, with the TypeScript driver passing the new cases.
+Record the spec and case changes as F42 items, classed, and have the reference driver declare the new cases if it already passes them.
+
+Log this message word for word in audit.md, update the NFR Requirements artifacts, commit signed off, push, wait for CI, then start U4's NFR Design."
+**AI Response**: "NFR Requirements approved with the addition. Recorded: L_event and B_body (1 MiB each) as named values in spec §0; a statement beside RCV-07 for an oversized event and an oversized non-stream body; two conformance cases (an oversized event of many data lines followed by a Delivery; a Problem body over B_body), with a stub capability to generate a large body if needed; the Python parser bounding each event; the TypeScript defect fix to subscription.ts and transport.ts inside U4's code PR, its own commit; each an F42 item, classed at Code Generation; the reference driver declaring the new cases if it passes them."
+**Context**: Construction, U4 python-harness, NFR Requirements approval with an addition
+
+---
+
+## U4 python-harness — NFR Requirements: the addition made
+**Timestamp**: 2026-11-19T22:00:09Z
+**User Input**: (none)
+**AI Response**: "Confirmed in the merged TypeScript code: subscription.ts appends to s.pending until '\\n\\n' with no bound (#onData, #pump); transport.ts collects both non-stream bodies (lines 142 and 203) with no bound. Made: nfr-requirements.md (L_event and B_body in the named values; NFR-U4-08 the body bound as B_body; NFR-U4-10 per event, the 1 MiB per-line bound kept as the parser's buffer bound and reported as event-too-large; NFR-U4-37 the specification change, two cases and a stub capability as F42 items; NFR-U4-38 the TypeScript defect fix in U4's code PR, its own commit), tech-stack-decisions.md (TS-U4-14), business-rules.md (PH-F42-02). NFR Requirements marked approved in aidlc-state.md."
+**Context**: Construction, U4 python-harness, NFR Requirements complete
+
+---

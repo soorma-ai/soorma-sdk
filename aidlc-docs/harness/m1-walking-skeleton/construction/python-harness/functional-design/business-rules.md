@@ -123,7 +123,7 @@ PUB-04's unlimited depth, U3's example and end-to-end answers.
 | # | Rule |
 |---|---|
 | PH-F42-01 | Every change U4 makes to U1's specification, name table, cases, runner, reference driver or protocol, or to U2's or U3's tests, is a **change to an earlier unit's tests (F42)**, listed with its class in the Code Generation plan and recorded in U4's code summary and `audit.md` |
-| PH-F42-02 | **Foreseen**: the `SoormaWarning` row in `spec/names.md` (approved by the user with U4-FD-Q7); the `PayloadNotParsed` row (the user, at the Functional Design approval); `tools/names/drivers.json` gaining the Python driver; the CI jobs for Python (conformance with OBL-04's second user, `e2e-python`, the packed-distribution check), each a configuration change that weakens no existing assertion |
+| PH-F42-02 | **Foreseen**: the `SoormaWarning` row in `spec/names.md` (approved by the user with U4-FD-Q7); the `PayloadNotParsed` row (the user, at the Functional Design approval); **`L_event` and `B_body` in spec §0, the statement beside RCV-07, its two cases and any stub capability they need, and the TypeScript defect fix to `subscription.ts` and `transport.ts`** (the user, at the NFR Requirements approval; nfr-requirements NFR-U4-37, -38); `tools/names/drivers.json` gaining the Python driver; the CI jobs for Python (conformance with OBL-04's second user, `e2e-python`, the packed-distribution check), each a configuration change that weakens no existing assertion |
 | PH-F42-03 | **Not foreseen**: a case found wrong when first run under Python (CDI-05). It is judged first, never edited quietly; a class 3 change stops for the user |
 
 ## Misuse Considered (SECURITY-11)
