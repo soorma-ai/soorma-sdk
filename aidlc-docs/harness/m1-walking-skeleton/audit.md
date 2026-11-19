@@ -1646,3 +1646,15 @@ Then push, confirm every conformance-typescript entry is green and shows CC-SEC-
 **Context**: Construction, typescript-harness, Code Generation Part 2, commit group G8 complete
 
 ---
+
+## Code Generation: typescript-harness, G7 and G8 accepted; G9 asked for
+**Timestamp**: 2026-11-19T17:59:50Z
+**User Input**: "G7 and G8 accepted. The scenario's two warnings (one per client, none on B's renewal) are correct under REN-07's once-per-lineage rule.
+
+Go on to G9: the code summary (with every F42 change listed with its class, diff and the message that covered it, and the note that U1's self-test ran its timing cases with production values until 0a91e6a), the coverage tables, and the code PR, dev → main. Wait for every check, including DCO, dependency review, all three conformance-typescript entries, e2e-typescript and package-typescript. Discharge OBL-04 with the PR's own run ID, record the state with run IDs, and stop with the PR number. Don't record it merged until I tell you and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Proceeding with G9: the code summary, the coverage tables, then the code PR dev to main; waiting for every check; OBL-04 discharged with the PR's run ID; stopping with the PR number."
+**Context**: Construction, typescript-harness, Code Generation Part 2: G7 and G8 accepted; G9
+
+---
