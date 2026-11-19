@@ -1585,3 +1585,26 @@ Log this message word for word in audit.md, run G1's gate, commit signed off, pu
 **Context**: Construction, typescript-harness, Code Generation Part 2, commit group G6 (part one); stopped for the user at Step 31
 
 ---
+
+## Code Generation: typescript-harness, G6 Step 31 — the user's decisions
+**Timestamp**: 2026-11-19T14:51:48Z
+**User Input**: "All four approved, as class 3 changes to U1 (or a name-table change, for 4), each in its own commit with its diff and reason, covered by this message.
+
+1. Approved. Add a runner test that the driver's create receives the case's values exactly, so this can't regress. Record in the code summary that U1's self-test ran its timing cases with production values until now: the reference driver never got values. Re-run the self-test with the fix and record its result and time.
+2. Approved: T_idle 10000 in CC-STR-04 and CC-STR-11. Each case gets a $comment saying why: the stub can't script heartbeats during a wait, so T_idle must exceed the case's longest silence. The self-test must show skip-boundary still fails exactly {CC-STR-04}, with faults.json unchanged.
+3. Approved: the s3 exchange plus the T_idle raise in CC-PRB-08. Run it before committing: it must pass under the TypeScript driver, and under the reference driver if that driver declares it. retry-publish must still fail exactly {CC-PRB-01, CC-PUB-03}.
+4. Approved: a state row in spec/names.md, with its Python column filled in, since U4 must provide it. toJSON goes in names.md's idioms and in IDIOMS in tools/names/check.ts. tools/names/drivers.json is then filled in.
+
+Then finish G6: the full runs on Node 24 and 26, judging any remaining failures under CDI-05 (stopping for me on any further class 3 change), times recorded, and the names entry. Put building the package before the names check in CI's checks job as planned. Log this message word for word in audit.md."
+**AI Response**: "Proceeding: four commits (runner values with a runner test; T_idle in CC-STR-04 and CC-STR-11; the s3 exchange and T_idle in CC-PRB-08; the state row and the toJSON idiom), then the names entry, the CI build step, and the full runs on Node 24 and 26."
+**Context**: Construction, typescript-harness, Code Generation Part 2, G6 Step 31: user approval of four class 3 / name-table changes
+
+---
+
+## Code Generation: typescript-harness, G6 complete (Steps 31 and 32)
+**Timestamp**: 2026-11-19T15:15:25Z
+**User Input**: "(none: G6 continues under the user's approval of 2026-11-19T14:51:48Z)"
+**AI Response**: "The four approved changes, each in its own commit with its diff and reason. (1) 0a91e6a, class 3: conformance/runner/src/run.ts adds a case's values to each create's arguments, exactly (`if (cmd.op === 'create' && c.values) args.values = { ...c.values };`); a runner test (fixtures CC-AAA-06 and CC-AAA-07; the fake driver echoes create's arguments) asserts create receives the case's values exactly, not merged with describe's, and none when the case has none; it fails with the fix removed. U1's self-test ran its timing cases with production values until this commit, since the reference driver never received a case's values (recorded for the code summary). Self-test with the fix: pass, 146 s, every fault set as declared. (2) 78def37, class 3: T_idle 1500 to 10000 in CC-STR-04 and CC-STR-11, each with a $comment saying the stub cannot script heartbeats during a wait, so T_idle must exceed the case's longest silence (STR-02). Both pass under the TypeScript driver; self-test pass, 147 s; skip-boundary still fails exactly {CC-STR-04}; faults.json unchanged. (3) c391d72, class 3: CC-PRB-08 gains exchange s3 (POST /subscriptions answered with a held stream, the replacement STR-04 requires after the renewal) and T_idle 10000, its $comment updated. Passes under the TypeScript driver; the reference driver does not declare it; self-test pass, 146 s; retry-publish still fails exactly {CC-PRB-01, CC-PUB-03}. (4) cda4473, the name table: a row `| client state | client state error | state | state |` (Python column filled for U4); toJSON added to names.md's idioms paragraph and to IDIOMS in tools/names/check.ts, with a new test that it is accepted. Then 230c4dc: tools/names/drivers.json lists the TypeScript driver, and CI's checks job builds the package before pnpm checks. Step 32: the full suite under the TypeScript driver, Node 24.22.3 and Node 26.13.0 each 94 passed, 0 failed, 1 not run (CC-SEC-05, locally only), 113 s, within the 5-minute budget; no failure remained to judge under CDI-05, so no further class 3 change. Gate green on Node 24.22.3: 274 tests, audit clean, checks (names: 1 language), build, self-test pass (146 s). CI run 44552096368 green on every job; its checks job built the package and reported `names: 1 language(s)`. Next: G7, the conformance-typescript job (OBL-04)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G6 complete
+
+---
