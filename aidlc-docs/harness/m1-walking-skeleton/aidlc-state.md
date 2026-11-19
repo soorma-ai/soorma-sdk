@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Construction Design PR gate APPROVED (#16 merged); next: Code Generation plan, after the user confirms the Dependabot merges into dev (#11, #12, #14, #15)
+- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Code Generation Part 1 (plan); awaiting the user's approval of the plan
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -157,6 +157,21 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 | tickets | Yes | Requirements Analysis (Q15) | Opted in — target: GitHub issues: soorma-ai/soorma-sdk; initiative ticket → tracking issue; unit ticket → sub-issue |
 
 Full rules loaded at opt-in: security-baseline.md, soorma-platform-invariants.md, pr-checkpoint.md, qa-test-cases.md, tickets.md.
+
+## Dependency Updates
+
+Dependabot PRs into `dev` (NFR-U1-27), merged by the user with the reviewer; confirmed on GitHub 2026-11-19T02:46:05Z. Each merge commit has no sign-off: the DCO check reads non-merge commits only (`git rev-list --no-merges`), and each Dependabot commit passes on the verified exemption (NFR-U1-29; OBL-01).
+
+| PR | Update | Dependabot commit | Merge commit on `dev` | Merged |
+|---|---|---|---|---|
+| #11 | `pnpm/action-setup` 6.1.0 → 6.1.1 | `c31d834` | `7c39e314723ecd685823069eebb8ec559b4c7495` | 2026-11-19T01:52:44Z |
+| #12 | `prettier` 3.9.10 → 3.10.0 | `3325ecc` | `b6825c4d43faf6cb8c3041677be731d6b6994824` | 2026-11-19T01:52:48Z |
+| #13 | `@types/node` 24.19.2 → 26.6.6 | — | **Closed, not merged**, 2026-11-19T01:29:28Z: `engines.node` is `>=24.22.3 <25`; `f33145c` ignores `@types/node`'s semver-major updates (DEPENDENCIES.md, *Update rules*) | — |
+| #14 | `typescript-eslint` 8.72.1 → 8.72.2 | `bb8946b` (rebased by Dependabot onto `b6825c4`; fresh runs green) | `2ce42fb6142b241e2330cc89ecf3ce7a0ea21395` | 2026-11-19T02:43:01Z |
+| #15 | `@opentelemetry/api` 1.9.1 → 1.10.0 | `fce8ed4` (rebased likewise) | `85f639d5c39cd8034e415219e5df25131e102fc9` | 2026-11-19T02:43:08Z |
+
+- `dev`'s push CI at `85f639d`, all four together: run 44446341525, green
+- Local `dev` fast-forwarded `1570b86..85f639d`. On Node 24.22.3 and pnpm 12.18.0: `pnpm install --frozen-lockfile`, then the local gate (typecheck, lint, format check, 98 tests, `pnpm audit --audit-level moderate`, audit exceptions, repository checks, conformance self-test), all green, 2026-11-19T02:48:31Z. U2's Code Generation plan is written against this `dev`
 
 ## Open Obligations
 

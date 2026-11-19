@@ -1093,3 +1093,21 @@ Log this message word for word in audit.md."
 **Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate APPROVED; OBL-01 discharged; Dependabot #13 closed
 
 ---
+
+## Dependabot merges into dev — the user reports #11, #12, #14, #15 merged
+**Timestamp**: 2026-11-19T02:46:05Z
+**User Input**: "The four Dependabot PRs are merged into dev, each with a merge commit:
+- #11 pnpm/action-setup 6.1.1: 7c39e314723ecd685823069eebb8ec559b4c7495, 2026-11-19T01:52:44Z
+- #12 prettier 3.10.0: b6825c4d43faf6cb8c3041677be731d6b6994824, 2026-11-19T01:52:48Z
+- #14 typescript-eslint 8.72.2: 2ce42fb6142b241e2330cc89ecf3ce7a0ea21395, 2026-11-19T02:43:01Z (rebased by Dependabot onto b6825c4 first, fresh runs green)
+- #15 @opentelemetry/api 1.10.0: 85f639d5c39cd8034e415219e5df25131e102fc9, 2026-11-19T02:43:08Z (same)
+dev's push CI on 85f639d, with all four together, is green: run 44446341525.
+
+1. Confirm the merges on GitHub, then git pull --ff-only on dev. If it won't fast-forward, stop and tell me.
+2. Record the four merges in aidlc-state.md and audit.md. The merge commits on dev have no sign-off; the DCO check skips merge commits (rev-list --no-merges), and the Dependabot commits pass on the verified exemption. Run pnpm install --frozen-lockfile and the local gate on the new dev, so the plan starts from a clean, green tree.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Then write U2's Code Generation plan against this dev, and stop for my approval before writing any code."
+**AI Response**: "Confirmed on GitHub: #11 MERGED into dev 2026-11-19T01:52:44Z as 7c39e314723ecd685823069eebb8ec559b4c7495 (head c31d834); #12 2026-11-19T01:52:48Z as b6825c4d43faf6cb8c3041677be731d6b6994824 (head 3325ecc); #14 2026-11-19T02:43:01Z as 2ce42fb6142b241e2330cc89ecf3ce7a0ea21395 (head bb8946b); #15 2026-11-19T02:43:08Z as 85f639d5c39cd8034e415219e5df25131e102fc9 (head fce8ed4). Run 44446341525: push to dev at 85f639d, success. git pull --ff-only: 1570b86..85f639d, fast-forward. Recorded in aidlc-state.md under a new '## Dependency Updates' section (with #13 closed, not merged). On Node 24.22.3 (the shell's default was 26.13.0, which pnpm install refused on engines; switched to the repository's .node-version) and pnpm 12.18.0: pnpm install --frozen-lockfile, then the local gate, all green: typecheck, lint, format:check, 98 tests, pnpm audit --audit-level moderate (no known vulnerabilities), check:audit-exceptions (picomatch exception still needed), checks, conformance:self-test (pass, 84 s). Note: the local checks and tests run for f33145c earlier were under Node 26.13.0; CI for 1570b86 (which includes f33145c) ran on Node 24 and was green. Next: commit, push, wait for CI, then U2's Code Generation plan."
+**Context**: CONSTRUCTION — U2 e2e-stack, before Code Generation; Dependabot merges recorded, local gate green on the new dev
+
+---
