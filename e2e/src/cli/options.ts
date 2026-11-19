@@ -5,10 +5,12 @@
 // (GEN-05), TS-U2-11's limits and the inherited PATH. No argument, environment
 // variable or CI setting changes them (GEN-01): the arguments are only the ones
 // each command documents. A test pins these values.
-import { isAbsolute, resolve } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import type { CoreDownOptions } from '../core-down.ts';
 import type { CoreUpOptions } from '../core-up.ts';
-import { LIMITS, REPOSITORY_ROOT } from '../stack.ts';
+import type { ProveOptions } from '../prove-stack.ts';
+import type { SetupOptions } from '../setup.ts';
+import { CLONE, ENDPOINTS, layout, LIMITS, REPOSITORY_ROOT } from '../stack.ts';
 
 export class UsageError extends Error {}
 
@@ -39,6 +41,41 @@ export function coreDownOptions(argv: readonly string[], env: NodeJS.ProcessEnv)
     throw new UsageError('usage: pnpm e2e:core-down [--logs]');
   }
   return { ...fixed(env), logs: argv[0] === '--logs' };
+}
+
+/** setup --agents <a,b> [--secrets-dir <dir>] */
+export function setupOptions(argv: readonly string[], env: NodeJS.ProcessEnv): SetupOptions {
+  const usage = 'usage: pnpm e2e:setup --agents <a,b> [--secrets-dir <dir>]';
+  let agents: string[] | undefined;
+  let secretsDir: string | undefined;
+  for (let i = 0; i < argv.length; i += 2) {
+    const value = argv[i + 1];
+    if (value === undefined || value.startsWith('--')) throw new UsageError(usage);
+    if (argv[i] === '--agents' && agents === undefined) agents = value.split(',');
+    else if (argv[i] === '--secrets-dir' && secretsDir === undefined) secretsDir = value;
+    else throw new UsageError(usage);
+  }
+  if (agents === undefined) throw new UsageError(usage);
+  const { print: p, repositoryRoot, root, limits } = fixed(env);
+  const clone = layout(root).clone;
+  return {
+    repositoryRoot,
+    root,
+    agents,
+    ...(secretsDir === undefined ? {} : { secretsDir: resolve(secretsDir) }),
+    endpoints: ENDPOINTS,
+    caFile: join(clone, CLONE.ca),
+    handoverFile: join(clone, CLONE.handover, 'first-admin-1.txt'),
+    limits,
+    print: p,
+  };
+}
+
+/** prove-stack */
+export function proveStackOptions(argv: readonly string[], env: NodeJS.ProcessEnv): ProveOptions {
+  if (argv.length !== 0) throw new UsageError('usage: pnpm e2e:prove-stack');
+  const { print: p, root, limits } = fixed(env);
+  return { root, limits, print: p };
 }
 
 /** Runs a command's entry: usage errors exit 2, the command's own status otherwise. */

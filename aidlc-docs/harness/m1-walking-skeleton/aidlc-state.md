@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Code Generation Part 2: G0 `5de6b7e`, G1 `0fd1dc0`, G2 `2a63a94` pushed; G3 gate green; next: G4 (setup, prove-stack)
+- **Current Stage**: CONSTRUCTION - U2 e2e-stack, Code Generation Part 2: G0 `5de6b7e`, G1 `0fd1dc0`, G2 `2a63a94`, G3 `f61254e` pushed; G4 gate green; next: G5 (CI jobs, documents, the local run)
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State

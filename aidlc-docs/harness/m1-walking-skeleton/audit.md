@@ -1167,3 +1167,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G3
 
 ---
+
+## U2 Code Generation — G4 gate green
+**Timestamp**: 2026-11-19T03:41:50Z
+**User Input**: (none)
+**AI Response**: "G4 (Steps 17 to 20). Created: e2e/src/setup.ts (ST-01 identifiers by the contract's LogicalAgentIdentifier; ST-02 secrets directory created 0700 or checked: not a symbolic link, a directory, owned by this user, mode 0700, no existing secret file; ST-03 marker consumed first; K 32 random bytes base64url used once; calls 1 to 5 each against its contract success status and response schema; secret files 0600 exclusive; ST-09 end and refusal check of the environment credential then the sign-in, on success and after any failure, each call under its own limit; ST-10, ST-11 stack description 0600 last and plain lines), e2e/src/prove-stack.ts (PS-01 to PS-06; also the agent, instance e2e-proof and environment in the credential), cli/setup.ts, cli/prove-stack.ts, root scripts, e2e/test-fixtures/fake-stack.ts (one HTTPS server for S1, S2, S3 with a per-test CA; contract end semantics; records operation and credential kind only; checks every request and every response against the vendored contract; faults: a status, a body, or never answering), e2e/src/setup.test.ts (20 tests: TC-ES-004, 006, 007 unit parts with a scan of output and files for every secret the fake issued or received, K included; TC-ES-005; TC-ES-019; TC-ES-020: registerAgent agent-b 503, the failure line, no authenticate, ends 204 then 401 for both, no live credential, no contract mismatch; TC-ES-022 for setup and prove-stack; NFR-U2-11 another CA; the fake's checks proved to discriminate; the CLI's fixed values). Gate fix before commit: two no-useless-assignment lint errors in setup.ts. Gate green on Node 24.22.3: 174 tests; self-test pass (84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G4
+
+---
