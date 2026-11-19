@@ -2,6 +2,7 @@
   "id": "CC-STR-05",
   "title": "The old stream never sends end: closed after W_super",
   "statements": ["STR-05"],
+  "$comment": "T_idle is 10000 ms, above this case's longest silence (the old stream waits about 2 s for the replacement subscribe): the stub cannot script heartbeats during a wait, so T_idle must exceed the case's longest silence, or the SDK rightly ends the stream as idle (STR-02).",
   "timeoutMs": 15000,
   "values": {
     "H_renew": 1000,
@@ -13,7 +14,7 @@
     "L_ends": 6,
     "W_super": 1000,
     "N_buf": 8,
-    "T_idle": 1500,
+    "T_idle": 10000,
     "T_req": 2000,
     "R_min": 1
   },
