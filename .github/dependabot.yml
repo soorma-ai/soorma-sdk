@@ -21,6 +21,10 @@ updates:
       # with engines.node, by hand (DEPENDENCIES.md, Update rules).
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # The @opentelemetry/api floor (npm:@opentelemetry/api@1.9.0) is the
+      # peer range's floor, tested in CI's 1.9.0 conformance run: it moves
+      # only with that range, by hand (DEPENDENCIES.md, Update rules).
+      - dependency-name: 'opentelemetry-api-floor'
 
   - package-ecosystem: github-actions
     directory: /
