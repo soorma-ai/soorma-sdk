@@ -1199,3 +1199,29 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation, code PR CHECKS_GREEN
 
 ---
+
+## U2 Code Generation — completion message, approval prompt
+**Timestamp**: 2026-11-19T04:05:08Z
+**User Input**: (none)
+**AI Response**: "PR #17's final head b5a000b (the bookkeeping commit): CI run 44455550563 (pull request) green with e2e passed, DCO run 44455550601 green, push CI 44455544010 green with e2e skipped (aidlc-docs/ only). Presented the Code Generation completion message for e2e-stack (code-generation.md Step 14): Request Changes, or Continue to Next Stage (the next unit, typescript-harness). Stopping for the user's merge of #17 and approval; #17 not recorded merged until the user says so and GitHub shows it. This entry is committed with the merge record, so that #17's head does not move again before review."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation complete, awaiting approval
+
+---
+
+## U2 Code Generation — the user approves; #17 merged
+**Timestamp**: 2026-11-19T04:11:52Z
+**User Input**: "Continue to Next Stage: U2 Code Generation approved. soorma-ai/soorma-sdk#17 is merged: merge commit 3f4883c2566c2bfbf5d1ddefb7724207bdc8b864 on main, 2026-11-19T04:08:31Z, with parents d3ab234 (main) and b5a000b (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record #17 as MERGED, with the runs at b5a000b that you held back: CI (pull request) 44455550563, DCO 44455550601, CI (push) 44455544010. Mark U2 complete in Stage Progress and tick the plan's last step.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Start U3 typescript-harness: Unit Initialization, the L1 gate, then its stages as planned. U3 is the first harness unit, so the shape profile applies. Carry into its design:
+   - OBL-04: U3's TypeScript conformance job creates the second user and passes --foreign-user. CC-SEC-05 runs in CI, and --local-skip stays refused there.
+   - CDI-05: the 67 cases no U1 job ran. When one fails, decide first whether the SDK or the case is wrong; a case fix is a recorded change to an earlier unit's tests (F42).
+   - JOB-06: U2's e2e job becomes e2e-typescript, with the scenario after prove-stack. prove-stack stays.
+   - CDI-01 to CDI-04, US-Q1's span rules (DEC-U1-01), and GAP-CAC-001's work-around (soorma-core#34).
+   Stop at each gate as before."
+**AI Response**: "Confirmed on GitHub: #17 MERGED 2026-11-19T04:08:31Z, merge commit 3f4883c2566c2bfbf5d1ddefb7724207bdc8b864, parents d3ab234 and b5a000b. dev fast-forwarded b5a000b..3f4883c (the uncommitted audit entry kept). Code PR — e2e-stack recorded MERGED with the final-head runs (CI pull request 44455550563, DCO 44455550601, CI push 44455544010). U2 marked complete in Stage Progress; Code Generation APPROVED; the plan's Step 28 records the merge and the plan COMPLETE (every step ticked). Ticket #5 left open, as U1's #4 is (the tickets extension names no closing step). Next: U3 typescript-harness, Unit Initialization and the L1 gate, carrying OBL-04, CDI-05, JOB-06, CDI-01 to CDI-04, DEC-U1-01 and GAP-CAC-001."
+**Context**: CONSTRUCTION — U2 e2e-stack COMPLETE; U3 next
+
+---
