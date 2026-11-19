@@ -1324,3 +1324,23 @@ Log this message word for word in audit.md, then start U3's NFR Requirements."
 **Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements, awaiting answers
 
 ---
+
+## U3 NFR Requirements — answers
+**Timestamp**: 2026-11-19T04:55:32Z
+**User Input**: "Answers for U3's NFR Requirements: Q1 A, Q2 A, Q3 A, Q4 A, Q5 A, Q6 A, Q7 A, Q8 A.
+
+Q4, one detail: Node 24's require() of ESM resolves the package's exports map with the "require" condition. An exports map with only an "import" entry would make require('@soorma/sdk') fail, despite what Q4 promises CommonJS callers. Give the exports map a "default" entry (types first), and have package-typescript prove both: in the fresh project, one file that imports the package and one CommonJS file that require()s it, each constructing an AgentClient.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Requirements artifacts, decide whether U3's NFR Design stage runs, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U3-NFR-Q1 A; U3-NFR-Q2 A; U3-NFR-Q3 A; U3-NFR-Q4 A, with the user's detail (the exports map has a \"default\" entry, \"types\" first; package-typescript proves an ESM import and a CommonJS require() in the fresh project, each constructing an AgentClient); U3-NFR-Q5 A; U3-NFR-Q6 A; U3-NFR-Q7 A; U3-NFR-Q8 A. Generating the NFR Requirements artifacts and deciding on NFR Design."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements answers (U3-NFR-Q1 to Q8)
+
+---
+
+## U3 NFR Requirements — artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T04:57:00Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements for typescript-harness: nfr-requirements.md (NFR-U3-01 to 27: the harness profile carried from PF §11 and §14; performance on the request path, shown by design and request counts; the named values H_renew 120 s, R_min 30 s, R_max 5, W_max 60 s, B 0.5 s x2 to 10 s, L_ends 5, W_super 10 s, N_buf 64, D_lang 512, T_idle 45 s, T_req 10 s in one module; one retry policy; one validity check (CDI-06); resources released, no unhandled rejection; TLS with the OS store, Node's bundled store and the CA; hygiene; the secret not retained; REN-07's flood bounds; CC-SEC-05 in CI with the second user (OBL-04); one runtime peer dependency @opentelemetry/api ^1.9.0, tested at 1.10.0 and 1.9.0; semantic conventions 1.45.0; ESM only with an exports map of types then default, so require() works under Node 24 (the user's Q4 detail); generated types from the vendored generator, agent side only; packaging guard on typescript/ and the tarball; package-typescript proving an ESM import and a CommonJS require() each constructing an AgentClient, and the agent file copied in; conformance-typescript on Node 24 and 26; e2e-typescript on Node 24, over 8 minutes reopens the stage; the README's contents). tech-stack-decisions.md (TS-U3-01 to 13; the jobs added and changed). Decision: NFR Design runs for U3 (the retry policy, the single validity check, the subscription supervisor's state machine, the clock seam for tests, the trust-store composition, the CI user helper). No PRD gap. Presented the completion message: Request Changes, or Continue to Next Stage (NFR Design)."
+**Context**: CONSTRUCTION — U3 typescript-harness, NFR Requirements complete, awaiting approval
+
+---
