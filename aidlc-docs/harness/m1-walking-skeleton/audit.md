@@ -1442,3 +1442,21 @@ Log this message word for word in audit.md."
 **Context**: CONSTRUCTION — U3 typescript-harness, Construction Design PR gate, CHECKS_GREEN
 
 ---
+
+## U3 Construction Design PR gate — the user reports #18 merged
+**Timestamp**: 2026-11-19T05:43:48Z
+**User Input**: "soorma-ai/soorma-sdk#18 is merged: merge commit 06b9df85c117024f63904904fb0b9ebee7794910 on main, 2026-11-19T05:42:28Z, with parents 3f4883c (main) and f846e85 (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record U3's Construction Design PR gate as approved and merged, with the runs at f846e85: CI (pull request) 44466251614, DCO 44466251601, CI (push) 44466245657.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Write U3's Code Generation plan and stop for my approval before writing any code. Make sure it covers:
+   - CDI-06: the single validity check, and the source check that refuses any other expiresAt-versus-clock comparison;
+   - every F42 change to U1 as its own step, each with its class and the self-test still passing with its fault sets unchanged: REN-07 and R_min; the STR-02 and STR-05 sentences; SEC-01's rewording; CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13 and CC-ACQ-08; the driver protocol's warnings report; and stub time support if needed;
+   - an early step that runs the full suite under the TypeScript driver and measures it against the 8-minute budget (CC-STR-12 waits out T_idle), so a budget problem shows up before the end;
+   - how CDI-05's failing cases will be judged and recorded;
+   - the order of the CI jobs (conformance-typescript with the second user, e2e-typescript replacing e2e, package-typescript) and where OBL-04 is discharged."
+**AI Response**: "Confirmed on GitHub: #18 MERGED 2026-11-19T05:42:28Z, merge commit 06b9df85c117024f63904904fb0b9ebee7794910, parents 3f4883c and f846e85. dev fast-forwarded f846e85..06b9df8. Construction Design PR Gate — typescript-harness recorded APPROVED (merged) with the final-head runs (CI pull request 44466251614, DCO 44466251601, CI push 44466245657). Next: U3's Code Generation plan, covering the five points, then stopping for approval."
+**Context**: CONSTRUCTION — U3 typescript-harness, design PR merged; Code Generation Part 1
+
+---
