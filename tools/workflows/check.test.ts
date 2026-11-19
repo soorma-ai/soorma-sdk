@@ -58,4 +58,35 @@ describe('workflow check', () => {
       'w.yml: job a uploads ${{ runner.temp }}/soorma-conformance-run-abc: the conformance run directory never leaves the run',
     ]);
   });
+
+  // U2 (NFR-U2-13): .e2e/ never leaves the run; the end-to-end jobs hold no secret.
+  it('catches an upload step naming .e2e/', () => {
+    const upload = `${good}      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          path: .e2e/stack.json
+`;
+    expect(checkWorkflow('w.yml', upload)).toEqual([
+      "w.yml: job a uploads .e2e/stack.json: .e2e/ (the stack's clone and secrets) never leaves the run",
+    ]);
+  });
+
+  it('catches a repository secret referenced in an end-to-end job, and only there', () => {
+    const withSecret = (job: string): string =>
+      good
+        .replace('  a:\n', `  ${job}:\n`)
+        .replace(
+          '      - run: echo hi',
+          '      - run: echo "$T"\n        env:\n          T: ${{ secrets.TOKEN }}',
+        );
+    expect(checkWorkflow('w.yml', withSecret('e2e'))).toEqual([
+      'w.yml: end-to-end job e2e references a repository secret',
+    ]);
+    expect(checkWorkflow('w.yml', withSecret('e2e-typescript'))).toEqual([
+      'w.yml: end-to-end job e2e-typescript references a repository secret',
+    ]);
+    expect(checkWorkflow('w.yml', withSecret('changes'))).toEqual([
+      'w.yml: end-to-end job changes references a repository secret',
+    ]);
+    expect(checkWorkflow('w.yml', withSecret('release'))).toEqual([]);
+  });
 });

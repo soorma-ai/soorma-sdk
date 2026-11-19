@@ -15,6 +15,12 @@ updates:
       default-days: 7
     versioning-strategy: increase
     open-pull-requests-limit: 5
+    ignore:
+      # @types/node follows engines.node's major (Node 24): types for a newer
+      # major would let code use APIs Node 24 lacks. Its major moves only
+      # with engines.node, by hand (DEPENDENCIES.md, Update rules).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /

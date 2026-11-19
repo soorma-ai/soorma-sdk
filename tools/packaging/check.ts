@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // The packaging guard (NFR-U1-23; P-10; I8). Test-only code (the conformance
-// runner, stub, reference driver and faults, and the repository checks) never
-// ships in an SDK package: no published file under conformance/ or tools/, and
-// no dependency on them. Inert until a package is listed in packages.json.
+// runner, stub, reference driver and faults, the repository checks, and the
+// end-to-end stack's raw calls, U2 GEN-03) never ships in an SDK package: no
+// published file under conformance/, tools/ or e2e/, and no dependency on them.
+// Inert until a package is listed in packages.json.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 
-const FORBIDDEN_DEP = /^@soorma-sdk\/(tools|conformance-[\w-]+|reference-driver|runner|stub)$/;
-const FORBIDDEN_PATH = /(^|\/)(conformance|tools|reference-driver|test-fixtures)(\/|$)/;
+const FORBIDDEN_DEP = /^@soorma-sdk\/(tools|e2e|conformance-[\w-]+|reference-driver|runner|stub)$/;
+const FORBIDDEN_PATH = /(^|\/)(conformance|tools|e2e|reference-driver|test-fixtures)(\/|$)/;
 
 interface Manifest {
   name?: string;
@@ -44,7 +45,7 @@ export function checkPackage(dir: string): string[] {
     'optionalDependencies',
   ] as const) {
     for (const [dep, spec] of Object.entries(manifest[field] ?? {})) {
-      if (FORBIDDEN_DEP.test(dep) || /(^|[:/])(conformance|tools)(\/|$)/.test(spec)) {
+      if (FORBIDDEN_DEP.test(dep) || /(^|[:/])(conformance|tools|e2e)(\/|$)/.test(spec)) {
         failures.push(`${name}: ${field} names test-only ${dep}@${spec}`);
       }
     }

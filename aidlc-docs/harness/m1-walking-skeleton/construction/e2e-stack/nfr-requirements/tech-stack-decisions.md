@@ -24,7 +24,7 @@ stripping), -05 (`ajv` 2020-12), -06 (`yaml`), -09 (Vitest), -12 (CI rules).
 | Job | Runs | Fails when |
 |---|---|---|
 | `changes` | On `pull_request` and pushes to `dev`, never pushes to `main`. Outputs `e2e=false` only for a computable, non-empty, `aidlc-docs/`-only diff | The diff step errors in a way the shell does not catch (the dependent job is then skipped and the workflow fails) |
-| `e2e` | `needs: changes`, `if: needs.changes.outputs.e2e == 'true'`; `ubuntu-24.04`; `timeout-minutes: 20` (a backstop: TS-U2-11's limits fire first); `contents: read`. Check out; set up pnpm; Node 26.13.0 then Node 24; install this repository's workspace (frozen); `core-up --core-node <path>`; `setup --agents agent-a,agent-b`; `prove-stack`; then `core-down`, **`if: always()`**, with **`--logs` when `failure() \|\| cancelled()`** | Any command exits non-zero; a time limit runs out; the 20-minute timeout |
+| `e2e` | `needs: changes`, `if: needs.changes.outputs.e2e == 'true'`; `ubuntu-24.04`; `timeout-minutes: 20` (a backstop: TS-U2-11's limits fire first); `contents: read`. Check out; set up pnpm; Node 26.13.0 then Node 24; install this repository's workspace (frozen); `core-up --core-node <path>`; `setup --agents agent-a,agent-b`; `prove-stack`; then `core-down`, **`if: always()`**, with **`--logs` when `failure() \|\| cancelled()`**; the log search runs either way (LS-11) | Any command exits non-zero, `core-down` included (a hit or an unreadable log, LS-11); a time limit runs out; the 20-minute timeout |
 | `unit` (U1's, extended) | Also Vitest for `e2e/` (TC-ES-002, 003, 013 to 023; TC-ES-008's workflow-condition test) | Any test fails |
 
 U1's workflow check covers both new jobs (SHA pins, runner, permissions, no `.e2e/` upload).

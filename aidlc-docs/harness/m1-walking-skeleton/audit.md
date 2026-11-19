@@ -1076,3 +1076,126 @@ Log this message word for word in audit.md."
 **Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate, CHECKS_GREEN
 
 ---
+
+## U2 Construction Design PR gate — the user reports #16 merged; Dependabot PRs
+**Timestamp**: 2026-11-19T01:28:22Z
+**User Input**: "soorma-ai/soorma-sdk#16 is merged: merge commit d3ab2344202cf981c292bdc2e2aff881c411d19d on main, 2026-11-19T01:27:13Z, with parents 91d0910 (main) and 9416420 (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record U2's Construction Design PR gate as approved and merged, with the runs at 9416420: CI (pull request) 44412142865, DCO 44412141421, CI (push) 44412132883.
+3. Five Dependabot PRs (#11 to #15) have been open against dev since 17:31 yesterday, all green, and they weren't noted.
+   - OBL-01 is discharged. DCO run 44359586310 on #11 reports \"skip c31d834f … (dependabot[bot], verified by GitHub)\". Confirm that line in the run's log, then record OBL-01 as discharged with that run ID.
+   - #13 bumps @types/node from 24.19.2 to 26.6.6, but package.json's engines is \">=24.22.3 <25\". Types for Node 26 would let code use APIs Node 24 doesn't have. Add an ignore rule to .github/dependabot.yml for @types/node's semver-major updates, so it stays on Node 24's major and moves with engines.node. Do it in a signed-off commit with a line in DEPENDENCIES.md. Then close #13 with a comment saying why.
+   - Don't merge #11, #12, #14 or #15 yourself. I'll merge them into dev with the reviewer. When I tell you they're merged, pull dev with git pull --ff-only.
+4. Log this message word for word in audit.md, commit signed off, push, and wait for CI.
+5. Then stop. Start U2's Code Generation plan only after I confirm the Dependabot merges, so the plan is written against the dev it will build on."
+**AI Response**: "Confirmed on GitHub: #16 MERGED 2026-11-19T01:27:13Z, merge commit d3ab2344202cf981c292bdc2e2aff881c411d19d, parents 91d0910 and 9416420. dev fast-forwarded 9416420..d3ab234 (no merge commit). Construction Design PR gate — e2e-stack recorded APPROVED (merged) with the final-head runs at 9416420 (CI pull request 44412142865, DCO 44412141421, CI push 44412132883). DCO run 44359586310 (on #11, head c31d834f) log line 175 confirmed: 'skip  c31d834f  build(deps): bump pnpm/action-setup from 6.1.0 to 6.1.1  (dependabot[bot], verified by GitHub)'; OBL-01 recorded Discharged with that run ID. Checked tools/dco: merge commits are outside the check (git rev-list --no-merges), so merging the Dependabot PRs into dev adds no unsigned commit to the next dev → main PR. f33145c (signed off): .github/dependabot.yml ignores @types/node's semver-major updates (npm ecosystem; minor and patch still arrive); DEPENDENCIES.md gains an 'Update rules' section saying @types/node stays on engines.node's major and moves by hand with it. Format, repository checks and 98 tests passed locally. #13 closed 2026-11-19T01:29:28Z with a comment giving the reason and citing f33145c. #11, #12, #14, #15 left open for the user and the reviewer. Stopping after CI; U2 Code Generation plan only after the user confirms the Dependabot merges."
+**Context**: CONSTRUCTION — U2 e2e-stack, Construction Design PR gate APPROVED; OBL-01 discharged; Dependabot #13 closed
+
+---
+
+## Dependabot merges into dev — the user reports #11, #12, #14, #15 merged
+**Timestamp**: 2026-11-19T02:46:05Z
+**User Input**: "The four Dependabot PRs are merged into dev, each with a merge commit:
+- #11 pnpm/action-setup 6.1.1: 7c39e314723ecd685823069eebb8ec559b4c7495, 2026-11-19T01:52:44Z
+- #12 prettier 3.10.0: b6825c4d43faf6cb8c3041677be731d6b6994824, 2026-11-19T01:52:48Z
+- #14 typescript-eslint 8.72.2: 2ce42fb6142b241e2330cc89ecf3ce7a0ea21395, 2026-11-19T02:43:01Z (rebased by Dependabot onto b6825c4 first, fresh runs green)
+- #15 @opentelemetry/api 1.10.0: 85f639d5c39cd8034e415219e5df25131e102fc9, 2026-11-19T02:43:08Z (same)
+dev's push CI on 85f639d, with all four together, is green: run 44446341525.
+
+1. Confirm the merges on GitHub, then git pull --ff-only on dev. If it won't fast-forward, stop and tell me.
+2. Record the four merges in aidlc-state.md and audit.md. The merge commits on dev have no sign-off; the DCO check skips merge commits (rev-list --no-merges), and the Dependabot commits pass on the verified exemption. Run pnpm install --frozen-lockfile and the local gate on the new dev, so the plan starts from a clean, green tree.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Then write U2's Code Generation plan against this dev, and stop for my approval before writing any code."
+**AI Response**: "Confirmed on GitHub: #11 MERGED into dev 2026-11-19T01:52:44Z as 7c39e314723ecd685823069eebb8ec559b4c7495 (head c31d834); #12 2026-11-19T01:52:48Z as b6825c4d43faf6cb8c3041677be731d6b6994824 (head 3325ecc); #14 2026-11-19T02:43:01Z as 2ce42fb6142b241e2330cc89ecf3ce7a0ea21395 (head bb8946b); #15 2026-11-19T02:43:08Z as 85f639d5c39cd8034e415219e5df25131e102fc9 (head fce8ed4). Run 44446341525: push to dev at 85f639d, success. git pull --ff-only: 1570b86..85f639d, fast-forward. Recorded in aidlc-state.md under a new '## Dependency Updates' section (with #13 closed, not merged). On Node 24.22.3 (the shell's default was 26.13.0, which pnpm install refused on engines; switched to the repository's .node-version) and pnpm 12.18.0: pnpm install --frozen-lockfile, then the local gate, all green: typecheck, lint, format:check, 98 tests, pnpm audit --audit-level moderate (no known vulnerabilities), check:audit-exceptions (picomatch exception still needed), checks, conformance:self-test (pass, 84 s). Note: the local checks and tests run for f33145c earlier were under Node 26.13.0; CI for 1570b86 (which includes f33145c) ran on Node 24 and was green. Next: commit, push, wait for CI, then U2's Code Generation plan."
+**Context**: CONSTRUCTION — U2 e2e-stack, before Code Generation; Dependabot merges recorded, local gate green on the new dev
+
+---
+
+## U2 Code Generation — Part 1 plan, approval prompt
+**Timestamp**: 2026-11-19T02:54:59Z
+**User Input**: (none)
+**AI Response**: "Push CI 44447016828 at d4b30d8 green. Code Generation plan written to construction/working/e2e-stack-code-generation-plan.md (git-ignored), against dev at d4b30d8: 28 steps in 6 commit groups (G1 workspace, shared modules and U1's checks made stronger; G2 log search; G3 core-up and core-down; G4 setup and prove-stack; G5 CI jobs, DEPENDENCIES.md and README, the local run; G6 summaries, coverage, code PR with OBL-02). Points for approval: 1.1 the commands as modules whose options (root, endpoints, CA, limits, PATH) the CLI entry always fixes to GEN-05 and TS-U2-11, a unit test pinning them; 1.2 TC-ES-010 run on the changes step's own script from ci.yml in a temporary git repository, plus the code PR's real runs; 1.3 the real failure path and --logs search run locally in G5's gate (rebuilds soorma/*:local images, uses ports 8441 to 8447, removes everything after); 1.4 class 2 changes to U1's packaging guard (e2e/) and workflow check (.e2e upload; secrets. in the end-to-end jobs), refusal sweep done, every affected test keeps one cause; 1.5 reuse of U1's contract.ts and rundir.ts by relative path, a new contract-ops resolver. Checked before writing: soorma-core's docker build lines at c1e3d7f3 (ci.yml lines 142, 154, 168, 190), its stack scripts, .node-version 26.13.0, strictDepBuilds and allowBuilds at the tag; the contract's credentials are HTTP bearer. ST-02's other-owner case tested through a pure function given another uid (no second local user, OBL-04). Asking: approve the plan, or request changes."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 1, awaiting approval
+
+---
+
+## U2 Code Generation — Part 1 plan approved, with changes
+**Timestamp**: 2026-11-19T03:03:47Z
+**User Input**: "Plan approved, with these changes:
+
+1. Step 25's run (b) doesn't test the log search on real traffic. \"setup --agents agent-a,agent-a\" is refused by ST-01 before the marker is used, so no call reaches the stack, and core-down --logs searches only startup output. Change (b): core-up, setup --agents agent-a,agent-b, prove-stack, then core-down --logs on that stack. The search then covers logs that saw a first authentication, an environment credential, two registrations, two registration secrets and two bootstraps. Keep the ST-01 refusal as a separate check of the exit status and the marker still being in place. Record the search's outcome per service in the code summary, with no log text.
+
+2. Design change (LS-11, CD-02): search the logs on every run, print them only on failure. core-down always runs the log search before down -v. A hit or an unreadable log fails the command and so the job, on a green run too. --logs only decides whether clean logs are printed. A leak in soorma-core's logs is then caught on every CI run, not only when something else fails. Update LS-11, CD-02, CD-06, NFR-U2-04, JOB-03, TC-ES-015 and TC-ES-008(b), and record the change against the approved Functional Design, citing this message.
+
+3. Point 3 is approved: run it locally on this machine. Stop and tell me if a soorma-local project or volume exists when you start.
+
+Log this message word for word in audit.md, then start G1."
+**AI Response**: "Plan approved with changes. (1) Step 25 (b) becomes core-up, setup --agents agent-a,agent-b, prove-stack, core-down --logs on that stack, with the search's outcome per service recorded in the code summary (no log text); the ST-01 refusal kept as a separate check (exit status non-zero, marker still in place). (2) Design change recorded against the approved Functional Design: the log search runs on every core-down with a stack, before down -v; a hit or an unreadable log fails core-down on a green run too; --logs only decides whether clean logs are printed. LS-11, CD-02, CD-06, NFR-U2-04, JOB-03, TC-ES-015, TC-ES-008(b) updated, with the rules and texts that follow from them. Added to the plan as G0 (a design-records commit) before G1. (3) Local run approved; I will stop if a soorma-local project or volume exists when it starts."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 1 APPROVED with changes; design change to LS-11 and CD-02
+
+---
+
+## U2 Code Generation — G0, the design change recorded
+**Timestamp**: 2026-11-19T03:08:06Z
+**User Input**: (none)
+**AI Response**: "G0 (records only), the user's design change of 2026-11-19T03:03:47Z recorded against the approved Functional Design, citing the message: business-rules.md LS-11 (search on every core-down with a stack; a hit or unreadable source fails it; --logs only decides whether clean logs are printed; without it one 'searched, clean' line per service), CD-02, CD-06, JOB-03, the change note at the top; LS-12 added as following from LS-11 (no container, no search: a core-up that failed before stack:up leaves no log, so no value source is read; otherwise every early core-up failure would also fail core-down over a handover file stack:init never wrote). nfr-requirements.md NFR-U2-04; tech-stack-decisions.md e2e jobs row; business-logic-model.md §1, §5 diagram and text, §5.1 (step 0, clean outcome, step 6), §7 TC-ES-015 row and the TC-ES-008 note; domain-entities.md E-09 and §3. test-specs-narrative.md and test-case-index.md: TC-ES-015 (three steps: --logs clean printed; no --logs clean searched, one line per service; no --logs hit fails, still torn down), TC-ES-008(b), TC-ES-018 (extended for LS-12). Plan updated: G0; Steps 10, 12, 14, 16, 22, 25 (a, b on real traffic, c the ST-01 refusal; stop if a soorma-local project or volume exists), §4. Gate green on Node 24.22.3 (frozen install, typecheck, lint, format, 98 tests, audit, audit exceptions, checks, conformance self-test)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G0
+
+---
+
+## U2 Code Generation — G1 gate green
+**Timestamp**: 2026-11-19T03:16:44Z
+**User Input**: (none)
+**AI Response**: "G1 (Steps 1 to 9). Created: e2e/package.json (@soorma-sdk/e2e, private; yaml 2.9.1, already locked), e2e/src/stack.ts (soorma-core's local stack values at the tag, the .e2e layout, TS-U2-11's limits, readPin), e2e/src/child.ts (spawn without a shell, an explicit environment, SIGTERM then SIGKILL on the process group, captured output), e2e/src/https.ts (node:https, the stack's CA only, agent: false, contract version header, bearer credential, a limit through the whole response; failure reduced to step, status, Problem code, request id), e2e/src/contract-ops.ts (operation and status to the vendored contract's response schema; checked with U1's validator), e2e/src/shared.test.ts (14 tests). Changed: pnpm-workspace.yaml, tsconfig.json, vitest.config.ts, pnpm-lock.yaml (importer entry only, no new package). Class 2 changes to U1's code, recorded: tools/packaging/check.ts forbids e2e/ (path segment, @soorma-sdk/e2e, a spec naming e2e) with 2 added tests; tools/workflows/check.ts refuses an upload naming .e2e and a secrets. reference in the end-to-end jobs (changes, e2e, e2e-*), with 2 added tests; no existing assertion changed. Plan notes: the e2e:* scripts arrive with their commands (G3, G4); spawn with shell: false instead of execFile, for the process-group kill; child output captured, a failure's output tail only for steps before stack:init. Gate fixes before commit: constructor parameter properties refused by erasableSyntaxOnly (https.ts), a comma expression refused by lint (shared.test.ts). Gate green on Node 24.22.3: frozen install, typecheck, lint, format, 116 tests, audit, audit exceptions, checks, conformance self-test (pass, 84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G1
+
+---
+
+## U2 Code Generation — G2 gate green
+**Timestamp**: 2026-11-19T03:23:39Z
+**User Input**: (none)
+**AI Response**: "G2 (Steps 10 to 12). Created: e2e/src/log-search.ts (prefixesFrom: the typed prefixes and kinds read from the vendored credentials.md, table rows by first cell, sentences by the bold phrase before the prefix, failing closed on none or an unnamed one; a prefix then a token character is a hit; exact values; hits as service and kind only; decide: unreadable, then hit, then clean; report: clean logs printed only with --logs, otherwise one 'searched, clean' line per service; the LS-05 line on K in every outcome), e2e/src/log-sources.ts (the container list, credentials.md, agent secrets from the stack description and the default secrets directory, every enrollmentMaterial value in the handover files, each service's log under its 1 min limit; unreadable sources named; no container: no search, LS-12), e2e/test-fixtures/fake-command.mjs and fakes.ts (fake docker and git, moved forward from Step 15), e2e/src/log-search.test.ts (18 tests: TC-ES-013 per prefix read from the contract, TC-ES-014, TC-ES-015's search part, TC-ES-016 with an unreadable log, a timed-out log, a missing handover directory, an unreadable container list, TC-ES-017, LS-12). Gate fix before commit: ESLint no-undef in the .mjs fake (process and setInterval now imported). Gate green on Node 24.22.3: 134 tests; self-test pass (84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G2
+
+---
+
+## U2 Code Generation — G3 gate green
+**Timestamp**: 2026-11-19T03:33:17Z
+**User Input**: (none)
+**AI Response**: "G3 (Steps 13 to 16). Created: e2e/src/core-up.ts (CU-01 record refusal; CU-11 prerequisites: Docker Engine 26+, Compose 2.26.0+, git, --core-node runs; CU-02 project and volume refusal; CU-03 record 0600 exclusive; CU-04 clone depth 1 at the tag; CU-05 HEAD equals contract.pin.json's commit; CU-12 strictDepBuilds true and allowBuilds {}; CU-13 --core-node version equals .node-version, pnpm equals packageManager; CU-06 to CU-08 install, the four docker build lines, stack:init, stack:up with --core-node's directory first on PATH, no output printed from stack:init on; CU-09 marker last; each step under its TS-U2-11 limit), e2e/src/core-down.ts (CD-01 to CD-07: the search on every run, down -v by the clone's Compose file or by project, removal with the record last, a failed or timed-out teardown keeps the record and the clone), e2e/src/cli/options.ts, cli/core-up.ts, cli/core-down.ts, root scripts e2e:core-up and e2e:core-down, e2e/src/core.test.ts (20 tests: TC-ES-002, 003, 008 unit part, 015 core-down part, 018 with LS-12, 021, 023, the CLI's fixed values). fakes.ts covers pnpm and a --core-node Node. Test fixes before commit: repeated runs in one test reset .e2e/ and the recorded calls; macOS /var vs /private/var compared by realpath; 30 s timeout for the two test groups. CLI checked by hand: core-down without a record prints the no-stack line and exits 0; a usage error exits 2. Gate green on Node 24.22.3: 154 tests; self-test pass (84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G3
+
+---
+
+## U2 Code Generation — G4 gate green
+**Timestamp**: 2026-11-19T03:41:50Z
+**User Input**: (none)
+**AI Response**: "G4 (Steps 17 to 20). Created: e2e/src/setup.ts (ST-01 identifiers by the contract's LogicalAgentIdentifier; ST-02 secrets directory created 0700 or checked: not a symbolic link, a directory, owned by this user, mode 0700, no existing secret file; ST-03 marker consumed first; K 32 random bytes base64url used once; calls 1 to 5 each against its contract success status and response schema; secret files 0600 exclusive; ST-09 end and refusal check of the environment credential then the sign-in, on success and after any failure, each call under its own limit; ST-10, ST-11 stack description 0600 last and plain lines), e2e/src/prove-stack.ts (PS-01 to PS-06; also the agent, instance e2e-proof and environment in the credential), cli/setup.ts, cli/prove-stack.ts, root scripts, e2e/test-fixtures/fake-stack.ts (one HTTPS server for S1, S2, S3 with a per-test CA; contract end semantics; records operation and credential kind only; checks every request and every response against the vendored contract; faults: a status, a body, or never answering), e2e/src/setup.test.ts (20 tests: TC-ES-004, 006, 007 unit parts with a scan of output and files for every secret the fake issued or received, K included; TC-ES-005; TC-ES-019; TC-ES-020: registerAgent agent-b 503, the failure line, no authenticate, ends 204 then 401 for both, no live credential, no contract mismatch; TC-ES-022 for setup and prove-stack; NFR-U2-11 another CA; the fake's checks proved to discriminate; the CLI's fixed values). Gate fix before commit: two no-useless-assignment lint errors in setup.ts. Gate green on Node 24.22.3: 174 tests; self-test pass (84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G4
+
+---
+
+## U2 Code Generation — G5 gate green; the local run
+**Timestamp**: 2026-11-19T03:51:26Z
+**User Input**: (none)
+**AI Response**: "G5 (Steps 21 to 25). ci.yml: job changes (soorma-core's diff script, output e2e; skipped on a push to main) and job e2e (needs changes, if e2e == 'true'; ubuntu-24.04; 20 minutes; Node 26.13.0 then its path kept, then Node 24; frozen install; core-up --core-node \"$CORE_NODE\" through env; setup --agents agent-a,agent-b; prove-stack; core-down with if: always(), --logs unless job.status is success; no cache, no artifact, no secret). e2e/src/workflow.test.ts (11 tests: TC-ES-008(b) running the step's script with a fake pnpm for success, failure, cancelled; TC-ES-009; TC-ES-010 running the changes script in a temporary git repository). DEPENDENCIES.md: the approved text verbatim under 'The end-to-end stack'. README.md: e2e/ row and 'The end-to-end stack' section (prerequisites, commands, side effects, refusal). e2e/README.md. Gate green on Node 24.22.3: 185 tests; self-test pass (84 s). Local run (the user approved; checked first at 2026-11-19T03:47:57Z: no soorma-local project or volume, ports 8441 to 8447 free, so not stopped): (a) core-up 0 (38 s), setup 0, prove-stack 0 (agent-a, agent-b 200 pass), core-down 0 (16 services searched, clean); (b) core-up, setup, prove-stack all 0, core-down --logs 0 (16 services searched, clean, printed; the gateways' logs hold the run's operations as events: signin.issued, signin.ended, credential.issued, grant.made, registration.created x2, secret.issued x2, credential.ended, credential.refused, and two bootstraps); (c) setup --agents agent-a,agent-a exit 1 'the agent identifiers must be distinct', marker still present, core-down 0. After each: no soorma-local project or volume, .e2e/ empty. The soorma/*:local images were rebuilt (the documented side effect)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G5
+
+---
+
+## U2 Code Generation — G6: summary and coverage
+**Timestamp**: 2026-11-19T03:57:22Z
+**User Input**: (none)
+**AI Response**: "G5 pushed as c68065c; CI run 44454329278 (push) green, the e2e job's first run: 1 min 39 s, core-up 69 s; setup's calls each as expected, the ends 204 then 401 for both credentials; prove-stack agent-a and agent-b 200 pass; core-down (no --logs) 16 services searched, clean. G6 Steps 26 and 27: construction/e2e-stack/code/code-summary.md (files, commands, groups and runs, the local run with the search's outcome per service and no log text, the two class 2 changes to U1's checks with their diffs and the refusal sweep, deviations); l1-coverage-matrix.md (5 rows Implemented, Verified; 0 Missing, 0 Unverified) and invariant-coverage-matrix.md (9 Implemented, Verified; I4, I11 N/A; I9 reviewed: soorma-core's values only in e2e/src/stack.ts plus one example URL in a doc comment; I10 confirmed: setup and prove-stack reference no Docker, Compose or host). Gate green on Node 24.22.3: 185 tests; self-test pass. This commit touches aidlc-docs/ only: its push is TC-ES-010's real case (the e2e job skipped). Next: the code PR (Step 28)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G6
+
+---
+
+## U2 Code Generation — code PR #17 CHECKS_GREEN
+**Timestamp**: 2026-11-19T04:02:28Z
+**User Input**: (none)
+**AI Response**: "Code PR soorma-ai/soorma-sdk#17 (dev → main) opened 2026-11-19T03:59:38Z (pr-checkpoint §5A; branch per the user's standing instruction). Every check green at head 8892fcc by 2026-11-19T04:01:48Z: CI run 44455207562 (pull request: unit, checks, conformance self-test, changes, e2e 1 min 41 s, dependency review), DCO run 44455207572; push CI 44454972332 green with e2e skipped (changes e2e=false: aidlc-docs/ only, TC-ES-010's real case). OBL-02 discharged: e2e job 1 min 41 s, nothing cached (set-up steps about 25 s, core-up 69 s, setup 1 s, prove-stack under 1 s, core-down 2 s); under 8 minutes, NFR Requirements not reopened. The e2e job's log: setup's refusal checks 401 for both credentials; prove-stack agent-a and agent-b 200 pass; core-down 16 services searched, clean. Recorded CHECKS_GREEN in aidlc-state.md; code summary's Code PR section filled. Stopping for the user's merge; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation, code PR CHECKS_GREEN
+
+---

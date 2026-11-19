@@ -17,16 +17,20 @@
     "checks": "node tools/checks.ts",
     "conformance": "node conformance/runner/src/cli.ts",
     "conformance:reference": "node conformance/runner/src/cli.ts run --mode reference --driver \"node --expose-gc conformance/reference-driver/src/driver.ts\"",
-    "conformance:self-test": "node conformance/runner/src/self-test.ts"
+    "conformance:self-test": "node conformance/runner/src/self-test.ts",
+    "e2e:core-up": "node e2e/src/cli/core-up.ts",
+    "e2e:setup": "node e2e/src/cli/setup.ts",
+    "e2e:prove-stack": "node e2e/src/cli/prove-stack.ts",
+    "e2e:core-down": "node e2e/src/cli/core-down.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "24.19.2",
     "ajv": "8.20.0",
     "eslint": "10.14.0",
-    "prettier": "3.9.10",
+    "prettier": "3.10.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.72.1",
+    "typescript-eslint": "8.72.2",
     "vitest": "5.1.0",
     "yaml": "2.9.1"
   }

@@ -12,7 +12,7 @@ core-up  -->  setup --agents agent-a,agent-b  -->  prove-stack  -->  [scenario: 
 ```
 
 Text alternative: a run is `core-up`, then `setup`, then `prove-stack`, then (from U3 on) the
-language's scenario, and `core-down` at the end whatever happened; `--logs` when any earlier step
+language's scenario, and `core-down` at the end whatever happened, which always searches the logs (LS-11); `--logs` when any earlier step
 failed. A failed step ends the run early; `core-down` still runs. One run, one stack.
 
 ## 2. `e2e/core-up`
@@ -92,10 +92,10 @@ attempts only; a success removes its own (PS-05).
 owner.json? --no--> print "no stack started by core-up is recorded"; exit 0
      | yes
      v
---logs? --yes--> log search (5.1) --> print logs | refuse (hit) | refuse (unreadable)
-     |                                        |
-     v                                        v
-down -v (Compose file, or -p soorma-local) <--+
+log search (5.1), every run --> clean: print logs if --logs | hit: refuse | unreadable: refuse
+     |
+     v
+down -v (Compose file, or -p soorma-local)
      |
      v
 remove: stack.json, listed secret files, default secrets dir, marker, clone, owner.json (last)
@@ -105,11 +105,14 @@ exit: non-zero on a hit, an unreadable log, or a teardown failure; else 0
 ```
 
 Text alternative: without the ownership record, `core-down` does nothing and exits `0`. With it,
-and `--logs`, it searches the logs first, then prints them only if clean and fully read. It then
+it always searches the logs first (LS-11; changed at the Code Generation plan approval, the user,
+2026-11-19T03:03:47Z), and prints them only with `--logs` and only if clean and fully read. It then
 takes the stack down, removes everything the run wrote, removes the ownership record last, and
 exits non-zero if the search found a hit or could not read something, or the teardown failed.
 
-### 5.1 The log search (LS-01 to LS-11)
+### 5.1 The log search (LS-01 to LS-12), on every `core-down`
+
+0. **Containers**. List the project's containers, stopped ones included. None: say there is no log to search, read no value source, continue to `down -v` (LS-12). The listing fails: unreadable (LS-10).
 
 1. **Patterns**. Read `contract/conventions/credentials.md`; collect every `` `soorma_…_` `` it
    names, with the contract's name for each (LS-01). None found: fail closed (LS-02). Each
@@ -123,13 +126,13 @@ exits non-zero if the search found a hit or could not read something, or the tea
 4. **Search**. Each log against every pattern and every exact value. Record per hit: the service
    and the kind. Keep no matched text.
 5. **Outcome**.
-   - **Clean** (every log read, no hit): print the logs, service by service (LS-07)
+   - **Clean** (every log read, no hit): with `--logs`, print the logs, service by service (LS-07); without it, one line per service, `core-down: <service>: log searched, clean`, and no log text (LS-11)
    - **Hit**: print nothing of the logs; print `core-down: <service>'s log holds a <kind>: a
      soorma-core logging defect. Not printing any log. Raise it as a soorma-core issue naming
      <service> and contract-v0.1.0, without the value.` once per hit (LS-08, LS-09)
    - **Unreadable**: print nothing of the logs; print what could not be read (LS-10)
    - Every outcome states that the human secret K is not searchable, and why (LS-05)
-6. Continue to `down -v` in every outcome (CD-05).
+6. Continue to `down -v` in every outcome (CD-05). A hit or an unreadable source makes `core-down` exit non-zero, with or without `--logs` (CD-06).
 
 ## 6. Packaging (GEN-03; I6, I8)
 
@@ -146,7 +149,7 @@ writes them with these numbers:
 |---|---|---|
 | TC-ES-013 | The log search finds each typed prefix followed by token characters, naming the service and the kind; a bare prefix is not a hit | LS-03, LS-06, LS-08, LS-09; one case per prefix read from the contract |
 | TC-ES-014 | The log search finds the exact enrollment material, and an exact agent secret | LS-04, LS-08 |
-| TC-ES-015 | A clean log is printed; nothing is searched without `--logs` | LS-07, LS-11 |
+| TC-ES-015 | A clean log is printed only with `--logs`; the search runs on every `core-down`, and a hit fails it without `--logs` too (changed at the Code Generation plan approval) | LS-07, LS-11, CD-06 |
 | TC-ES-016 | An unreadable log (including one whose read times out): nothing printed, `core-down` fails closed and still tears the stack down | LS-10, CD-05, CD-06 |
 | TC-ES-017 | The prefixes come from the vendored contract; none readable fails closed | LS-01, LS-02 |
 | TC-ES-018 | `core-down` without an ownership record removes nothing and exits `0` | CD-01 |
@@ -171,7 +174,8 @@ live sign-in or environment credential at the end. The real-stack refusal is TC-
 
 **TC-ES-008, extended at the NFR Requirements approval**: a unit test reads the workflow and
 asserts that the `core-down` step runs `if: always()` and passes `--logs` exactly when
-`failure() || cancelled()`.
+`failure() || cancelled()`; on a green run it runs `core-down` without `--logs`, which still searches
+(LS-11), so a hit fails the job (changed at the Code Generation plan approval).
 
 TC-ES-013 to 017 run against recorded log text and the vendored contract, without a stack, so
 they run in `unit` on every PR; the end-to-end job exercises the search for real only when a job

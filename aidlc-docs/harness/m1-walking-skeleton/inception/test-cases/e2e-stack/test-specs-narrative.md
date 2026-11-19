@@ -200,7 +200,7 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 2. (a) List Compose projects and volumes, and `.e2e/`.
 3. (b) Read the `e2e` job's `core-down` step from the workflow.
 
-**Expected outcome**: (a) The logs were searched (TC-ES-013 to 016) and, clean, shown before teardown. The `soorma-local` project and its volumes are gone; `.e2e/stack.json`, the secret files, `.e2e/secrets/`, the marker and `.e2e/soorma-core/` are removed, and `.e2e/owner.json` last. (b) The step has `if: always()` and passes `--logs` exactly when `failure() || cancelled()`.
+**Expected outcome**: (a) The logs were searched (TC-ES-013 to 016) and, clean, shown before teardown. The `soorma-local` project and its volumes are gone; `.e2e/stack.json`, the secret files, `.e2e/secrets/`, the marker and `.e2e/soorma-core/` are removed, and `.e2e/owner.json` last. (b) The step has `if: always()` and passes `--logs` exactly when `failure() || cancelled()`; on a green run it runs `core-down` without `--logs`, which still searches the logs (LS-11), so a hit fails the job (changed at the Code Generation plan approval, the user, 2026-11-19T03:03:47Z).
 
 **Scope**: edge/boundary · **Priority**: High
 
@@ -366,20 +366,21 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 ---
 
-### TC-ES-015 — A clean log is printed; nothing is searched without --logs
+### TC-ES-015 — A clean log is printed only with --logs; the search runs on every core-down
 
-**Context**: The search must not hide useful logs when there is nothing to hide, and runs only when logs are to be shown. Covers FR-19. Rules LS-07, LS-11.
+**Context**: The search must not hide useful logs when there is nothing to hide, and runs on every `core-down`, so a leak is caught on a green run too (changed at the Code Generation plan approval, the user, 2026-11-19T03:03:47Z: "search the logs on every run, print them only on failure"). Covers FR-19. Rules LS-07, LS-11, CD-06.
 
 **Preconditions**:
 - Vitest in `unit`; recorded log text holding no prefix and no exact value
 
-**Scenario**: `core-down --logs` over clean logs; then `core-down` without `--logs`.
+**Scenario**: `core-down --logs` over clean logs; `core-down` without `--logs` over clean logs; `core-down` without `--logs` over a log holding a typed prefix.
 
 **Steps**:
-1. Run the search over the clean logs.
-2. Run `core-down` without `--logs` (fake `docker`).
+1. Run `core-down --logs` over the clean logs (fake `docker`).
+2. Run `core-down` without `--logs` over the same clean logs.
+3. Run `core-down` without `--logs` over logs where one service's log holds a typed prefix followed by token characters.
 
-**Expected outcome**: Step 1 prints every service's log, service by service, and its outcome is clean. Step 2 reads no log and prints none.
+**Expected outcome**: Step 1 prints every service's log, service by service; exit `0`. Step 2 reads every service's log (the fake `docker` recorded each `compose logs` call), prints one `searched, clean` line per service and no log text; exit `0`. Step 3 prints no log, names the service and the kind (never the value), still runs `down -v` and removes the stack, and exits non-zero.
 
 **Scope**: happy-path · **Priority**: Medium
 
@@ -441,20 +442,22 @@ Inception pass, scope **comprehensive** (`aidlc-state.md`, *Extension Configurat
 
 ---
 
-### TC-ES-018 — core-down without an ownership record removes nothing and exits 0
+### TC-ES-018 — core-down without an ownership record removes nothing and exits 0; with a record and no container, nothing is searched
 
-**Context**: `core-down` must never remove a stack `core-up` did not start, and must stay clean after a `core-up` that failed before creating anything. Covers FR-19. Rule CD-01.
+**Context**: `core-down` must never remove a stack `core-up` did not start, and must stay clean after a `core-up` that failed before creating anything. Covers FR-19. Rules CD-01, LS-12 (LS-12 added at the Code Generation plan approval, following from LS-11: the user, 2026-11-19T03:03:47Z).
 
 **Preconditions**:
 - Vitest in `unit`, with a fake `docker` reporting a running `soorma-local` project; no `.e2e/owner.json`
+- (step 3) an ownership record, no clone and no handover directory (a `core-up` that failed at the clone), and a fake `docker` reporting no container
 
-**Scenario**: `core-down` with and without `--logs`, no ownership record.
+**Scenario**: `core-down` with and without `--logs`, no ownership record; then `core-down` with a record and no container.
 
 **Steps**:
 1. Run `core-down`, then `core-down --logs`.
 2. Read the output, exit status and the fake `docker`'s recorded calls.
+3. Write the record, then run `core-down`.
 
-**Expected outcome**: Each prints that no stack started by `core-up` is recorded and exits `0`. No `down`, `logs` or removal was called; the reported project is untouched.
+**Expected outcome**: Each prints that no stack started by `core-up` is recorded and exits `0`. No `down`, `logs` or removal was called; the reported project is untouched. Step 3 says there is no log to search, reads no value source (no unreadable-handover failure), runs `docker compose -p soorma-local down -v`, removes the record last, and exits `0`.
 
 **Scope**: negative · **Priority**: High
 
