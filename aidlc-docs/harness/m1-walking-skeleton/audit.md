@@ -1151,3 +1151,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G1
 
 ---
+
+## U2 Code Generation — G2 gate green
+**Timestamp**: 2026-11-19T03:23:39Z
+**User Input**: (none)
+**AI Response**: "G2 (Steps 10 to 12). Created: e2e/src/log-search.ts (prefixesFrom: the typed prefixes and kinds read from the vendored credentials.md, table rows by first cell, sentences by the bold phrase before the prefix, failing closed on none or an unnamed one; a prefix then a token character is a hit; exact values; hits as service and kind only; decide: unreadable, then hit, then clean; report: clean logs printed only with --logs, otherwise one 'searched, clean' line per service; the LS-05 line on K in every outcome), e2e/src/log-sources.ts (the container list, credentials.md, agent secrets from the stack description and the default secrets directory, every enrollmentMaterial value in the handover files, each service's log under its 1 min limit; unreadable sources named; no container: no search, LS-12), e2e/test-fixtures/fake-command.mjs and fakes.ts (fake docker and git, moved forward from Step 15), e2e/src/log-search.test.ts (18 tests: TC-ES-013 per prefix read from the contract, TC-ES-014, TC-ES-015's search part, TC-ES-016 with an unreadable log, a timed-out log, a missing handover directory, an unreadable container list, TC-ES-017, LS-12). Gate fix before commit: ESLint no-undef in the .mjs fake (process and setInterval now imported). Gate green on Node 24.22.3: 134 tests; self-test pass (84 s)."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G2
+
+---
