@@ -39,49 +39,73 @@ function refuse(path: string, kind: string): never {
   throw new TypeError(`payload ${path} is ${kind}, which JSON cannot carry exactly`);
 }
 
-/** Checks the payload and returns its compact JSON text (PUB-03, PUB-04). */
+type Frame =
+  | { kind: 'value'; v: unknown; path: string }
+  | { kind: 'raw'; text: string }
+  | { kind: 'exit'; of: object };
+
+/**
+ * Checks the payload and returns its compact JSON text (PUB-03, PUB-04), in
+ * one iterative walk: no depth can overflow the stack, so depth is not limited
+ * on any platform (Step 25b). The text is what JSON.stringify gives for every
+ * value the check accepts: strings and numbers through JSON.stringify, keys in
+ * Object.entries order (the same order JSON.stringify uses).
+ */
 export function payloadText(payload: unknown): string {
+  const out: string[] = [];
   const ancestors = new Set<object>();
-  const stack: { v: unknown; path: string; exit?: object }[] = [{ v: payload, path: '$' }];
+  const stack: Frame[] = [{ kind: 'value', v: payload, path: '$' }];
   while (stack.length > 0) {
-    const top = stack.pop() as { v: unknown; path: string; exit?: object };
-    if (top.exit) {
-      ancestors.delete(top.exit);
+    const f = stack.pop() as Frame;
+    if (f.kind === 'raw') {
+      out.push(f.text);
       continue;
     }
-    const { v, path } = top;
-    if (v === null) continue;
+    if (f.kind === 'exit') {
+      ancestors.delete(f.of);
+      continue;
+    }
+    const { v, path } = f;
+    if (v === null) {
+      out.push('null');
+      continue;
+    }
     const scalar = kindOf(v);
     if (scalar) refuse(path, scalar);
-    if (typeof v !== 'object') continue;
-    if (ancestors.has(v)) refuse(path, 'a cycle');
-    if (Array.isArray(v)) {
-      ancestors.add(v);
-      stack.push({ v: null, path, exit: v });
-      for (let i = v.length - 1; i >= 0; i--) {
-        if (!(i in v)) refuse(step(path, i), 'a missing array element');
-        stack.push({ v: v[i], path: step(path, i) });
-      }
+    if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+      out.push(JSON.stringify(v));
       continue;
     }
-    const proto = Object.getPrototypeOf(v) as unknown;
+    const o = v as object;
+    if (ancestors.has(o)) refuse(path, 'a cycle');
+    if (Array.isArray(o)) {
+      ancestors.add(o);
+      stack.push({ kind: 'exit', of: o }, { kind: 'raw', text: ']' });
+      for (let i = o.length - 1; i >= 0; i--) {
+        if (!(i in o)) refuse(step(path, i), 'a missing array element');
+        stack.push({ kind: 'value', v: o[i], path: step(path, i) });
+        if (i > 0) stack.push({ kind: 'raw', text: ',' });
+      }
+      stack.push({ kind: 'raw', text: '[' });
+      continue;
+    }
+    const proto = Object.getPrototypeOf(o) as unknown;
     if (proto !== Object.prototype && proto !== null) refuse(path, 'not a plain object or array');
-    if (Object.getOwnPropertySymbols(v).length > 0) refuse(path, 'an object with symbol keys');
-    ancestors.add(v);
-    stack.push({ v: null, path, exit: v });
-    const entries = Object.entries(v as Record<string, unknown>);
+    if (Object.getOwnPropertySymbols(o).length > 0) refuse(path, 'an object with symbol keys');
+    ancestors.add(o);
+    stack.push({ kind: 'exit', of: o }, { kind: 'raw', text: '}' });
+    const entries = Object.entries(o as Record<string, unknown>);
     for (let i = entries.length - 1; i >= 0; i--) {
       const [k, x] = entries[i] as [string, unknown];
-      stack.push({ v: x, path: step(path, k) });
+      stack.push({ kind: 'value', v: x, path: step(path, k) });
+      stack.push({ kind: 'raw', text: `${i > 0 ? ',' : ''}${JSON.stringify(k)}:` });
     }
+    stack.push({ kind: 'raw', text: '{' });
   }
   try {
-    return JSON.stringify(payload);
+    return out.join('');
   } catch (error) {
-    if (error instanceof RangeError) {
-      // A stack-overflow RangeError carries no data, so it is safe to keep as the cause.
-      throw new TypeError('payload $ is too deeply nested to serialize', { cause: error });
-    }
-    throw error;
+    // A guard only: joining cannot recurse. A RangeError carries no data.
+    throw new TypeError('payload $ is too large to serialize', { cause: error });
   }
 }

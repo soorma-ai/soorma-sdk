@@ -1561,3 +1561,11 @@ Log this message word for word in audit.md, run G1's gate, commit signed off, pu
 **Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G4
 
 ---
+
+## U3 Code Generation — G4: a red CI run, fixed (Step 25b)
+**Timestamp**: 2026-11-19T07:50:31Z
+**User Input**: (none)
+**AI Response**: "G4 pushed as 960fe5a; CI run 44481857808 failed in the unit job: typescript/src/g4.test.ts 'does not limit depth' threw 'payload $ is too deeply nested to serialize' (Caused by RangeError: Maximum call stack size exceeded). Cause: JSON.stringify overflowed the Linux runner's stack on a 5,120-deep payload that passed on macOS, so the depth a payload could be sent at depended on the platform, against the user's ruling that depth is not limited (PUB-04). Not a CI-infrastructure failure, so not rerun. Step 25b added to the plan before the fix: payloadText now serializes iteratively, in the same walk as the check, giving JSON.stringify's text for every accepted value (strings and numbers through JSON.stringify; keys in Object.entries order); no depth can overflow; the RangeError refusal stays as a guard. Tests: output equal to JSON.stringify over varied values; 5,120, 100,000 and 2,000,000-deep payloads sent. Gate green on Node 24.22.3."
+**Context**: CONSTRUCTION — U3 typescript-harness, G4, red run fixed
+
+---

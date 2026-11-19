@@ -127,13 +127,28 @@ describe('the payload check (TH-PUB-01; TC-TH-070)', () => {
       '{"a":{"k":1},"b":{"k":1},"s":"<&>é"}',
     );
   });
-  it('does not limit depth; refuses a payload too deep to serialize', () => {
-    let deep: unknown = 1;
-    for (let i = 0; i < 5120; i++) deep = { n: deep };
-    expect(payloadText(deep).length).toBeGreaterThan(5120);
-    let deeper: unknown = 1;
-    for (let i = 0; i < 2_000_000; i++) deeper = [deeper];
-    expect(refused(deeper)).toBe('payload $ is too deeply nested to serialize');
+  it('does not limit depth on any platform: serialized iteratively (Step 25b)', () => {
+    for (const depth of [5_120, 100_000, 2_000_000]) {
+      let deep: unknown = 1;
+      for (let i = 0; i < depth; i++) deep = [deep];
+      expect(payloadText(deep)).toBe(`${'['.repeat(depth)}1${']'.repeat(depth)}`);
+    }
+  });
+
+  it('gives what JSON.stringify gives, for every value the check accepts', () => {
+    const values: unknown[] = [
+      null,
+      true,
+      0,
+      -1.5e-7,
+      1e21,
+      'a"b\\c\n\u2028<&>é\ud800',
+      [],
+      {},
+      [1, 'x', null, [true, {}]],
+      { 2: 'b', 1: 'a', z: [{ y: null }], 'k"q': 1, __proto__: null },
+    ];
+    for (const v of values) expect(payloadText(v)).toBe(JSON.stringify(v));
   });
 });
 
