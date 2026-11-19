@@ -51,3 +51,42 @@ Rows are numbered as in U1's and U2's matrices.
 Missing**. At Code Generation each Covered row becomes Implemented, and Verified when its cases
 pass through the TypeScript driver on Node 24 and 26 (and the end-to-end test, where named) on
 U3's code PR.
+
+## Code Generation (2026-11-19)
+
+Every Covered row is **Implemented**: each implementation target above exists in `typescript/src/`
+at `848a030` (G1 to G8). It is **Verified** three ways, as each row names:
+- **cases**: its conformance cases through the TypeScript driver, 95 of 95 passed (CC-SEC-05 included) on all three `conformance-typescript` entries (Node 24.22.3 and 26.13.0 with `@opentelemetry/api` 1.10.0; Node 24.22.3 with 1.9.0): push runs 44562488457 and 44565965835, and the code PR's run, recorded in `aidlc-state.md`;
+- **unit**: the TC-TH cases, in the package's tests (the `unit` job);
+- **end-to-end**: `e2e-typescript` on soorma-core's real stack, the scenario 1 passed (push run 44565965835).
+
+| # | Implemented in | Cases | Unit | End-to-end |
+| --- | --- | --- | --- | --- |
+| L1-01 | `draft.ts` (DRF-01 to DRF-03), `reader.ts` (the envelope as received) | CC-DRF-01, CC-NEV-02 | TC-TH-023 | B's Delivery carries A's draft's `traceparent` in the platform-stamped envelope |
+| L1-02 | `draft.ts` (`clientContractVersion` `"0.1.0"`); `transport.ts` (the header on calls without a draft) | CC-DRF-01, CC-ACQ-01 | — | — |
+| L1-03 | `tracing.ts`, `draft.ts` (TH-SPN-02, TH-SPN-06) | CC-TRC-01, CC-TRC-02, CC-FWD-04, CC-FWD-05 | TC-TH-025 to 027 | one trace across the hop: B's receive span's parent is A's send span |
+| L1-04 | `draft.ts` (no way to set one: TH-API-03), `transport.ts` (the Problem surfaced) | CC-NEV-02, CC-PRB-01 | TC-TH-024 | — |
+| L1-05 | `reader.ts` (TH-RD-03: exact text, unknown members kept), `draft.ts` (the spliced text, TH-PUB-02) | CC-RCV-03, CC-FWD-02 | TC-TH-029, 047 | — |
+| L1-06 | `reader.ts` (`originMode` as received), `subscription.ts` (end codes, STR-03), `errors.ts` (Problem codes, PRB-01) | CC-RCV-03, CC-STR-03, CC-PRB-01 | TC-TH-039, 047, 052 | — |
+| L1-07 | `reader.ts` (no schema rejection, TH-RD-05), the `Envelope` type (every member optional, CDI-04) | CC-RCV-03, CC-RCV-08 | TC-TH-069 | — |
+| L1-09 | `draft.ts` (forwarded unchanged), `reader.ts` (a 32-entry chain received), `errors.ts` (`chain_too_deep` surfaced) | CC-FWD-02, CC-RCV-02, CC-FWD-07 | — | — |
+| L1-11 | `draft.ts`; `reader.ts` (no validation); `keeper.ts` (`agent`, `instance` sent as given, ACQ-09) | CC-NEV-02, CC-RCV-08, CC-ACQ-07 | — | — |
+| L1-12 | `keeper.ts` (§2 of the logic model; TH-SEC-04), `secrets.ts` | CC-ACQ-01, CC-SEC-01 | — | both agents bootstrap on soorma-core's stack, `fileSecret` on U2's files |
+| L1-13 | `keeper.ts` (REN-01 to REN-07, TH-REN-01 to 05) | CC-REN-01 to CC-REN-07 | — | one real S3 renewal under a 14-minute skew, none before `R_min`, one warning per lineage |
+| L1-15 | `keeper.ts` (ACQ-03: `ProblemError`, not retried) | CC-ACQ-02 | TC-TH-009 | — |
+| L1-16 | `keeper.ts` (REN-04, REN-06; REN-07: after the clock-skew warning, S3's `credential_expired` decides), `subscription.ts` (SUB-05) | CC-REN-03, CC-REN-05, CC-REN-07, CC-SUB-05 | TC-TH-018, 075 | — |
+| L1-17 | `keeper.ts` (REN-05; TH-REN-04, GAP-CAC-001), `subscription.ts` (STR-07), `client.ts` (*revoked*) | CC-REN-04, CC-STR-09 | TC-TH-019, 042 | — |
+| L1-18 | `transport.ts` (`503` retried, PRB-05), `subscription.ts` (`end unavailable` non-terminal) | CC-PRB-04, CC-STR-01 | TC-TH-011 | — |
+| L1-19 | `errors.ts`, `transport.ts` (FWD-05: surfaced, not retried) | CC-FWD-07 | TC-TH-031 | — |
+| L1-20 | `errors.ts` (DRF-04 surfaced as given) | CC-PRB-01 | — | — |
+| L1-22 | `client.ts`, `draft.ts` (forwarding the default path through `delivery.publish`, FWD-01), `errors.ts` (`forbidden` as given) | CC-FWD-01, CC-PRB-03, CC-FWD-07 | TC-TH-028, 053 | — |
+| L1-23 | `keeper.ts` (in memory, opaque), `transport.ts` (bearer only, to S3 and S4 only), `client.ts` (details read only, TH-API-04) | CC-CRD-01 to CC-CRD-03, CC-CFG-03 | TC-TH-020 to 022 | — |
+| L1-24 | `reader.ts`, `draft.ts`, `client.ts` (`delivery.publish` vs `client.publish`) | CC-FWD-01 to CC-FWD-07 | TC-TH-027 to 031 | the decoy span neither parent nor linked (TH-E2E-03) |
+| L1-25 | `options.ts` (no environment option), `client.ts` (`credential.environment` read only, CDI-01), the lint rule (TH-API-05) | CC-CFG-02, CC-CFG-06, CC-CRD-01 | TC-TH-002, 006 | both credentials name U2's environment, which no SDK option configures |
+| L1-26 | `reader.ts` (RCV-04: never syntax-checked) | CC-RCV-04 | TC-TH-048 | — |
+| L1-27 | `options.ts` (`agent`, `instance` supplied; `newInstanceId`), `keeper.ts` (asserted at bootstrap) | CC-CFG-01, CC-CFG-07, CC-CRD-01 | — | two instances (`newInstanceId()`), each with its own credential |
+| L1-29 | `draft.ts` (the seal opaque, FWD-03), `keeper.ts` (acting needs the presenter's own credential) | CC-FWD-03, CC-CRD-03 | — | — |
+| L1-30 | `keeper.ts`, `subscription.ts`, `client.ts` (*revoked*) | CC-REN-04, CC-STR-09 | TC-TH-019, 042 | — |
+
+**Result**: 25 applicable rows Implemented and Verified; 5 N/A as above; **0 Missing, 0
+Unverified**.

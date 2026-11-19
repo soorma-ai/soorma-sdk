@@ -1,0 +1,17 @@
+{
+  "id": "CC-AAA-06",
+  "title": "create receives the case's values exactly",
+  "statements": ["AAA-01"],
+  "timeoutMs": 5000,
+  "values": { "T_idle": 1234, "R_min": 7 },
+  "script": { "exchanges": [] },
+  "commands": [{ "op": "create", "label": "create", "args": {} }],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "create",
+      "ok": true,
+      "result": { "/hasValues": true, "/values": { "oneOf": [{ "T_idle": 1234, "R_min": 7 }] } }
+    }
+  ]
+}

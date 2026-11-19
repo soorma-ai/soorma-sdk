@@ -4,7 +4,7 @@
 // settable members (from its conformance driver's `names` and `surface`
 // commands) must equal that language's column of the name table
 // (spec/names.md): an export not in the table, or a table name not exported,
-// fails, naming it. Protocol idioms (iteration, disposal) are accepted.
+// fails, naming it. Protocol idioms (iteration, disposal, JSON form) are accepted.
 // Inert until a driver is listed in drivers.json (U3, U4).
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -17,6 +17,8 @@ export const IDIOMS = new Set([
   '__anext__',
   '__aenter__',
   '__aexit__',
+  // JSON.stringify's hook for an object's JSON form (every TypeScript error has one).
+  'toJSON',
 ]);
 
 const IDENT = /^[A-Za-z_$][\w$]*$/;

@@ -186,6 +186,9 @@ async function runCase(
         const s = args.secret as JsonObject;
         if (s.kind === 'test') args.secret = { kind: 'test', bytes: ctx.secretBase64 };
       }
+      // The case's own values, exactly, for the driver's timing hook
+      // (conformance/README.md, "Values and the timing hook").
+      if (cmd.op === 'create' && c.values) args.values = { ...c.values };
       const r = await driver.send(
         cmd.op,
         args,

@@ -1,0 +1,36 @@
+{
+  "name": "@soorma/sdk",
+  "version": "0.1.0",
+  "description": "The soorma agent SDK for TypeScript: acquire, renew and present an agent credential; draft, publish, forward and subscribe on the data face; emit spans through the OpenTelemetry API. Advisory only: the platform enforces everything.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/internal",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "generate": "node scripts/generate.ts src/generated"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "^1.9.0"
+  },
+  "devDependencies": {
+    "@opentelemetry/api": "1.10.0",
+    "@opentelemetry/context-async-hooks": "2.12.0",
+    "@opentelemetry/sdk-trace-base": "2.12.0"
+  }
+}

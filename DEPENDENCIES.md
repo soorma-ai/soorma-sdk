@@ -26,6 +26,7 @@ affected package is no longer installed, and the exception is then removed in a 
 ## Update rules
 
 - **`@types/node` stays on `engines.node`'s major** (Node 24). Types for a newer major would let code use APIs Node 24 does not have, so `.github/dependabot.yml` ignores `@types/node`'s semver-major updates; minor and patch updates still arrive. Its major is changed by hand, in the same change that moves `engines.node`.
+- **`opentelemetry-api-floor` stays at `@soorma/sdk`'s peer range floor** (`npm:@opentelemetry/api@1.9.0`, a development dependency of `tools/`). CI's `conformance-typescript` 1.9.0 entry swaps it in for the installed API after the frozen install (`tools/otel-api-floor/use-floor.ts`), so the floor is locked with its integrity like every other dependency. `.github/dependabot.yml` ignores it; it moves by hand, in the same change that moves the peer range.
 
 ## The end-to-end stack
 

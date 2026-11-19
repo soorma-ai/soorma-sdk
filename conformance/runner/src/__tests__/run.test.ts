@@ -48,6 +48,16 @@ describe('the scheduler', () => {
     expect(r.ok).toBe(false);
   }, 30_000);
 
+  it("passes a case's values to the driver's create exactly, and none when it has none", async () => {
+    // Exactly the case's values, not merged with describe's (the fake reports H_renew).
+    const r = await runConformance({ ...base, only: ['CC-AAA-06', 'CC-AAA-07'] }, fakeStub);
+    const byId = Object.fromEntries(r.results.map((x) => [x.id, x]));
+    expect(byId['CC-AAA-06']?.failures).toEqual([]);
+    expect(byId['CC-AAA-06']?.status).toBe('pass');
+    expect(byId['CC-AAA-07']?.failures).toEqual([]);
+    expect(byId['CC-AAA-07']?.status).toBe('pass');
+  }, 30_000);
+
   it('runs only the declared cases in reference mode, the rest not run', async () => {
     const r = await runConformance({ ...base, mode: 'reference' }, fakeStub);
     expect(r.results.filter((x) => x.status !== 'not-run').map((x) => x.id)).toEqual(['CC-AAA-01']);

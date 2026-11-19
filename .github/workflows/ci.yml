@@ -79,6 +79,11 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      # The names check reads the TypeScript driver's names and surface from
+      # the built package's declarations (typescript/dist/index.d.ts).
+      - name: Build the TypeScript package (for the names check)
+        run: pnpm --filter @soorma/sdk build
+
       # The remote half of the drift check reads soorma-core with git only:
       # no token, no REST API. It never runs with --offline here.
       - name: Repository checks
@@ -110,6 +115,102 @@ jobs:
       # The run directory (CAs, case secrets) is never uploaded.
       - name: Conformance self-test
         run: pnpm conformance:self-test
+
+  # The TypeScript package through every conformance case (NFR-U3-23): Node 24
+  # and 26 with @opentelemetry/api 1.10.0 as locked, and Node 24 at the peer
+  # range's floor, 1.9.0 (NFR-U3-16), swapped in from the lock after the frozen
+  # install. The workspace's tools run on .node-version; the driver, and so the
+  # SDK, on the matrix's Node. The second local user lets CC-SEC-05 run (P-10);
+  # --local-skip is refused in CI. The run directory is never uploaded.
+  conformance-typescript:
+    name: Conformance, TypeScript (Node ${{ matrix.node }}, @opentelemetry/api ${{ matrix.otel-api }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - node: 24.22.3
+            otel-api: 1.10.0
+          - node: 26.13.0
+            otel-api: 1.10.0
+          - node: 24.22.3
+            otel-api: 1.9.0
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Set up the driver's Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Keep the driver's Node path
+        id: driver-node
+        run: echo "path=$(command -v node)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node from .node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Use @opentelemetry/api 1.9.0, the peer range's floor (from the lock)
+        if: matrix.otel-api == '1.9.0'
+        run: node tools/otel-api-floor/use-floor.ts
+
+      - name: Build @soorma/sdk
+        run: pnpm --filter @soorma/sdk build
+
+      - name: Create the second local user (P-10)
+        run: sudo useradd --no-create-home --shell /usr/sbin/nologin soorma-foreign
+
+      - name: Conformance, every case
+        env:
+          DRIVER_NODE: ${{ steps.driver-node.outputs.path }}
+        run: |
+          "$DRIVER_NODE" --version
+          pnpm conformance run --driver "$DRIVER_NODE --expose-gc typescript/conformance-driver/driver.ts" --foreign-user soorma-foreign
+
+  # @soorma/sdk as a tenant receives it (NFR-U3-21, -22): packed; the guard over
+  # the tarball (no test-only code, no values hook); installed offline into a
+  # fresh project outside the workspace, the peer API from the lock; an ESM
+  # import and a CommonJS require(), each constructing an AgentClient; a deep
+  # import of the hook refused; the example's agent files type-checked and
+  # imported. Nothing is fetched from a registry.
+  package-typescript:
+    name: Package, TypeScript (packed, installed fresh, import and require)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Set up Node from .node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build @soorma/sdk
+        run: pnpm --filter @soorma/sdk build
+
+      - name: Pack, guard, install fresh, import and require
+        run: pnpm package:typescript
 
   # The end-to-end stack (U2): soorma-core at the contract tag, fresh per job.
   # Skipped only when every changed file is under aidlc-docs/ (soorma-core's
@@ -154,13 +255,16 @@ jobs:
           fi
           echo "e2e=$e2e" | tee -a "$GITHUB_OUTPUT"
 
-  # core-up, setup, prove-stack, then core-down whatever happened. core-down
+  # e2e-typescript (JOB-06; NFR-U3-24): U2's end-to-end job with the TypeScript
+  # scenario after prove-stack (typescript/e2e/; the built package, both agents,
+  # one real renewal, the decoy span). core-up, setup, prove-stack, the
+  # scenario, then core-down whatever happened. core-down
   # always searches soorma-core's logs for credentials and secrets, so a leak
   # fails a green job too; it prints the logs only when the job failed or was
   # cancelled (a job stopped by its timeout is cancelled). No cache, no
   # artifact, no secret: .e2e/ never leaves the runner.
-  e2e:
-    name: End-to-end stack (soorma-core at the contract tag)
+  e2e-typescript:
+    name: End-to-end, TypeScript (soorma-core at the contract tag)
     needs: changes
     if: needs.changes.outputs.e2e == 'true'
     runs-on: ubuntu-24.04
@@ -191,6 +295,9 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      - name: Build @soorma/sdk (the scenario uses the built package)
+        run: pnpm --filter @soorma/sdk build
+
       - name: core-up
         env:
           CORE_NODE: ${{ steps.core-node.outputs.path }}
@@ -201,6 +308,9 @@ jobs:
 
       - name: prove-stack
         run: pnpm e2e:prove-stack
+
+      - name: The TypeScript scenario (two agents, one real renewal, one trace)
+        run: pnpm e2e:scenario-typescript
 
       - name: core-down (searches the logs every run; prints them if the job failed or was cancelled)
         if: always()

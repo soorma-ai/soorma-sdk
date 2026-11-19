@@ -1442,3 +1442,227 @@ Log this message word for word in audit.md."
 **Context**: CONSTRUCTION — U3 typescript-harness, Construction Design PR gate, CHECKS_GREEN
 
 ---
+
+## U3 Construction Design PR gate — the user reports #18 merged
+**Timestamp**: 2026-11-19T05:43:48Z
+**User Input**: "soorma-ai/soorma-sdk#18 is merged: merge commit 06b9df85c117024f63904904fb0b9ebee7794910 on main, 2026-11-19T05:42:28Z, with parents 3f4883c (main) and f846e85 (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record U3's Construction Design PR gate as approved and merged, with the runs at f846e85: CI (pull request) 44466251614, DCO 44466251601, CI (push) 44466245657.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Write U3's Code Generation plan and stop for my approval before writing any code. Make sure it covers:
+   - CDI-06: the single validity check, and the source check that refuses any other expiresAt-versus-clock comparison;
+   - every F42 change to U1 as its own step, each with its class and the self-test still passing with its fault sets unchanged: REN-07 and R_min; the STR-02 and STR-05 sentences; SEC-01's rewording; CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13 and CC-ACQ-08; the driver protocol's warnings report; and stub time support if needed;
+   - an early step that runs the full suite under the TypeScript driver and measures it against the 8-minute budget (CC-STR-12 waits out T_idle), so a budget problem shows up before the end;
+   - how CDI-05's failing cases will be judged and recorded;
+   - the order of the CI jobs (conformance-typescript with the second user, e2e-typescript replacing e2e, package-typescript) and where OBL-04 is discharged."
+**AI Response**: "Confirmed on GitHub: #18 MERGED 2026-11-19T05:42:28Z, merge commit 06b9df85c117024f63904904fb0b9ebee7794910, parents 3f4883c and f846e85. dev fast-forwarded f846e85..06b9df8. Construction Design PR Gate — typescript-harness recorded APPROVED (merged) with the final-head runs (CI pull request 44466251614, DCO 44466251601, CI push 44466245657). Next: U3's Code Generation plan, covering the five points, then stopping for approval."
+**Context**: CONSTRUCTION — U3 typescript-harness, design PR merged; Code Generation Part 1
+
+---
+
+## U3 Code Generation — Part 1 plan, approval prompt
+**Timestamp**: 2026-11-19T05:49:07Z
+**User Input**: (none)
+**AI Response**: "Push CI 44467194054 at f18e25c green. Code Generation plan written to construction/working/typescript-harness-code-generation-plan.md (git-ignored), against dev at f18e25c: 44 steps in 9 groups. G1 every F42 change to U1 as its own step with its class, the gate proving the self-test's fault sets unchanged: REN-07 and R_min (class 1), SEC-01 reworded (class 3), the STR-02 and STR-05 sentences (class 3), the warnings report (class 1), stub time support, $expiresIn at send time (class 1, needed by CC-REN-06; CC-REN-07's past time already works with ${TIME:+-60000}), the reference driver's REN-07 (shown to behave as before, else reclassed 3), the five cases (class 1), a static budget estimate. G2 the package's skeleton. G3 secrets, transport, retry, keeper, with CDI-06's single validity check and its source check and unit test. G4 publish, forwarding, tracing. G5 the reader and the subscription. G6 the TypeScript driver and the first full suite run on Node 24 and 26, measured against the budget, and CDI-05's judging procedure (SDK, case as F42 with its class and class 3 stopping, or the specification stopping for the user; never a quiet edit). G7 conformance-typescript with the second user (OBL-04 shown on the push, discharged on the code PR). G8 the example, the end-to-end test, e2e-typescript replacing e2e (U2's workflow test updated, class 1 unless it checks less), package-typescript, the README, the local run. G9 summary, matrices, the code PR. Points for approval: 1.1 the values hook U1's driver protocol already requires (conformance/README.md: a test hook not part of the public interface), placed in an internal module excluded from the tarball and unreachable through the exports map; 1.2 approving the plan as the stop for the three class 3 changes; 1.3 budgets: the runner enforces 5 minutes per full run per runtime (FULL_BUDGET_MS), 8 minutes is the self-test's; the new cases use small values through the hook; 1.4 the reference driver declares CC-STR-12 and CC-STR-13 only if it passes them; 1.5 the local end-to-end run. Asking: approve the plan, or request changes."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 1, awaiting approval
+
+---
+
+## U3 Code Generation — Part 1 plan approved, with a clarification
+**Timestamp**: 2026-11-19T06:55:43Z
+**User Input**: "Plan approved, with one clarification on 1.1, the values hook.
+
+The direction of the import matters. test-values.ts is left out of the tarball, so no published module may import it, or every installed copy of @soorma/sdk fails to load. limits.ts holds a module-private slot and a setter; test-values.ts (unpublished) imports limits.ts and calls the setter. Published code never imports test-values. limits.ts uses the slot only when it has been set, otherwise NFR Requirements' constants, and captures the values when a client is constructed. Add a lint or source check that nothing under typescript/src except test-values.ts imports internal/test-values. package-typescript's construct-from-the-tarball test then proves the package works without the hook.
+
+Points 2 to 5 are approved as proposed. Approving this plan counts as the stop for the three class 3 changes (SEC-01, STR-02, STR-05), each recorded with its before and after. Run the local end-to-end in G8 as for U2, stopping if a soorma-local project or volume exists.
+
+Log this message word for word in audit.md, then start G1."
+**AI Response**: "Plan approved. 1.1 clarified in the plan: limits.ts holds a module-private slot and a setter; internal/test-values.ts (unpublished) imports limits.ts and calls the setter; no published module imports test-values; limits.ts uses the slot only when set, else NFR Requirements' constants, and the values are captured when a client is constructed; a source check (Step 14) fails if anything under typescript/src other than test-values.ts imports internal/test-values; package-typescript's construct-from-the-tarball test proves the package works without the hook. Points 2 to 5 approved; plan approval is the stop for the class 3 changes SEC-01, STR-02, STR-05, each recorded with its before and after. Starting G1."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 1 APPROVED; Part 2, G1
+
+---
+
+## U3 Code Generation — G1: the F42 changes to U1, each with its class (Step 9)
+**Timestamp**: 2026-11-19T07:03:59Z
+**User Input**: (none)
+**AI Response**: "Changes to an earlier unit's tests and specification (F42), each recorded with its class:
+1. Step 1, class 1 (items added): spec/behaviour.md §0 gains R_min; §4 gains REN-07 (the floor on a monotonic clock; one clock-skew warning per lineage; after it the lineage's expiry is S3's to judge); the runner's NAMED_VALUES and the case schema's values enum gain R_min; the reference driver's Values and DEFAULTS gain R_min (1000 ms).
+2. Step 2, class 3 (the plan's approval is the stop, the user, 2026-11-19T06:55:43Z). SEC-01 before: | SEC-01 | A secret provider is a function supplied by tenant code that returns the registration secret. The SDK calls it **exactly once per bootstrap**, and **never** at client creation, renewal, publish or subscribe | D-09; FR-04 | CC-ACQ-01, CC-REN-03 |
+   SEC-01 after: | SEC-01 | A secret provider is a function supplied by tenant code that returns the registration secret. The SDK calls it **exactly once per bootstrap attempt**, and **never** at client creation, renewal, publish or subscribe. **A retried bootstrap (PRB-05, PRB-08, PRB-09) calls it again**, and no reference to an earlier attempt's secret remains during the backoff or `Retry-After` wait (SEC-02). *Reworded at U3 (the user, 2026-11-19): it read "exactly once per bootstrap"* | D-09; FR-04; U3 NFR Design P-08 | CC-ACQ-01, CC-REN-03, CC-ACQ-08 |
+3. Step 3, class 3 (the same stop). STR-02 before: | STR-02 | When a stream ends, the iterator yields **stream ended** with the `end` event's `code`, or `code: null` when the connection ended without one (including after `T_idle` of silence) or the `end` data carries no string `code` | FR-11 | CC-STR-01, CC-STR-02 |
+   STR-02 after: | STR-02 | When a stream ends, the iterator yields **stream ended** with the `end` event's `code`, or `code: null` when the connection ended without one (including after `T_idle` of silence) or the `end` data carries no string `code`. **`T_idle` is silence while the SDK is reading the stream**: a stream paused because tenant code has not pulled items (SUB-06) does not time out, and a resume restarts `T_idle`; a consumer too slow for the platform is told by the platform's `overflow` end. *Sentence added at U3 (the user, 2026-11-19)* | FR-11; SUB-06 | CC-STR-01, CC-STR-02, CC-STR-12 |
+   STR-05 before: | STR-05 | **Boundary order on replacement** (Q3, DEC-U1-03): the iterator yields the old stream's Deliveries read before its end, then **stream ended (old)**, then **stream started (new)**, then the new stream's Deliveries. Deliveries read from the new stream before the old one's end are **held**, counting against `N_buf`. **If the old stream's end has not arrived within `W_super`** after the new stream opened, the SDK **closes the old stream itself**, yields its *stream ended* with `code: null`, then *stream started* and the held Deliveries. On a **lineage change** (REN-03, REN-04, REN-06), no `superseded` will come: the SDK closes the old stream as soon as the new one opens, and yields the same sequence. **At every replacement, renewal or lineage change, a Delivery accepted while both streams are open may be read on both**: the SDK yields it from the old stream (before *stream ended*) and again from the new one (after *stream started*), and **suppresses neither**; nothing identifies a duplicate (DEC-U1-12) | Q3; DEC-U1-03, DEC-U1-12 | CC-STR-04, CC-STR-05, CC-STR-06, CC-STR-11 |
+   STR-05 after: | STR-05 | **Boundary order on replacement** (Q3, DEC-U1-03): the iterator yields the old stream's Deliveries read before its end, then **stream ended (old)**, then **stream started (new)**, then the new stream's Deliveries. Deliveries read from the new stream before the old one's end are **held**, counting against `N_buf`. **If the old stream's end has not arrived within `W_super`** after the new stream opened, the SDK **closes the old stream itself**, yields its *stream ended* with `code: null`, then *stream started* and the held Deliveries. On a **lineage change** (REN-03, REN-04, REN-06), no `superseded` will come: the SDK closes the old stream as soon as the new one opens, and yields the same sequence. **At every replacement, renewal or lineage change, a Delivery accepted while both streams are open may be read on both**: the SDK yields it from the old stream (before *stream ended*) and again from the new one (after *stream started*), and **suppresses neither**; nothing identifies a duplicate (DEC-U1-12). **`W_super` counts only while the old stream is being read**, as `T_idle` does (STR-02). The SDK **may pause the new stream from its opening until the old stream ends** or `W_super` expires, so that the new stream's Deliveries wait upstream rather than in the buffer, and cannot starve the old stream of buffer room. *Sentences added at U3 (the user, 2026-11-19)* | Q3; DEC-U1-03, DEC-U1-12; SUB-06 | CC-STR-04, CC-STR-05, CC-STR-06, CC-STR-11, CC-STR-13 |
+4. Step 4, class 1 (an added command): conformance/README.md gains warnings (and R_min in the values list); the case schema's op enum gains warnings.
+5. Step 5, class 1 (an added capability; existing scripts unchanged): the stub resolves {\"$expiresIn\": ms} when it sends a response (atSend in conformance/stub/src/delivery.ts), with a unit test; the stub's other 8 tests pass unchanged.
+6. Step 6, shown to behave as before (so class 1 under the rule's exception): the reference driver schedules renewal at max(R_min, target) and records one clock-skew warning per lineage; warnings answered. The self-test passed: 26 declared cases, and each faulted run's failed set equal to its declared set, faults.json unchanged.
+7. Step 7, class 1 (added cases): CC-REN-06, CC-REN-07, CC-ACQ-08, CC-STR-12, CC-STR-13, each naming the one statement that names it (REN-07, REN-07, SEC-01, STR-02, STR-05: U1's links are two-way). CC-ACQ-08 checks two provider calls and two requests; it has no heap check, because the protocol runs commands one at a time and start returns only after the retry (no check can run during the wait), and after start the check is CC-SEC-01's, which here would add a knock-on to the retain-secret fault's declared set. The reference driver declares CC-REN-06, CC-REN-07, CC-ACQ-08 and CC-STR-12 (it passes CC-STR-12, which no fault touches; it reads eagerly, so its pass does not exercise pausing). CC-STR-13 passes against it but is not declared: the skip-boundary fault drops a superseded stream's end, so declaring it would change that fault's declared set.
+8. Step 7a (added to the plan during G1, before it was made), class 1 (one item added to each case's values): R_min: 1 in the 13 existing cases that script a renewal (CC-CFG-03, CC-NEV-03, CC-PRB-08, CC-REN-01 to 05, CC-STR-04, 05, 06, 10, 11), because the runner merges the driver's values under a case's and these cases set every value but R_min; 1 ms leaves every scheduled renewal where it was.
+9. Step 8, the static budget estimate under the TypeScript values: 95 cases, 33.5 s of scripted waits, no loader-rule violation; at the reference run's rate of about 0.9 s per case, a passing full run is about 1.5 minutes against the runner's 5-minute budget per run; the sum of all timeouts (1443 s) is reached only if cases time out.
+Refusal sweep: no new refusal is added to an earlier unit's checks."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G1 records
+
+---
+
+## U3 Code Generation — G1 gate: a class 3 change the plan did not list; stopped for the user
+**Timestamp**: 2026-11-19T07:05:29Z
+**User Input**: (none)
+**AI Response**: "G1's gate failed at pnpm test on two of U1's assertions, which count the specification and the case catalogue: conformance/runner/src/spec.test.ts line 12 expects(statements).toHaveLength(103), now 104 with REN-07; conformance/runner/src/__tests__/cases.test.ts line 30 expects(loaded.cases).toHaveLength(90) in 'holds the 90 cases of the approved catalogue, with no problem', now 95. Replacing an expected value is class 3 even when the approved design requires it, and these two were not among the plan's listed class 3 changes (1.2), so the change is not made: stopped for the user. Proposed: 103 to 104 ('103 at U1, plus REN-07 at U3'); 90 to 95, retitled 'holds U1's 90 cases and the 5 added at U3, with no problem', also asserting the five new ids are present. Everything else in G1 is uncommitted until the gate passes. Also recorded: my prettier --write over whole directories reformatted Markdown the repository does not format (spec/behaviour.md, spec/names.md, conformance/README.md, a runner fixture); all four were restored from HEAD and only the intended edits re-applied (behaviour.md 8 lines, README.md 5); from now on Prettier runs only on the formatted types (ts, js, json, yml)."
+**Context**: CONSTRUCTION — U3 typescript-harness, G1 gate, stopped for a class 3 change
+
+---
+
+## U3 Code Generation — G1: the user approves the two class 3 changes
+**Timestamp**: 2026-11-19T07:09:13Z
+**User Input**: "Yes, make both changes, with one addition to the cases test.
+
+- spec.test.ts: 104, commented "103 at U1, plus REN-07 at U3".
+- cases.test.ts: 95, titled as you proposed, and checking the five new IDs are present. Also check that all 90 of U1's original case IDs are still present. A count alone would pass if one case were deleted and another added. Read the 90 from a fixed list in the test, not from the directory.
+
+Record both as class 3 changes with their before and after, covered by this message. The other adjustments are accepted: Step 7a (R_min: 1 in the 13 cases), no heap check in CC-ACQ-08, and the reference driver not declaring CC-STR-13 (the TypeScript driver must still pass it).
+
+Log this message word for word in audit.md, run G1's gate, commit signed off, push, and wait for CI before G2."
+**AI Response**: "Making both changes as class 3 (covered by this message), with the 90 original ids as a fixed list in the cases test; recording before and after; then G1's gate, commit, push, CI."
+**Context**: CONSTRUCTION — U3 typescript-harness, G1, class 3 changes approved
+
+---
+
+## U3 Code Generation — G1: two class 3 changes to U1's tests, made
+**Timestamp**: 2026-11-19T07:09:40Z
+**User Input**: (none)
+**AI Response**: "Class 3, covered by the user's message of 2026-11-19T07:09:13Z.
+1. conformance/runner/src/spec.test.ts. Before: it('holds the 103 statements of the approved design, in 16 areas', () => { expect(statements).toHaveLength(103); ... After: it('holds the 104 statements of the approved design, in 16 areas', () => { // 103 at U1, plus REN-07 at U3 (class 3, approved by the user 2026-11-19T07:09:13Z). expect(statements).toHaveLength(104); ... The 16-area check is unchanged.
+2. conformance/runner/src/__tests__/cases.test.ts. Before: it('holds the 90 cases of the approved catalogue, with no problem', () => { expect(loaded.problems).toEqual([]); expect(loaded.cases).toHaveLength(90); }). After: it(\"holds U1's 90 cases and the 5 added at U3, with no problem\", ...): problems [], 95 cases, and each of U1's 90 ids present (a fixed list U1_CASES in the test, taken from HEAD's conformance/cases, never read from the directory) and each of the 5 U3 ids (CC-ACQ-08, CC-REN-06, CC-REN-07, CC-STR-12, CC-STR-13). Both tests pass."
+**Context**: CONSTRUCTION — U3 typescript-harness, G1, class 3 changes recorded
+
+---
+
+## U3 Code Generation — G2 gate green
+**Timestamp**: 2026-11-19T07:24:09Z
+**User Input**: (none)
+**AI Response**: "G1 pushed as 89aa962, CI run 44477890224 green (the e2e job included). G2 (Steps 10 to 15, and 11a added before it was made): typescript/package.json (@soorma/sdk 0.1.0, ESM, engines >=24, exports types then default, files dist without dist/internal plus README, LICENSE, NOTICE; peer @opentelemetry/api ^1.9.0, development 1.10.0), tsconfig.build.json, the workspace entry; root tsconfig, vitest, .gitignore (typescript/dist, *.tgz), .prettierignore (dist, src/generated); limits.ts (NFR Requirements' values; the module-private slot and setLimitsSlot; captureLimits at construction; D_LANG 512), internal/test-values.ts (imports limits.ts; nothing published imports it), clock.ts, errors.ts (five classes; message, JSON and inspect forms with no secret), types.ts (the public types; Envelope deep-optional over the generated type), skeletons of client, subscription, delivery, secrets, options (newInstanceId), index.ts. Step 11a: openapi-typescript 7.13.0 added as a root development dependency (the version soorma-core pins at the tag with TypeScript 6.0.3); typescript/scripts/generate.ts reuses the vendored generator; its three files are byte-identical to contract/generated/. tools/generated-types/packages.json and tools/packaging/packages.json list the package (names/drivers.json in G6). ESLint rules for typescript/src (no process.env, host reads, console, Date.now, performance.now, setTimeout, clearTimeout outside clock.ts; no import of internal/test-values). Tests (7): the values and the hook, the source check on imports, the generated files, the errors' forms, the Envelope type. pnpm pack checked: no dist/internal in the tarball. Gate fixes before commit: two unused-parameter lint errors in stubs; two test bugs (the import check matched a comment; the type test executed its line). Gate green on Node 24.22.3: 193 tests; checks find 1 package for generated types and packaging; self-test pass (132 s); the package builds."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G2
+
+---
+
+## U3 Code Generation — G3 gate green
+**Timestamp**: 2026-11-19T07:34:07Z
+**User Input**: (none)
+**AI Response**: "G2 pushed as eb57cf0, CI run 44479337399 green. G3 (Steps 16 to 21): secrets.ts (fileSecret: O_RDONLY|O_NONBLOCK, the opened handle checked in the reference driver's order, one trailing line ending removed, refused on Windows without opening, unreadable on an open failure, no contents in any error); transport.ts (node:https, agent false, rejectUnauthorized true; the trust store system plus bundled plus the CA file, TransportError ca-file on a missing, unreadable or non-PEM file; T_req through clock.ts; a failure records whether it was sent; Problems parsed with every member kept, a non-Problem body kept out; Retry-After as delta-seconds or HTTP-date); retry.ts (the one policy: 503 and connection failures retried, a renewal only while isUsable(); never TLS, 429, other 4xx, 500; Retry-After first, else backoff; R_max and W_max; aborted by the signal); keeper.ts (bootstrap with one provider call per attempt, the secret only an argument and the request body; the credential in memory only; REN-01 with REN-07's floor and one SOORMA_CLOCK_SKEW warning per lineage; isUsable() the one validity check (CDI-06); REN-03 a new lineage at once; REN-04 credential_expired bootstraps; REN-05 and GAP-CAC-001 credential_refused terminal, also on a retried renewal; REN-06 the next operation bootstraps when not usable). Tests (26): fileSecret on real files (a FIFO not waited on, a link chain, each refusal), the trust store, Problems, the retry table, CDI-06's source check and a test that it catches a forbidden comparison; the keeper with post mocked and fake timers (the body, the provider per attempt, the floor and the warning, the expiry left to S3 after it, CDI-06's 503 renewal retry on a skewed lineage, REN-03, REN-05, REN-06). Gate fixes before commit: a test type under exactOptionalPropertyTypes; two no-useless-assignment lint errors (the secret's path restructured). Gate green on Node 24.22.3: 219 tests; self-test pass (132 s); the package builds."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G3
+
+---
+
+## U3 Code Generation — G4 gate green
+**Timestamp**: 2026-11-19T07:43:46Z
+**User Input**: (none)
+**AI Response**: "G3 pushed as fdd2613, CI run 44480624379 green. G4 (Steps 22 to 25, and 25a added before it was made): json.ts (the iterative payload check: non-finite numbers, undefined, functions, symbols, bigint, cycles, non-plain objects refused with the path and kind, never the value; also negative zero, a missing array element and symbol keys, each silently changed by JSON.stringify; depth not limited; a stack overflow while serializing refused the same way); draft.ts (exactly clientContractVersion and traceContext, inbound only when forwarding, the envelope text spliced byte for byte); tracing.ts (semantic conventions 1.45.0 as constants; the received traceparent parsed by the SDK; a client publish parents on the active context; a forward on the received context, linking the active span when it differs; a receive span on the received context, linking nothing; an unparseable context a root span linking the active span; the draft's traceparent the span's or generated); client.ts (option checks: unknown member, non-string, non-URL, non-https refused; start builds the trust store then bootstraps, back to created on failure; credential read only; publish never retried, 401 credential_expired noted; close idempotent; JSON and inspect forms without secrets); Delivery.publish forwards through the client. Step 25a: @opentelemetry/context-async-hooks 2.12.0 as a test-only development dependency of typescript/ (released 2026-10-06; no dependencies), and @opentelemetry/sdk-trace-base 2.12.0 (already locked) as one too; a pre-existing, test-only peer mismatch noted (the 2.12.0 packages declare @opentelemetry/api below 1.10.0; the reference driver already runs that pair). Tests (14): the payload check, drafts, options, publish and forward bodies, a publish never retried, the spans with a test-installed SDK and context manager, the decoy around a receive span neither parent nor linked, the error status, a traceparent without an SDK. Gate fix before commit: preserve-caught-error (the RangeError kept as cause; it carries no data). Gate green on Node 24.22.3: 233 tests; self-test pass (133 s); the package builds."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G4
+
+---
+
+## U3 Code Generation — G4: a red CI run, fixed (Step 25b)
+**Timestamp**: 2026-11-19T07:50:31Z
+**User Input**: (none)
+**AI Response**: "G4 pushed as 960fe5a; CI run 44481857808 failed in the unit job: typescript/src/g4.test.ts 'does not limit depth' threw 'payload $ is too deeply nested to serialize' (Caused by RangeError: Maximum call stack size exceeded). Cause: JSON.stringify overflowed the Linux runner's stack on a 5,120-deep payload that passed on macOS, so the depth a payload could be sent at depended on the platform, against the user's ruling that depth is not limited (PUB-04). Not a CI-infrastructure failure, so not rerun. Step 25b added to the plan before the fix: payloadText now serializes iteratively, in the same walk as the check, giving JSON.stringify's text for every accepted value (strings and numbers through JSON.stringify; keys in Object.entries order); no depth can overflow; the RangeError refusal stays as a guard. Tests: output equal to JSON.stringify over varied values; 5,120, 100,000 and 2,000,000-deep payloads sent. Gate green on Node 24.22.3."
+**Context**: CONSTRUCTION — U3 typescript-harness, G4, red run fixed
+
+---
+
+## Code Generation: typescript-harness, G5 (the reader and the subscription)
+**Timestamp**: 2026-11-19T08:08:37Z
+**User Input**: "(none: G5 continues the approved plan)"
+**AI Response**: "G4's fix pushed as 7121dd4; CI run 44482725422 green. G5's steps 26 to 28 done. `reader.ts`: one iterative, validating scan (TH-RD-01 to 05; P-09). `subscription.ts`: the P-04 supervisor (bounded queue, socket paused when full, T_idle and W_super counted only while reading, the replacement held paused until the old stream ends, resubscribe through keeper.token() and so isUsable(), CDI-06). `client.subscribe()` (SUB-04). `Delivery.payload` made a `declare` field so it is absent beyond D_lang (RCV-06). Tests: `g5.test.ts` (35) and `g5-exit.test.ts` (TC-TH-071 against U1's stub; mutation-checked). No change to an earlier unit's tests. Gate: typecheck, lint, format, 270 tests, checks, build, self-test pass (132 s; fault sets unchanged)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G5
+
+---
+
+## Code Generation: typescript-harness, G6 (the driver; the first full suite run; CDI-05 judging)
+**Timestamp**: 2026-11-19T08:37:53Z
+**User Input**: "(none: G6 continues the approved plan)"
+**AI Response**: "G5's CI run 44485162024 green on 80e931b. Step 29: the TypeScript conformance driver (typescript/conformance-driver/: driver.ts, names.ts reading names and surface from dist/index.d.ts, spans.ts), and typescript/README.md's Delivery and Spans sections. Step 30, the first full suite run, the committed runner: Node 26.13.0, 74 passed, 20 failed, 1 not run (CC-SEC-05, locally), 220 s; after Step 30a, Node 24.22.3 and 26.13.0 each 77 passed, 17 failed, 1 not run, 219 s: within the 5-minute budget. Step 30a (added when the run found them): CC-FWD-05, the SDK (TRC-04: without an OpenTelemetry SDK the no-op tracer returns the parent's context, so a forward repeated the received span id; startSend now uses a span context only when it is a new span); CC-CRD-01, the SDK (CDI-04: the credential's environment now kept as sent, unknown members included); CC-PRB-03, the driver (an absent title or detail reported as null, as the protocol says). Unit tests for both SDK fixes. Step 31 judging, recorded in the plan's CDI-05 log, four items stopped for the user and nothing changed in U1: (1) the runner never sends a case's values to the driver, against conformance/README.md; adding them to create is class 3 (scratch evidence, never committed: 3 failures then remain, and the self-test passes with its fault sets unchanged, 142 s); (2) CC-STR-04 and CC-STR-11 script a silence longer than their own T_idle (1500 ms), so the SDK ends the stream as STR-02 requires: raising T_idle is class 3 (both pass at 10000 in scratch); (3) CC-PRB-08 has no exchange for the replacement subscribe STR-04 requires: adding one is class 3; (4) the names check: state and toJSON are exported but not in spec/names.md, a specification question; tools/names/drivers.json is unchanged until it is answered. Gate green: 272 tests, checks, build, self-test (127 s)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G6 (part one); stopped for the user at Step 31
+
+---
+
+## Code Generation: typescript-harness, G6 Step 31 — the user's decisions
+**Timestamp**: 2026-11-19T14:51:48Z
+**User Input**: "All four approved, as class 3 changes to U1 (or a name-table change, for 4), each in its own commit with its diff and reason, covered by this message.
+
+1. Approved. Add a runner test that the driver's create receives the case's values exactly, so this can't regress. Record in the code summary that U1's self-test ran its timing cases with production values until now: the reference driver never got values. Re-run the self-test with the fix and record its result and time.
+2. Approved: T_idle 10000 in CC-STR-04 and CC-STR-11. Each case gets a $comment saying why: the stub can't script heartbeats during a wait, so T_idle must exceed the case's longest silence. The self-test must show skip-boundary still fails exactly {CC-STR-04}, with faults.json unchanged.
+3. Approved: the s3 exchange plus the T_idle raise in CC-PRB-08. Run it before committing: it must pass under the TypeScript driver, and under the reference driver if that driver declares it. retry-publish must still fail exactly {CC-PRB-01, CC-PUB-03}.
+4. Approved: a state row in spec/names.md, with its Python column filled in, since U4 must provide it. toJSON goes in names.md's idioms and in IDIOMS in tools/names/check.ts. tools/names/drivers.json is then filled in.
+
+Then finish G6: the full runs on Node 24 and 26, judging any remaining failures under CDI-05 (stopping for me on any further class 3 change), times recorded, and the names entry. Put building the package before the names check in CI's checks job as planned. Log this message word for word in audit.md."
+**AI Response**: "Proceeding: four commits (runner values with a runner test; T_idle in CC-STR-04 and CC-STR-11; the s3 exchange and T_idle in CC-PRB-08; the state row and the toJSON idiom), then the names entry, the CI build step, and the full runs on Node 24 and 26."
+**Context**: Construction, typescript-harness, Code Generation Part 2, G6 Step 31: user approval of four class 3 / name-table changes
+
+---
+
+## Code Generation: typescript-harness, G6 complete (Steps 31 and 32)
+**Timestamp**: 2026-11-19T15:15:25Z
+**User Input**: "(none: G6 continues under the user's approval of 2026-11-19T14:51:48Z)"
+**AI Response**: "The four approved changes, each in its own commit with its diff and reason. (1) 0a91e6a, class 3: conformance/runner/src/run.ts adds a case's values to each create's arguments, exactly (`if (cmd.op === 'create' && c.values) args.values = { ...c.values };`); a runner test (fixtures CC-AAA-06 and CC-AAA-07; the fake driver echoes create's arguments) asserts create receives the case's values exactly, not merged with describe's, and none when the case has none; it fails with the fix removed. U1's self-test ran its timing cases with production values until this commit, since the reference driver never received a case's values (recorded for the code summary). Self-test with the fix: pass, 146 s, every fault set as declared. (2) 78def37, class 3: T_idle 1500 to 10000 in CC-STR-04 and CC-STR-11, each with a $comment saying the stub cannot script heartbeats during a wait, so T_idle must exceed the case's longest silence (STR-02). Both pass under the TypeScript driver; self-test pass, 147 s; skip-boundary still fails exactly {CC-STR-04}; faults.json unchanged. (3) c391d72, class 3: CC-PRB-08 gains exchange s3 (POST /subscriptions answered with a held stream, the replacement STR-04 requires after the renewal) and T_idle 10000, its $comment updated. Passes under the TypeScript driver; the reference driver does not declare it; self-test pass, 146 s; retry-publish still fails exactly {CC-PRB-01, CC-PUB-03}. (4) cda4473, the name table: a row `| client state | client state error | state | state |` (Python column filled for U4); toJSON added to names.md's idioms paragraph and to IDIOMS in tools/names/check.ts, with a new test that it is accepted. Then 230c4dc: tools/names/drivers.json lists the TypeScript driver, and CI's checks job builds the package before pnpm checks. Step 32: the full suite under the TypeScript driver, Node 24.22.3 and Node 26.13.0 each 94 passed, 0 failed, 1 not run (CC-SEC-05, locally only), 113 s, within the 5-minute budget; no failure remained to judge under CDI-05, so no further class 3 change. Gate green on Node 24.22.3: 274 tests, audit clean, checks (names: 1 language), build, self-test pass (146 s). CI run 44552096368 green on every job; its checks job built the package and reported `names: 1 language(s)`. Next: G7, the conformance-typescript job (OBL-04)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G6 complete
+
+---
+
+## Code Generation: typescript-harness, G7 (conformance-typescript); a red run, stopped for the user
+**Timestamp**: 2026-11-19T15:33:59Z
+**User Input**: "(none: G7 continues the approved plan)"
+**AI Response**: "Step 33: ci.yml gains conformance-typescript, a matrix of Node 24.22.3 and 26.13.0 with @opentelemetry/api 1.10.0, plus Node 24.22.3 at 1.9.0; the workspace's tools on .node-version, the driver on the matrix's Node; the package built; the second local user created (P-10); no --local-skip. Step 33a, a technology decision added before it was made: the 1.9.0 run stays on the lock (NFR-U1-24): tools/'s development dependency opentelemetry-api-floor is npm:@opentelemetry/api@1.9.0 (released 2024-06-05; locked with its integrity); in the 1.9.0 entry, tools/otel-api-floor/use-floor.ts replaces the one store copy of the API with the floor's files and checks the package and the test OpenTelemetry SDK see one copy at 1.9.0 (four tests on a fake pnpm layout). At the root the alias moved vitest's optional peer to 1.9.0, so it is in tools/. Dependabot ignores it; DEPENDENCIES.md says it moves by hand with the peer range. Locally at 1.9.0: the package builds; the suite on Node 24.22.3 passes, 94 passed, 1 not run (CC-SEC-05, locally), 111 s. Gate green: 278 tests, checks, build, self-test (146 s). Commit d661bf5; CI run 44555060916 red: conformance-typescript on Node 26.13.0 (API 1.10.0) failed CC-STR-06 (request-shape: the second subscribe's authorization was not soorma_ac_token.three); Node 24 at 1.10.0 and at 1.9.0 passed every case; every other job green. Not CI infrastructure, so not rerun. Step 33b added before any fix. Judged under CDI-05: the case. CC-STR-05, CC-STR-06 and CC-STR-10 each leave the old stream silent from its first read until the renewal (about 2 s), longer than their T_idle (1500 ms), so the SDK ends it as idle (STR-02) first when the driver starts fast, and resubscribes with the still-valid first credential; CC-STR-05 and CC-STR-10 then still pass, through the idle path rather than the one they test. Scratch evidence, reverted: at T_idle 1000, CC-STR-06 fails 3 of 3 and the other two pass; at 10000, all three pass 3 of 3. Every other case with a held stream and T_idle 1500 checked and not exposed. Proposed: T_idle 10000 with a $comment in all three, as in CC-STR-04 and CC-STR-11. Class 3: stopped for the user; nothing changed in U1."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G7; stopped for the user at Step 33b
+
+---
+
+## Code Generation: typescript-harness, G7 Step 33b — the user's decision
+**Timestamp**: 2026-11-19T15:58:14Z
+**User Input**: "Approved: T_idle 10000 in CC-STR-05, CC-STR-06 and CC-STR-10, class 3, each in its own commit with the same $comment as CC-STR-04 and CC-STR-11, covered by this message. The self-test must show every fault set unchanged.
+
+Five cases have now had this flaw, so add one rule to conformance/README.md's guidance for case authors, as a class 1 documentation change: a case's T_idle must exceed the longest silence on any stream it keeps open, including the wait for a renewal or replacement, unless the case is testing the idle timeout itself (as CC-STR-02 is).
+
+Your OpenTelemetry 1.9.0 approach is accepted: the locked alias in tools/package.json and use-floor.ts with its single-copy check.
+
+Then push, confirm every conformance-typescript entry is green and shows CC-SEC-05 passed (Step 34), record the run ID, and go on to G8. Log this message word for word in audit.md."
+**AI Response**: "Proceeding: three commits (T_idle 10000 with the $comment in CC-STR-05, CC-STR-06, CC-STR-10), one class 1 README rule for case authors, then push, Step 34, and G8."
+**Context**: Construction, typescript-harness, Code Generation Part 2, G7 Step 33b: user approval
+
+---
+
+## Code Generation: typescript-harness, G7 complete (Steps 33b to 35)
+**Timestamp**: 2026-11-19T16:10:49Z
+**User Input**: "(none: G7 continues under the user's approval above)"
+**AI Response**: "Class 3, one commit each, CC-STR-04's $comment: 2c70ed4 (CC-STR-05), fb6233f (CC-STR-06), ec74d30 (CC-STR-10), T_idle 1500 to 10000; each passes under the TypeScript driver; self-test after each pass (145-146 s), every fault set as declared, faults.json unchanged. Class 1: 3549c29, conformance/README.md 'Rules for case authors': a case's T_idle exceeds the longest silence on any stream it keeps open, including the wait for a renewal or a replacement, unless the case tests the idle timeout itself (as CC-STR-02 does). Step 34: push run 44562488457 (head 3549c29) green on every job; conformance-typescript on Node 24.22.3 with @opentelemetry/api 1.9.0, Node 24.22.3 with 1.10.0, and Node 26.13.0 with 1.10.0: each 95 passed, 0 failed, 0 not run, so CC-SEC-05 passed, not skipped (101-102 s); the 1.9.0 entry logged one copy of the API at 1.9.0 seen by the package and both OpenTelemetry SDK packages. Step 35: unit ran 278 tests, the package's included; checks found the package. OBL-04 is discharged at the code PR's run. Next: G8."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G7 complete
+
+---
+
+## Code Generation: typescript-harness, G8 (the example, the end-to-end scenario, e2e-typescript, package-typescript, the README)
+**Timestamp**: 2026-11-19T16:29:32Z
+**User Input**: "(none: G8 continues the approved plan)"
+**AI Response**: "Step 36: typescript/examples/two-agents/ (agent-a.ts publishes { hello: B } and prints the traceparent; agent-b.ts prints each Delivery's envelope and trace id; each with one marked configuration block, config and run(config) exported, run directly through import.meta.main; README: e2e:core-up and e2e:setup, start B first, the unstable span shape with DEC-U1-01's deviation, fileSecret's settings and Windows). Step 37: typescript/e2e/scenario.test.ts, its own Vitest configuration against dist/, excluded from pnpm test, run by pnpm e2e:scenario-typescript. Interpretation recorded in the plan: under the 14-minute skew each client warns once at bootstrap, so the test asserts two warnings (B's lineage, then A's) and none at the renewal. Step 38 (class 1 to U2's test, its own commit): e2e becomes e2e-typescript, the package built, the scenario after prove-stack; the test's job key changed and a new test added, no assertion weakened. Step 39: tools/package-typescript/check.ts, pack, the guard over the tarball, an offline install into a fresh project with the peer API from the lock (nothing fetched), ESM import and CommonJS require() each constructing an AgentClient, the deep import refused, the agent files type-checked and imported; mutation-checked. Step 40: the package README (NFR-U3-27). Step 41, locally: no soorma-local project or volume; core-up 36 s; setup and prove-stack pass; the scenario 1 passed in 60 s; the example agents as written delivered A's event to B in one trace; core-down --logs exit 0, the log search clean, everything removed. Gate green: 282 tests, checks, the package check, build, self-test (148 s). Commits 8e6bf68, 30ffa4b, 848a030; CI run 44565965835 green on every job: e2e-typescript 154 s with the scenario 1 passed (59.6 s), package-typescript pass, conformance-typescript green on all three entries. Next: G9 (the code summary, the matrices, the code PR)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G8 complete
+
+---
+
+## Code Generation: typescript-harness, G7 and G8 accepted; G9 asked for
+**Timestamp**: 2026-11-19T17:59:50Z
+**User Input**: "G7 and G8 accepted. The scenario's two warnings (one per client, none on B's renewal) are correct under REN-07's once-per-lineage rule.
+
+Go on to G9: the code summary (with every F42 change listed with its class, diff and the message that covered it, and the note that U1's self-test ran its timing cases with production values until 0a91e6a), the coverage tables, and the code PR, dev → main. Wait for every check, including DCO, dependency review, all three conformance-typescript entries, e2e-typescript and package-typescript. Discharge OBL-04 with the PR's own run ID, record the state with run IDs, and stop with the PR number. Don't record it merged until I tell you and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Proceeding with G9: the code summary, the coverage tables, then the code PR dev to main; waiting for every check; OBL-04 discharged with the PR's run ID; stopping with the PR number."
+**Context**: Construction, typescript-harness, Code Generation Part 2: G7 and G8 accepted; G9
+
+---
+
+## Code Generation: typescript-harness, G9 (the code summary, the matrices, the code PR)
+**Timestamp**: 2026-11-19T18:07:39Z
+**User Input**: "(none: G9 continues under the user's message above)"
+**AI Response**: "Step 42: code-summary.md (the files; every F42 change with its class, diff and covering message; U1's self-test ran its timing cases with production values until 0a91e6a; CDI-05; budgets; groups and runs; technology decisions; the local run). Step 43: the L1 matrix (25 rows Implemented and Verified) and the invariant matrix (9 Implemented and Verified), with the I9 review (no tenant or local-stack value in typescript/src/; the generated types' only hits are the contract's description text) and the I10 statement. Committed efe1597, pushed (push run 44583674081 green, e2e-typescript skipped: aidlc-docs/ only). Step 44: the code PR soorma-ai/soorma-sdk#19, dev to main, opened 2026-11-19T18:03:27Z (the branch from the user's standing instruction). Every check green at head efe1597: CI run 44583734202 (pull request): unit, repository checks, conformance self-test, changes, conformance-typescript on Node 24.22.3 / API 1.9.0 (95 passed, 0 failed, 0 not run), Node 24.22.3 / API 1.10.0 (95, 0, 0) and Node 26.13.0 / API 1.10.0 (95, 0, 0), e2e-typescript (172 s, the scenario 1 passed), package-typescript, dependency review; DCO run 44583734359. OBL-04 discharged for U3 on run 44583734202: CC-SEC-05 passed, not skipped, on every entry; open for U4. AD-13: 172 s, under 8 minutes. State CHECKS_GREEN recorded; the PR is not merged and is not recorded as merged."
+**Context**: Construction, typescript-harness, Code Generation Part 2, G9; code PR CHECKS_GREEN; stopped for the user
+
+---

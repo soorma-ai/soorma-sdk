@@ -8,7 +8,7 @@ import { request } from 'node:https';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { makeCerts, makeRunDir, removeRunDir, type Certs } from '../../runner/src/rundir.ts';
 import type { StubControl } from '../../runner/src/types.ts';
-import { deepPayload } from './delivery.ts';
+import { atSend, deepPayload } from './delivery.ts';
 import { startStub } from './stub.ts';
 
 let dir = '';
@@ -201,5 +201,21 @@ describe('the stub', () => {
     expect(
       (await send(stub.urls.UNTRUSTED, '/x', '{}', readFileSync(certs.untrustedCaFile))).status,
     ).toBe(204);
+  });
+});
+
+// Added at U3 (CC-REN-06): a time relative to the moment the stub sends.
+describe('$expiresIn', () => {
+  it('becomes the ISO time that far after the send, and leaves everything else as it was', () => {
+    const now = Date.parse('2026-11-19T07:00:00.000Z');
+    expect(
+      atSend({ credential: 'c', expiresAt: { $expiresIn: 1500 }, list: [{ $expiresIn: 0 }] }, now),
+    ).toEqual({
+      credential: 'c',
+      expiresAt: '2026-11-19T07:00:01.500Z',
+      list: ['2026-11-19T07:00:00.000Z'],
+    });
+    const plain = { a: 1, b: { c: [true, null, 'x'] }, d: { $expiresIn: 'not a number' } };
+    expect(atSend(plain, now)).toEqual(plain);
   });
 });

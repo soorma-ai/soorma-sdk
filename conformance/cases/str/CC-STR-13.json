@@ -1,0 +1,631 @@
+{
+  "id": "CC-STR-13",
+  "title": "A replacement with a full buffer: the old stream's remaining Deliveries, its superseded end, then the new stream's",
+  "statements": ["STR-05"],
+  "timeoutMs": 20000,
+  "values": {
+    "H_renew": 1000,
+    "R_max": 3,
+    "W_max": 4000,
+    "B_init": 100,
+    "B_factor": 2,
+    "B_cap": 400,
+    "L_ends": 6,
+    "W_super": 1000,
+    "N_buf": 3,
+    "T_idle": 1500,
+    "T_req": 2000,
+    "R_min": 1
+  },
+  "script": {
+    "exchanges": [
+      {
+        "label": "boot",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+3000}"
+          }
+        }
+      },
+      {
+        "label": "renew",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials/current/renewal"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.two",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      },
+      {
+        "label": "s1",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "d1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d1"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d2",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d2"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d3",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d3"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d4",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d4"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "d5",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d5"
+                  }
+                }
+              }
+            },
+            {
+              "waitFor": {
+                "match": {
+                  "path": "/subscriptions"
+                },
+                "count": 2,
+                "timeoutMs": 8000
+              }
+            },
+            {
+              "delivery": {
+                "label": "d6",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "d6"
+                  }
+                }
+              }
+            },
+            {
+              "end": "superseded"
+            }
+          ]
+        }
+      },
+      {
+        "label": "s2",
+        "match": {
+          "listener": "S4",
+          "method": "POST",
+          "path": "/subscriptions"
+        },
+        "respond": {
+          "stream": [
+            {
+              "delivery": {
+                "label": "n1",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "n1"
+                  }
+                }
+              }
+            },
+            {
+              "delivery": {
+                "label": "n2",
+                "envelope": {
+                  "fixture": "envelope/valid/sample.json"
+                },
+                "seal": "seal-1",
+                "payload": {
+                  "json": {
+                    "k": "n2"
+                  }
+                }
+              }
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "heartbeat": true
+            },
+            {
+              "silence": 250
+            },
+            {
+              "hold": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "subscribe",
+      "label": "sub"
+    },
+    {
+      "op": "waitForRequest",
+      "args": {
+        "match": {
+          "path": "/subscriptions"
+        },
+        "count": 2,
+        "timeoutMs": 6000
+      }
+    },
+    {
+      "op": "wait",
+      "args": {
+        "ms": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "timeoutMs": 3000
+      }
+    }
+  ],
+  "expect": [
+    {
+      "kind": "item-sequence",
+      "items": [
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d1",
+          "sealOf": "d1"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d2",
+          "sealOf": "d2"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d3",
+          "sealOf": "d3"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d4",
+          "sealOf": "d4"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d5",
+          "sealOf": "d5"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "d6",
+          "sealOf": "d6"
+        },
+        {
+          "kind": "streamEnded",
+          "code": "superseded",
+          "terminal": false
+        },
+        {
+          "kind": "streamStarted"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "n1",
+          "sealOf": "n1"
+        },
+        {
+          "kind": "delivery",
+          "envelopeTextOf": "n2",
+          "sealOf": "n2"
+        }
+      ]
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/subscriptions"
+      },
+      "count": 2
+    }
+  ],
+  "$comment": "N_buf 3 is full before the renewal opens the new stream. The 3000 ms wait is longer than W_super (1000 ms), but the old stream is paused, so W_super does not count, and the new stream is paused until the old one ends. No stream ended with code null."
+}

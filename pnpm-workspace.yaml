@@ -3,11 +3,13 @@
 # pnpm settings for the soorma-sdk workspace (U1 NFR-U1-24 to -26), mirroring
 # soorma-core's. The language-neutral tooling (the conformance machinery and the
 # repository checks) is private and never published, and so is the end-to-end
-# stack (e2e/, U2); typescript/ joins at U3; python/ stays outside.
+# stack (e2e/, U2). typescript/ (U3) holds the published package @soorma/sdk;
+# python/ stays outside.
 packages:
   - 'conformance/*'
   - 'e2e'
   - 'tools'
+  - 'typescript'
 
 # pnpm's own refusal of a mismatched pnpm version is off: with it on, pnpm 12
 # writes pnpm-lock.yaml as two YAML documents, and GitHub's dependency graph

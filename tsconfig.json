@@ -14,8 +14,17 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["node"],
+    // The examples import @soorma/sdk as a tenant would; in the workspace that
+    // is the source (package-typescript type-checks them against the tarball).
+    "paths": { "@soorma/sdk": ["./typescript/src/index.ts"] },
     "noEmit": true
   },
-  "include": ["conformance/**/*.ts", "e2e/**/*.ts", "tools/**/*.ts", "*.config.ts"],
-  "exclude": ["node_modules", "**/node_modules", "contract", "aidlc-docs"]
+  "include": [
+    "conformance/**/*.ts",
+    "e2e/**/*.ts",
+    "tools/**/*.ts",
+    "typescript/**/*.ts",
+    "*.config.ts"
+  ],
+  "exclude": ["node_modules", "**/node_modules", "contract", "aidlc-docs", "typescript/dist"]
 }

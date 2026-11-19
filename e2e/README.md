@@ -47,4 +47,5 @@ Everything that needs no stack runs in the `unit` job (`pnpm test`): the log sea
 recorded log text, `core-up` and `core-down` with fake `docker`, `git`, `pnpm` and Node
 (`test-fixtures/fake-command.mjs`), `setup` and `prove-stack` against a fake S1, S2 and S3 that
 checks every request and response against the vendored contract (`test-fixtures/fake-stack.ts`),
-and the CI jobs' own scripts. The `e2e` job runs the four commands on a real stack.
+and the CI jobs' own scripts. The `e2e-typescript` job runs the four commands on a real stack, with
+the TypeScript scenario (`typescript/e2e/`) after `prove-stack`.

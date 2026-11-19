@@ -21,13 +21,16 @@
     "e2e:core-up": "node e2e/src/cli/core-up.ts",
     "e2e:setup": "node e2e/src/cli/setup.ts",
     "e2e:prove-stack": "node e2e/src/cli/prove-stack.ts",
-    "e2e:core-down": "node e2e/src/cli/core-down.ts"
+    "e2e:core-down": "node e2e/src/cli/core-down.ts",
+    "e2e:scenario-typescript": "vitest run --config typescript/e2e/vitest.config.ts",
+    "package:typescript": "node tools/package-typescript/check.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "24.19.2",
     "ajv": "8.20.0",
     "eslint": "10.14.0",
+    "openapi-typescript": "7.13.0",
     "prettier": "3.10.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.2",

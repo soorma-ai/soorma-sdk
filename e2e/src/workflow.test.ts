@@ -43,7 +43,7 @@ const CI = parse(
   readFileSync(join(REPOSITORY_ROOT, '.github', 'workflows', 'ci.yml'), 'utf8'),
 ) as Workflow;
 const changes = CI.jobs.changes as Job;
-const e2e = CI.jobs.e2e as Job;
+const e2e = CI.jobs['e2e-typescript'] as Job;
 const step = (job: Job, name: string): Step => {
   const s = job.steps.find((x) => x.name?.startsWith(name));
   if (!s) throw new Error(`no step ${name}`);
@@ -92,6 +92,20 @@ describe('TC-ES-009: triggers and the jobs’ settings', () => {
     expect(at('setup')).toBeLessThan(at('prove-stack'));
     expect(at('prove-stack')).toBeLessThan(at('core-down'));
     expect(at('core-down')).toBe(names.length - 1);
+  });
+});
+
+describe('JOB-06: e2e-typescript runs the TypeScript scenario (U3; TH-E2E-05)', () => {
+  it('builds the package before core-up, and runs the scenario after prove-stack and before core-down', () => {
+    expect(step(e2e, 'Build @soorma/sdk').run).toBe('pnpm --filter @soorma/sdk build');
+    expect(step(e2e, 'The TypeScript scenario').run).toBe('pnpm e2e:scenario-typescript');
+    expect(step(e2e, 'The TypeScript scenario').if).toBeUndefined();
+    const names = e2e.steps.map((s) => s.name ?? '');
+    const at = (n: string) => names.findIndex((x) => x.startsWith(n));
+    expect(at('Build @soorma/sdk')).toBeLessThan(at('core-up'));
+    expect(at('prove-stack')).toBeLessThan(at('The TypeScript scenario'));
+    expect(at('The TypeScript scenario')).toBeLessThan(at('core-down'));
+    expect(CI.jobs.e2e).toBeUndefined();
   });
 });
 

@@ -31,6 +31,9 @@ rl.on('line', (line) => {
     setTimeout(() => reply({ id, ok: true, result: {} }), args.hangMs);
   } else if (op === 'newInstanceId') {
     reply({ id, ok: true, result: { value: String(process.pid) } });
+  } else if (op === 'create') {
+    // Echoes what create received, so the runner's tests can see it.
+    reply({ id, ok: true, result: { hasValues: 'values' in args, values: args.values ?? null } });
   } else if (op === 'credential') {
     process.stderr.write(`log line with ${String(args.leak ?? '')}\n`);
     reply({ id, ok: true, result: { agent: 'a' } });

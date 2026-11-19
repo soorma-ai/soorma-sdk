@@ -13,6 +13,9 @@ export type Fault =
   'retain-secret' | 'reorder-forwarded-envelope' | 'retry-publish' | 'skip-boundary' | undefined;
 export const RETAINED: string[] = [];
 
+/** The SDK's warnings since the driver started (REN-07's `clock-skew`), for `warnings`. */
+export const WARNINGS: { code: string }[] = [];
+
 export interface Values {
   H_renew: number;
   R_max: number;
@@ -25,6 +28,7 @@ export interface Values {
   N_buf: number;
   T_idle: number;
   T_req: number;
+  R_min: number;
 }
 
 export class DriverError extends Error {
@@ -85,6 +89,8 @@ export class Client {
   private credential: Credential | undefined;
   private state: 'created' | 'started' | 'revoked' | 'closed' = 'created';
   private renewTimer: NodeJS.Timeout | undefined;
+  /** REN-07: whether this lineage's clock-skew warning has fired. A bootstrap starts a lineage. */
+  private skewWarned = false;
   private listeners: ((c: Credential, lineageChanged: boolean) => void)[] = [];
   providerCalls = 0;
   subscription: Subscription | undefined;
@@ -128,6 +134,12 @@ export class Client {
   }
 
   private async bootstrap(): Promise<Credential> {
+    const credential = await this.bootstrapAttempts();
+    this.skewWarned = false; // a new lineage
+    return credential;
+  }
+
+  private async bootstrapAttempts(): Promise<Credential> {
     return this.withRetry(async () => {
       this.providerCalls++;
       const secret = await this.opts.provider();
@@ -188,8 +200,15 @@ export class Client {
     this.credential = c;
     for (const l of this.listeners) l(c, lineageChanged);
     clearTimeout(this.renewTimer);
+    // REN-01: the target, by the wall clock; REN-07: never sooner than R_min
+    // after this credential arrived (the timer itself is monotonic), and one
+    // clock-skew warning per lineage when the target has already passed.
     const at = c.expiresAt - this.values.H_renew - Date.now();
-    this.renewTimer = setTimeout(() => void this.renew(), Math.max(0, at));
+    if (at <= 0 && !this.skewWarned) {
+      this.skewWarned = true;
+      WARNINGS.push({ code: 'clock-skew' });
+    }
+    this.renewTimer = setTimeout(() => void this.renew(), Math.max(this.values.R_min, at));
   }
 
   private async renew(): Promise<void> {

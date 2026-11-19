@@ -63,15 +63,20 @@ cooldown, into `dev`.
 ### The end-to-end stack
 
 The end-to-end tests run against a fresh soorma-core at `contract-v0.1.0`, brought up from
-soorma-core's own code and taken down again ([`e2e/`](e2e/README.md)). The same four commands run
-in CI's `e2e` job and on your machine:
+soorma-core's own code and taken down again ([`e2e/`](e2e/README.md)). The same commands run in
+CI's `e2e-typescript` job and on your machine:
 
 ```sh
 pnpm e2e:core-up --core-node "$(nvm which 26.13.0)"   # clone soorma-core at the tag, build, start
 pnpm e2e:setup --agents agent-a,agent-b              # register the agents; write their secret files
 pnpm e2e:prove-stack                                 # one bootstrap per agent: the stack works
+pnpm --filter @soorma/sdk build                      # the TypeScript scenario uses the built package
+pnpm e2e:scenario-typescript                         # two agents, one real renewal, one trace (about 1 minute)
 pnpm e2e:core-down                                   # search soorma-core's logs, then take it all down
 ```
+
+The example agents the scenario stands for are in
+[`typescript/examples/two-agents/`](typescript/examples/two-agents/README.md).
 
 **Prerequisites**: Linux or macOS (Windows is not supported in M1); Docker Engine 26 or later and
 Docker Compose 2.26.0 or later (soorma-core's floor); `git`; and **Node.js 26.13.0** for

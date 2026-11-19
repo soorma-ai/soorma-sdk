@@ -2,6 +2,7 @@
   "id": "CC-STR-04",
   "title": "Replacement across renewal: ended (old), then started (new)",
   "statements": ["STR-04", "STR-05", "STR-08"],
+  "$comment": "T_idle is 10000 ms, above this case's longest silence (the old stream waits about 2 s for the replacement subscribe): the stub cannot script heartbeats during a wait, so T_idle must exceed the case's longest silence, or the SDK rightly ends the stream as idle (STR-02).",
   "fixtures": ["event-ingest/StreamEnd/valid/superseded.json"],
   "timeoutMs": 15000,
   "values": {
@@ -14,8 +15,9 @@
     "L_ends": 6,
     "W_super": 1000,
     "N_buf": 8,
-    "T_idle": 1500,
-    "T_req": 2000
+    "T_idle": 10000,
+    "T_req": 2000,
+    "R_min": 1
   },
   "script": {
     "exchanges": [

@@ -32,7 +32,8 @@
           "W_super",
           "N_buf",
           "T_idle",
-          "T_req"
+          "T_req",
+          "R_min"
         ]
       },
       "additionalProperties": { "type": "number", "minimum": 0 }
@@ -136,6 +137,7 @@
             "fileSecret",
             "newInstanceId",
             "inspect",
+            "warnings",
             "spans",
             "names",
             "surface",

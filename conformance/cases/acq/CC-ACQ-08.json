@@ -1,0 +1,108 @@
+{
+  "id": "CC-ACQ-08",
+  "title": "A retried bootstrap calls the provider once per attempt and keeps no secret",
+  "statements": ["SEC-01"],
+  "timeoutMs": 10000,
+  "script": {
+    "exchanges": [
+      {
+        "label": "b1",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 503,
+          "json": {
+            "type": "urn:soorma:problem:unavailable",
+            "title": "unavailable",
+            "status": 503,
+            "code": "unavailable"
+          },
+          "headers": {
+            "Retry-After": "1"
+          }
+        }
+      },
+      {
+        "label": "b2",
+        "match": {
+          "listener": "S3",
+          "method": "POST",
+          "path": "/agent-credentials"
+        },
+        "respond": {
+          "status": 200,
+          "json": {
+            "credential": "soorma_ac_token.one",
+            "agent": "agent-a",
+            "environment": {
+              "organization": "o1",
+              "project": "p1",
+              "environment": "e1"
+            },
+            "instance": "instance-1",
+            "expiresAt": "${TIME:+600000}"
+          }
+        }
+      }
+    ]
+  },
+  "commands": [
+    {
+      "op": "create",
+      "args": {
+        "dataGatewayUrl": "${S3}",
+        "eventIngestUrl": "${S4}",
+        "caFile": "${CA}",
+        "agent": "agent-a",
+        "instance": "instance-1",
+        "secret": {
+          "kind": "test"
+        }
+      },
+      "label": "create"
+    },
+    {
+      "op": "start",
+      "label": "start"
+    },
+    {
+      "op": "inspect",
+      "args": {
+        "checks": ["providerCalls"]
+      },
+      "label": "insp"
+    }
+  ],
+  "expect": [
+    {
+      "kind": "observation",
+      "command": "start",
+      "ok": true
+    },
+    {
+      "kind": "request-count",
+      "match": {
+        "path": "/agent-credentials"
+      },
+      "count": 2
+    },
+    {
+      "kind": "request-timing",
+      "requests": {
+        "path": "/agent-credentials"
+      },
+      "minGapMs": 1000
+    },
+    {
+      "kind": "observation",
+      "command": "insp",
+      "result": {
+        "/providerCalls": 2
+      }
+    }
+  ],
+  "$comment": "Two attempts, two provider calls (SEC-01 as reworded at U3). No heap check here: the protocol runs commands one at a time and start returns only after the retry, so nothing can run during the Retry-After wait; after start, the check is CC-SEC-01's, and repeating it here would add a knock-on to the retain-secret fault's declared set."
+}
