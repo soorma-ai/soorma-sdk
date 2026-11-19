@@ -164,10 +164,23 @@ export class AgentClient {
     throw problem;
   }
 
-  /** One active subscription per client (SUB-04). Filled in G5. */
+  /**
+   * Subscribes (SUB-01): the stream opens as the Subscription is created, and
+   * its items are read as tenant code pulls them (SUB-06). One active
+   * subscription per client; another is allowed once it is closed or finished
+   * (SUB-04).
+   */
   subscribe(): Subscription {
     this.#assertStarted();
-    throw new ClientStateError('not-implemented');
+    if (this.#subscription?.active) throw new ClientStateError('subscribed');
+    this.#subscription = new Subscription({
+      s4: this.#options.eventIngestUrl,
+      keeper: this.#keeper,
+      limits: this.#limits,
+      ca: () => this.#ca,
+      forward: (payload, inbound, receivedTrace) => this.forward(payload, inbound, receivedTrace),
+    });
+    return this.#subscription;
   }
 
   #assertStarted(): void {

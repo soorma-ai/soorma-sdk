@@ -70,7 +70,7 @@ export interface RequestSpec {
   signal?: AbortSignal;
 }
 
-function flatten(h: IncomingMessage['headers']): Record<string, string> {
+export function flatten(h: IncomingMessage['headers']): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(h))
     out[k] = Array.isArray(v) ? v.join(', ') : String(v ?? '');
@@ -151,7 +151,7 @@ export function post(spec: RequestSpec): Promise<Reply> {
   }) as Promise<Reply>;
 }
 
-/** Opens an event stream: resolves with the response once its head arrives (G5). */
+/** Opens an event stream: resolves with the response once its head arrives (P-04). */
 export function openStream(spec: RequestSpec): Promise<IncomingMessage> {
   return send(spec, (res, settle) => settle(res)) as Promise<IncomingMessage>;
 }
@@ -187,5 +187,31 @@ export function problemFrom(reply: Reply): ProblemError {
     ...(isProblem && typeof p?.detail === 'string' ? { detail: p.detail } : {}),
     ...(retryAfter === undefined ? {} : { retryAfter }),
     ...(isProblem && p !== undefined ? { problem: Object.freeze({ ...p }) } : {}),
+  });
+}
+
+/** A non-200 stream response read whole, as a Reply; `signal` destroys it (PRB-07). */
+export function readReply(res: IncomingMessage, signal?: AbortSignal): Promise<Reply> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    const onAbort = (): void => {
+      res.destroy();
+      reject(signal?.reason);
+    };
+    if (signal?.aborted) return onAbort();
+    signal?.addEventListener('abort', onAbort, { once: true });
+    res.on('data', (c: Buffer) => chunks.push(c));
+    res.on('end', () => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve({
+        status: res.statusCode ?? 0,
+        headers: flatten(res.headers),
+        body: Buffer.concat(chunks).toString('utf8'),
+      });
+    });
+    res.on('error', () => {
+      signal?.removeEventListener('abort', onAbort);
+      reject(new TransportFailure('connection', true));
+    });
   });
 }

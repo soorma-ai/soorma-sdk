@@ -135,3 +135,16 @@ export function recordReceive(receivedTc: unknown): void {
     )
     .end();
 }
+
+/**
+ * A subscribe's draft context (DRF-01, TRC-01): no span, since a subscribe has
+ * none (SPN-02). Tenant code's active trace, when there is one, with a fresh
+ * span id; otherwise random identifiers and flags `00` (TRC-03).
+ */
+export function subscribeTraceContext(): TraceContext {
+  const active = trace.getSpanContext(context.active());
+  if (active && trace.isSpanContextValid(active)) {
+    return { traceparent: `00-${active.traceId}-${hex(8)}-${flags(active.traceFlags)}` };
+  }
+  return { traceparent: `00-${hex(16)}-${hex(8)}-00` };
+}

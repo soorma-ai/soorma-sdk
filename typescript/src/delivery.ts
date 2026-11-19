@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // A received Delivery (C-18; RCV-01 to RCV-08). Its publish forwards its
-// context (FWD-01). Filled in G4 and G5.
+// context (FWD-01).
 import { ClientStateError } from './errors.ts';
 import type { Envelope, JsonValue, PublishAccepted } from './types.ts';
 
@@ -17,7 +17,8 @@ export class Delivery {
   readonly envelope: Envelope;
   readonly envelopeText: string;
   readonly seal: string;
-  readonly payload?: JsonValue;
+  /** Absent when the payload is deeper than D_lang (RCV-06). */
+  declare readonly payload?: JsonValue;
   readonly payloadText: string;
   readonly payloadParsed: boolean;
   readonly #forward: Forwarder | undefined;

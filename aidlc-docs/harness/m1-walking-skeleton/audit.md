@@ -1569,3 +1569,11 @@ Log this message word for word in audit.md, run G1's gate, commit signed off, pu
 **Context**: CONSTRUCTION — U3 typescript-harness, G4, red run fixed
 
 ---
+
+## Code Generation: typescript-harness, G5 (the reader and the subscription)
+**Timestamp**: 2026-11-19T08:08:37Z
+**User Input**: "(none: G5 continues the approved plan)"
+**AI Response**: "G4's fix pushed as 7121dd4; CI run 44482725422 green. G5's steps 26 to 28 done. `reader.ts`: one iterative, validating scan (TH-RD-01 to 05; P-09). `subscription.ts`: the P-04 supervisor (bounded queue, socket paused when full, T_idle and W_super counted only while reading, the replacement held paused until the old stream ends, resubscribe through keeper.token() and so isUsable(), CDI-06). `client.subscribe()` (SUB-04). `Delivery.payload` made a `declare` field so it is absent beyond D_lang (RCV-06). Tests: `g5.test.ts` (35) and `g5-exit.test.ts` (TC-TH-071 against U1's stub; mutation-checked). No change to an earlier unit's tests. Gate: typecheck, lint, format, 270 tests, checks, build, self-test pass (132 s; fault sets unchanged)."
+**Context**: Construction, typescript-harness, Code Generation Part 2, commit group G5
+
+---
