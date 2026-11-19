@@ -94,8 +94,27 @@ clean.
 
 ## Code PR
 
-Recorded in `aidlc-state.md` (*Code PR — e2e-stack*) when its checks are green, with OBL-02's
-measurement.
+soorma-ai/soorma-sdk#17 (`dev` → `main`), opened 2026-11-19T03:59:38Z. Every check was green at
+head `8892fcc` on 2026-11-19T04:01:48Z:
+- CI run 44455207562 (pull request): unit, repository checks, conformance self-test, `changes`,
+  `e2e` and dependency review;
+- DCO run 44455207572.
+
+The push run for `8892fcc` (44454972332) **skipped `e2e`**, because the push touched
+`aidlc-docs/` only: TC-ES-010's real case.
+
+**OBL-02 (AD-13's CI time), from run 44455207562**: the `e2e` job took **1 min 41 s**, with nothing
+cached.
+
+| Step | Time |
+| --- | --- |
+| Set-up steps | about 25 s |
+| `core-up` | 69 s |
+| `setup` | 1 s |
+| `prove-stack` | under 1 s |
+| `core-down` | 2 s |
+
+That is under 8 minutes, so NFR Requirements is not reopened.
 
 ## Changes to Earlier Units' Tests
 

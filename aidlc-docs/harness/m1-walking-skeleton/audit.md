@@ -1191,3 +1191,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: CONSTRUCTION — U2 e2e-stack, Code Generation Part 2, G6
 
 ---
+
+## U2 Code Generation — code PR #17 CHECKS_GREEN
+**Timestamp**: 2026-11-19T04:02:28Z
+**User Input**: (none)
+**AI Response**: "Code PR soorma-ai/soorma-sdk#17 (dev → main) opened 2026-11-19T03:59:38Z (pr-checkpoint §5A; branch per the user's standing instruction). Every check green at head 8892fcc by 2026-11-19T04:01:48Z: CI run 44455207562 (pull request: unit, checks, conformance self-test, changes, e2e 1 min 41 s, dependency review), DCO run 44455207572; push CI 44454972332 green with e2e skipped (changes e2e=false: aidlc-docs/ only, TC-ES-010's real case). OBL-02 discharged: e2e job 1 min 41 s, nothing cached (set-up steps about 25 s, core-up 69 s, setup 1 s, prove-stack under 1 s, core-down 2 s); under 8 minutes, NFR Requirements not reopened. The e2e job's log: setup's refusal checks 401 for both credentials; prove-stack agent-a and agent-b 200 pass; core-down 16 services searched, clean. Recorded CHECKS_GREEN in aidlc-state.md; code summary's Code PR section filled. Stopping for the user's merge; not recorded merged until the user says so and GitHub shows it."
+**Context**: CONSTRUCTION — U2 e2e-stack, Code Generation, code PR CHECKS_GREEN
+
+---
