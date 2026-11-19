@@ -1767,3 +1767,33 @@ Log this message word for word in audit.md, update the artifacts, commit signed 
 **Context**: Construction, U4 python-harness, NFR Requirements Steps 1 to 4
 
 ---
+
+## U4 python-harness — NFR Requirements: answers
+**Timestamp**: 2026-11-19T21:23:35Z
+**User Input**: "Answers for U4's NFR Requirements: Q1 A (D_lang 256), Q4 A, Q5 A, Q6 A, Q7 A, Q8 A, Q9 A. Q2 and Q3: A, with these conditions.
+
+Q2: A, the standard-library client, on condition that its response parser is strict and bounded, since the SDK will be parsing untrusted server responses with its own code:
+- Fail closed on a malformed status line, header line or chunk-size line. No obs-fold, no bare LF unless the contract's server sends it.
+- Limits on the status line's length, each header line's length, the header count, and the non-stream response body (for example 1 MiB).
+- A response carrying both Content-Length and Transfer-Encoding is refused. Chunk extensions are ignored, and trailers are bounded.
+- An SSE line longer than a bound is a delivery error, and the stream continues, consistent with RCV-07.
+- Each failure is a TransportError with a reason, never the bytes.
+Give the parser table-driven tests of malformed input (truncated, oversized, conflicting framing), plus a property or fuzz test that random bytes never hang it or raise anything other than TransportError. If you judge this too much code to own, h11 (pure Python, no dependencies, sans-IO) is acceptable instead. Say which you chose, and why, in tech-stack-decisions.md.
+
+Q3: A. Python installed from python.org's macOS installer can start with no CA certificates until its \"Install Certificates\" script is run, and then every public TLS connection fails. Say so in the package README, and make the TLS failure's message hint at it (reason only, no certificate details).
+
+The envelope-unparsed delivery error for an envelope holding an over-long integer is accepted.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Requirements artifacts, decide whether U4's NFR Design stage runs, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U4-NFR-Q1: A (D_lang 256). U4-NFR-Q2: A, on the user's condition, word for word: \"its response parser is strict and bounded, since the SDK will be parsing untrusted server responses with its own code: Fail closed on a malformed status line, header line or chunk-size line. No obs-fold, no bare LF unless the contract's server sends it. Limits on the status line's length, each header line's length, the header count, and the non-stream response body (for example 1 MiB). A response carrying both Content-Length and Transfer-Encoding is refused. Chunk extensions are ignored, and trailers are bounded. An SSE line longer than a bound is a delivery error, and the stream continues, consistent with RCV-07. Each failure is a TransportError with a reason, never the bytes. Give the parser table-driven tests of malformed input (truncated, oversized, conflicting framing), plus a property or fuzz test that random bytes never hang it or raise anything other than TransportError. If you judge this too much code to own, h11 (pure Python, no dependencies, sans-IO) is acceptable instead. Say which you chose, and why, in tech-stack-decisions.md.\" U4-NFR-Q3: A, on the user's condition, word for word: \"Python installed from python.org's macOS installer can start with no CA certificates until its 'Install Certificates' script is run, and then every public TLS connection fails. Say so in the package README, and make the TLS failure's message hint at it (reason only, no certificate details).\" U4-NFR-Q4: A. U4-NFR-Q5: A. U4-NFR-Q6: A. U4-NFR-Q7: A. U4-NFR-Q8: A. U4-NFR-Q9: A. The envelope-unparsed delivery error (an envelope holding an over-long integer) accepted. No answer ambiguous; generating the artifacts."
+**Context**: Construction, U4 python-harness, NFR Requirements Step 5: answers collected
+
+---
+
+## U4 python-harness — NFR Requirements: artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T21:25:41Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements artifacts generated in construction/python-harness/nfr-requirements/: nfr-requirements.md (NFR-U4-01 to -36: the harness profile; request-path performance; the named values, U3's with D_lang 256; the HTTP response parser under the user's conditions, NFR-U4-07 to -11: CRLF only, no obs-fold, status line 1 KiB, header line 8 KiB, 100 headers, head 64 KiB, non-stream body 1 MiB, chunk-size line 1 KiB, trailers 16 KiB and 32 lines, Content-Length with Transfer-Encoding refused, chunk extensions ignored, SSE lines over 1 MiB a line-too-long delivery error, each failure a TransportError reason never the bytes, sans-IO so it cannot hang, table-driven and seeded fuzz tests; reliability; security, with the TLS failure's Install Certificates hint when the default store loaded no CA; supply chain; the distribution; testing and CI, the checks job gaining Python for the names check; the README, with the macOS installer note; SECURITY-12 per clause; NFR Design runs) and tech-stack-decisions.md (TS-U4-01 to -16; the parser: the SDK's own, chosen over h11 because the contract's HTTP subset is narrow and every condition then holds exactly as written, without a runtime dependency; the jobs). Approval prompt presented: Request Changes or Continue to Next Stage (NFR Design)."
+**Context**: Construction, U4 python-harness, NFR Requirements Steps 6 and 7
+
+---
