@@ -79,6 +79,11 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      # The names check reads the TypeScript driver's names and surface from
+      # the built package's declarations (typescript/dist/index.d.ts).
+      - name: Build the TypeScript package (for the names check)
+        run: pnpm --filter @soorma/sdk build
+
       # The remote half of the drift check reads soorma-core with git only:
       # no token, no REST API. It never runs with --offline here.
       - name: Repository checks

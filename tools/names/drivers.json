@@ -1,1 +1,6 @@
-[]
+[
+  {
+    "language": "TypeScript",
+    "command": ["node", "--expose-gc", "typescript/conformance-driver/driver.ts"]
+  }
+]
