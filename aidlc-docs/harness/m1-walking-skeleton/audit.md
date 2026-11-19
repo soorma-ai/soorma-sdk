@@ -1545,3 +1545,11 @@ Log this message word for word in audit.md, run G1's gate, commit signed off, pu
 **Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G2
 
 ---
+
+## U3 Code Generation — G3 gate green
+**Timestamp**: 2026-11-19T07:34:07Z
+**User Input**: (none)
+**AI Response**: "G2 pushed as eb57cf0, CI run 44479337399 green. G3 (Steps 16 to 21): secrets.ts (fileSecret: O_RDONLY|O_NONBLOCK, the opened handle checked in the reference driver's order, one trailing line ending removed, refused on Windows without opening, unreadable on an open failure, no contents in any error); transport.ts (node:https, agent false, rejectUnauthorized true; the trust store system plus bundled plus the CA file, TransportError ca-file on a missing, unreadable or non-PEM file; T_req through clock.ts; a failure records whether it was sent; Problems parsed with every member kept, a non-Problem body kept out; Retry-After as delta-seconds or HTTP-date); retry.ts (the one policy: 503 and connection failures retried, a renewal only while isUsable(); never TLS, 429, other 4xx, 500; Retry-After first, else backoff; R_max and W_max; aborted by the signal); keeper.ts (bootstrap with one provider call per attempt, the secret only an argument and the request body; the credential in memory only; REN-01 with REN-07's floor and one SOORMA_CLOCK_SKEW warning per lineage; isUsable() the one validity check (CDI-06); REN-03 a new lineage at once; REN-04 credential_expired bootstraps; REN-05 and GAP-CAC-001 credential_refused terminal, also on a retried renewal; REN-06 the next operation bootstraps when not usable). Tests (26): fileSecret on real files (a FIFO not waited on, a link chain, each refusal), the trust store, Problems, the retry table, CDI-06's source check and a test that it catches a forbidden comparison; the keeper with post mocked and fake timers (the body, the provider per attempt, the floor and the warning, the expiry left to S3 after it, CDI-06's 503 renewal retry on a skewed lineage, REN-03, REN-05, REN-06). Gate fixes before commit: a test type under exactOptionalPropertyTypes; two no-useless-assignment lint errors (the secret's path restructured). Gate green on Node 24.22.3: 219 tests; self-test pass (132 s); the package builds."
+**Context**: CONSTRUCTION — U3 typescript-harness, Code Generation Part 2, G3
+
+---
