@@ -222,13 +222,16 @@ jobs:
           fi
           echo "e2e=$e2e" | tee -a "$GITHUB_OUTPUT"
 
-  # core-up, setup, prove-stack, then core-down whatever happened. core-down
+  # e2e-typescript (JOB-06; NFR-U3-24): U2's end-to-end job with the TypeScript
+  # scenario after prove-stack (typescript/e2e/; the built package, both agents,
+  # one real renewal, the decoy span). core-up, setup, prove-stack, the
+  # scenario, then core-down whatever happened. core-down
   # always searches soorma-core's logs for credentials and secrets, so a leak
   # fails a green job too; it prints the logs only when the job failed or was
   # cancelled (a job stopped by its timeout is cancelled). No cache, no
   # artifact, no secret: .e2e/ never leaves the runner.
-  e2e:
-    name: End-to-end stack (soorma-core at the contract tag)
+  e2e-typescript:
+    name: End-to-end, TypeScript (soorma-core at the contract tag)
     needs: changes
     if: needs.changes.outputs.e2e == 'true'
     runs-on: ubuntu-24.04
@@ -259,6 +262,9 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      - name: Build @soorma/sdk (the scenario uses the built package)
+        run: pnpm --filter @soorma/sdk build
+
       - name: core-up
         env:
           CORE_NODE: ${{ steps.core-node.outputs.path }}
@@ -269,6 +275,9 @@ jobs:
 
       - name: prove-stack
         run: pnpm e2e:prove-stack
+
+      - name: The TypeScript scenario (two agents, one real renewal, one trace)
+        run: pnpm e2e:scenario-typescript
 
       - name: core-down (searches the logs every run; prints them if the job failed or was cancelled)
         if: always()
