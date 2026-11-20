@@ -118,7 +118,7 @@ SDK never changes the process-global digit limit. Anything malformed, including 
 ## 6. Subscribing and Stream Supervision (SUB, STR; P-04 as U3's)
 
 As U3's §6 and its NFR Design P-04, in `asyncio`:
-- `subscribe()` raises `ClientStateError` (`subscribed`) while one is active (SUB-04), else returns a `Subscription` at once; the first `__anext__` opens the stream (`POST {S4}/subscriptions` with `{draft}`); a failure before any stream opens is raised from `__anext__` (SUB-05).
+- `subscribe()` raises `ClientStateError` (`subscribed`) while one is active (SUB-04), else returns a `Subscription` at once, **having opened the stream** (`POST {S4}/subscriptions` with `{draft}`), as SUB-01 says, as U3 does, and as CC-STR-13 needs (it waits for the request before its first pull); a failure before any stream opens is raised from `__anext__` (SUB-05). *(Corrected at Code Generation: this line said the first `__anext__` opens the stream; see audit.md, "Code Generation Part 2: G7 (Steps 26 to 28)", 2026-11-20T03:18:11Z.)*
 - The stream is read **only as items are pulled**, through a queue of at most `N_buf` items; when it is full the socket's reading is paused (`transport.pause_reading()`), so the platform's buffer fills (SUB-06).
 - **`T_idle` and `W_super` count only while the stream is being read** (STR-02, STR-05): pausing stops them, resuming restarts `T_idle`.
 - **The replacement stream is held paused from its opening until the old stream ends** or `W_super` expires (STR-05); a lineage change forces the switch.

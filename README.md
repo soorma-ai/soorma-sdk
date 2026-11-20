@@ -39,18 +39,25 @@ does as a courtesy the platform independently re-checks.
 
 ## Working on it
 
-The toolchain is pinned: **Node.js 24.22.3** (`.node-version`) and **pnpm 12.18.0**
-(`packageManager`); install pnpm without Corepack.
+The toolchain is pinned: **Node.js 24.22.3** (`.node-version`), **pnpm 12.18.0**
+(`packageManager`; install pnpm without Corepack), and **[`uv`](https://docs.astral.sh/uv/)
+0.13.8** for the Python package (the repository checks run its conformance driver too).
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm typecheck && pnpm lint && pnpm format:check
 pnpm test                    # unit tests (Vitest)
+pnpm --filter @soorma/sdk build   # first: the names check and the TypeScript driver load the built package
 pnpm checks                  # repository checks; the drift check reads soorma-core by git
 pnpm checks --offline        # locally only: the drift check's local half; refused in CI
 pnpm conformance:self-test   # the reference driver, then the four negative controls
+pnpm conformance run --driver "node --expose-gc typescript/conformance-driver/driver.ts" --local-skip CC-SEC-05
 pnpm audit --audit-level moderate && pnpm check:audit-exceptions
 ```
+
+CC-SEC-05 needs a second local user to own a file: CI creates one and passes
+`--foreign-user` instead. Locally, `--local-skip CC-SEC-05` runs every other case and says that
+one did not run ([`conformance/README.md`](conformance/README.md#running)).
 
 The Python package is its own [`uv`](https://docs.astral.sh/uv/) project in `python/` (uv
 0.13.8, Python 3.11 and 3.15):
@@ -60,13 +67,15 @@ cd python && uv sync --locked
 uv run --locked ruff check && uv run --locked ruff format --check
 uv run --locked mypy && uv run --locked pytest -q
 scripts/audit.sh             # pip-audit over every resolution in uv.lock
-cd .. && pnpm conformance run --driver "python/.venv/bin/python python/conformance_driver/driver.py"
+cd .. && pnpm conformance run --driver "python/.venv/bin/python python/conformance_driver/driver.py" --local-skip CC-SEC-05
 ```
 
 The conformance suite runs on Linux and macOS (it needs the `openssl` CLI); Windows is not
 supported in M1. CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs all of these on
 pull requests and pushes to `dev`, with every action pinned by commit SHA, `ubuntu-24.04`, and
-read-only permissions.
+read-only permissions. The whole build and test procedure, with every run of M1's last pass
+recorded, is in
+[`aidlc-docs/harness/m1-walking-skeleton/construction/build-and-test/`](aidlc-docs/harness/m1-walking-skeleton/construction/build-and-test/build-and-test-summary.md).
 
 **Sign-off and Dependabot.** Every commit carries a `Signed-off-by` matching its author
 ([`dco.yml`](.github/workflows/dco.yml)). The one exemption is a commit GitHub's API reports as

@@ -54,6 +54,28 @@ If you are unsure whether something qualifies, ask in the pull request rather
 than omitting it. A disclosed dependency is a conversation; an undisclosed one
 is a defect.
 
+### For maintainers: trusting the DCO check on a fork pull request
+
+The DCO check (`Check sign-off`) runs on `pull_request`, so it runs the pull
+request's own copy of `.github/workflows/dco.yml` and `tools/dco/`. **A pull
+request can change either so that its own check passes.** This is an accepted
+risk (OBL-03 in `aidlc-docs/harness/m1-walking-skeleton/aidlc-state.md`): the
+alternative, `pull_request_target`, always runs the default branch's workflow,
+and GitHub blocks it by default in public repositories.
+
+Before trusting a fork pull request's DCO result:
+
+1. Check whether it touches `.github/` or `tools/dco/`:
+   `gh pr diff <number> --name-only | grep -E '^(\.github/|tools/dco/)'`
+2. If it does, do not rely on its `Check sign-off`. Read the change, and check
+   every commit's sign-off yourself:
+   `gh pr view <number> --json commits --jq '.commits[] | .oid[0:8] + " " + .messageHeadline'`,
+   then `git log --format='%h %an <%ae>%n%(trailers:key=Signed-off-by)' <base>..<head>`
+   after fetching `refs/pull/<number>/head`.
+
+GitHub also asks a maintainer to approve workflow runs for a first-time
+contributor; approve them only after this check.
+
 ## What belongs in the harness
 
 The single rule that governs everything here:

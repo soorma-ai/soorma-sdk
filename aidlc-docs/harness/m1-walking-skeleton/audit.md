@@ -2149,3 +2149,149 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation, code PR
 
 ---
+
+## Code Generation: code PR merged
+**Timestamp**: 2026-11-20T04:08:26Z
+**User Input**: "#23 is merged as 73d88c3 (2026-11-20T04:06:30Z, merge commit; head 0a9cd90). Record the merge in aidlc-state.md and the code summary.
+
+1. Fast-forward dev to main (git merge --ff-only origin/main; if a merge is unavoidable, use --signoff) and push.
+
+2. Fix a run-ID slip: your last message gave the final head's runs as \"PR run 44671323729, DCO 44671323748\"; they're the other way round. At 0a9cd90: CI (pull_request) 44671323748, DCO 44671323729, CI (push) 44671318552. The code summary records fb3ae20's runs (44670863814, 44670863789), which are correct; add 0a9cd90's with the labels above.
+
+3. Functional Design business-logic-model.md line 121 still says \"the first __anext__ opens the stream\". The code opens it when subscribe() is called (SUB-01, U3, CC-STR-13), as the audit and code summary record. Correct the line and cite the audit entry, in the same commit as the records above.
+
+4. Then check Dependabot's first uv job and record its outcome. Then Build and Test.
+
+Log this message word for word in audit.md. Commit signed off and push."
+**AI Response**: "Checked on GitHub: #23 MERGED as 73d88c3 at 2026-11-20T04:06:30Z. dev fast-forwarded from 0a9cd90 to 73d88c3 (git merge --ff-only origin/main; no merge needed) and pushed. The run IDs confirmed with gh: at 0a9cd90, CI (pull_request) 44671323748 success, DCO 44671323729 success, CI (push) 44671318552 success; my previous message had the first two swapped. Recorded: the merge and 0a9cd90's runs in the code summary and aidlc-state.md; business-logic-model.md §6 corrected to say the stream opens when subscribe() is called, citing the audit entry 'Code Generation Part 2: G7 (Steps 26 to 28)' (2026-11-20T03:18:11Z). Next: Dependabot's first uv job, then Build and Test."
+**Context**: Construction, U4 python-harness, Code Generation complete (merged)
+
+---
+
+## Dependabot's first uv job (plan Step 13)
+**Timestamp**: 2026-11-20T04:09:33Z
+**User Input**: (none)
+**AI Response**: "0819ca8 (the merge records and the FD §6 correction, signed off) pushed to dev. Dependabot's first uv run came with #23's merge to main: run 44672183241 ('uv in /python - Update #1718066419') success, and the uv dependency-graph run 44672183239 success. From its log: the job read python/uv.lock on dev, used the opentelemetry group and the 7-day cooldown, and checked opentelemetry-api, opentelemetry-sdk, mypy, pytest, pytest-asyncio, ruff, pip-audit and uv-build: no update needed for any, two newer releases held back by the cooldown (pytest-asyncio, uv-build), no error, no PR. Recorded in aidlc-state.md under Dependency Updates. The npm job of the same trigger opened #24, '@opentelemetry/context-async-hooks 2.12.0 to 3.1.1 in the opentelemetry group': the same split as #20 (typescript/package.json keeps @opentelemetry/sdk-trace-base 2.12.0; only this package has a new major, so the group cannot prevent it). Not acted on: recorded as open and held for the user. Next: Build and Test."
+**Context**: Construction, after U4's code PR; Dependency Updates
+
+---
+
+## Build and Test: start
+**Timestamp**: 2026-11-20T04:10:58Z
+**User Input**: (none; the user's message of 2026-11-20T04:08:26Z: "Then Build and Test.")
+**AI Response**: "Build and Test started. Rules loaded: construction/build-and-test.md (Recording Runs; Step 1a, the README from a fresh clone; the instruction files; L1 conformance; the summary's open obligations and the brief's Proves items); soorma-platform-invariants (invariant-conformance-test-instructions.md; I8 across all units); security-baseline (carried obligations reported); pr-checkpoint, qa-test-cases and tickets have no Build and Test trigger. Every unit's L1 and invariant matrices are Verified or N/A (U1 to U4). The brief @ 0aad84a assigns soorma-sdk done-when items 2, 3 and 5, through the SDK against a running soorma-core. Also fixed: U4's Stage Progress checkbox, which my previous edit left as '[x ]'. Every run is recorded with its log under construction/working/build-and-test-runs/ (git-ignored; one file per run, numbered, never overwritten)."
+**Context**: Construction, Build and Test
+
+---
+
+## Build and Test Stage
+**Timestamp**: 2026-11-20T04:39:21Z
+**Build Status**: Success
+**Test Status**: Pass
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- contract-test-instructions.md
+- security-test-instructions.md
+- e2e-test-instructions.md
+- l1-conformance-test-instructions.md
+- invariant-conformance-test-instructions.md
+- build-and-test-summary.md
+**User Input**: (none)
+**AI Response**: "44 runs recorded (logs under construction/working/build-and-test-runs/, git-ignored, one per run). Runs 1 to 12 followed the README in a fresh clone at 755ccf7: three failed, causes established from their logs: runs 4 and 5 (pnpm checks, and --offline) because the README never built @soorma/sdk, which the names check's TypeScript driver loads (ERR_MODULE_NOT_FOUND for typescript/dist/index.js); run 12 (Python conformance) because the README's command lacked --local-skip CC-SEC-05, which a laptop without a second user needs. README fixed in 2a64284 (build first; --local-skip, with the reason; uv as a prerequisite; the TypeScript conformance run; a link to this stage's summary); runs 31 to 44 followed it again in a new fresh clone at 2a64284: all 14 pass. Runs 13 to 30 in the working tree at 755ccf7, all pass: pytest 395 on 3.11.18 and 3.15.2; Vitest 302; build; pnpm checks; conformance 96 passed and CC-SEC-05 not run (local) on Node 24.22.3, Node 26.13.0, Python 3.11.18 and 3.15.2 (85 to 121 s); package-typescript; package-python; no soorma-local state; core-up, setup, prove-stack (200, 200), the TypeScript and Python scenarios (60 s each), core-down (16 logs searched clean). CI evidence for CC-SEC-05 and the API floors from #23's run 44670863814 (97 of 97 on all six entries). L1: 80 applicable rows across U1 to U4, all Pass; invariants: 37 applicable rows, all Pass, I8 as a set Pass; both files generated from the units' matrices. Open obligations: 0 deferred questions open; 1 gap Open (GAP-CAC-001, built fail-closed); 2 Awaiting PRD (GAP-INT-001 Event, GAP-INT-002 Observability), each worked around and documented; OBL-03 (the DCO check imports tools/dco from the pull request's own checkout) found still open, reported, not acted on; OBL-05 open (soorma-core#36); 6 carried security obligations. The brief's Proves items for soorma-sdk, done when 2, 3 and 5: Pass in both languages. Also: .gitignore and eslint.config.js ignore .venv-*/ (the 3.15 environment the instructions create); aidlc-state's CDI-04, CDI-05 and CDI-06, stale as 'Open', updated to what U3 and U4 did."
+**Context**: Construction, Build and Test, completion; awaiting the user's approval
+
+---
+
+## Build and Test: gate held; #24 and OBL-03
+**Timestamp**: 2026-11-20T04:47:36Z
+**User Input**: "Not approving Build and Test yet. Two things first, then show me the gate again.
+
+1. Dependabot #24 is merged into dev as d68520a (2026-11-20T04:45:41Z; the user's decision, through the reviewer). Pull dev. Record #24 as merged in the Dependency Updates table. Correct #20's row: the \"split\" premise was wrong. context-async-hooks 3.1.1 is that package's own latest release, sdk-trace-base has no 3.x release to group with, and the package only touches @opentelemetry/api (peer >=1.0.0 <1.11.0). All 16 checks on #24 passed, including TypeScript conformance on API 1.9.0 and 1.10.0 and e2e-typescript.
+
+2. Fix OBL-03 now. Taking the tools from the base commit alone isn't enough: under pull_request, the PR also supplies dco.yml itself. Change dco.yml to:
+   - on: pull_request_target (opened, synchronize, reopened); permissions: contents: read; no secrets.
+   - Check out only github.event.pull_request.base.sha (fetch-depth 0, persist-credentials false).
+   - Fetch the PR's commits as data only (git fetch origin +refs/pull/<n>/head), then run the base's tools/dco over base.sha..head.sha.
+   - Never check out, install or run anything from the PR.
+   Add a rule to the repository's workflow check that fails if dco.yml checks out the PR head or runs anything from it, plus a test the rule fails on (checking out head.sha). Keep the tools/dco tests passing. Say in the commit that pull_request_target uses the base branch's workflow, so the fix applies to PRs into dev once it's on dev, and to PRs into main only after it's merged there. Mark OBL-03 Discharged, citing the commit and a green DCO run. Record that main isn't protected (ruleset 27701690 \"protect main\" is disabled), so DCO isn't a required check; requiring it is the user's repository setting, not this session's.
+
+Then add both to build-and-test-summary.md, update the open obligations count, wait for dev's CI to go green, and present the Build and Test gate again. After approval, open the closing PR dev → main. Log this message word for word in audit.md. Commit signed off and push."
+**AI Response**: "Logged. Pulling dev (fast-forward), then: #24 recorded as merged and #20's row corrected; OBL-03 fixed as specified, with the workflow check's new rule and its test; then the summary, dev's CI, and the gate again."
+**Context**: Construction, Build and Test gate (held)
+
+---
+
+## Build and Test: main's protection (correction)
+**Timestamp**: 2026-11-20T04:51:41Z
+**User Input**: "Correction to my last message: main is now protected (2026-11-20T04:50:36Z, the user's change, through the reviewer). Ruleset 27701690 \"protect main\" is active. No deletion or force push. Changes only through a PR, with 0 approvals and merge commits only. \"Check sign-off\" (GitHub Actions) is a required check, with no bypass. dev stays unprotected.
+
+Record this with OBL-03, not as an open item. Keep the DCO job's name exactly \"Check sign-off\": the rule matches that name, so a rename would block every PR into main. Log this message word for word in audit.md."
+**AI Response**: "It matches what GitHub showed me before this message arrived: ruleset 27701690 'protect main' enforcement active on ~DEFAULT_BRANCH (updated 2026-11-20T04:50:30Z), rules deletion, non_fast_forward, pull_request (0 approvals, merge only), required_status_checks [{context 'Check sign-off', integration 15368}]; main protected. To be recorded with OBL-03, not as an open item. The rewritten DCO job (ae6dba9) keeps its name exactly 'Check sign-off'."
+**Context**: Construction, Build and Test gate (held); OBL-03
+
+---
+
+## OBL-03: the fix cannot run as specified (stopped for the user)
+**Timestamp**: 2026-11-20T04:54:02Z
+**User Input**: (none)
+**AI Response**: "ae6dba9 (dco.yml on pull_request_target, base-only checkout, the PR's commits fetched as data; the workflow check's rule and 8 tests; tools/dco unchanged) pushed to dev; the Node gate passed (310 tests, every check ok), and a local simulation of the job (a clone at main's tip 73d88c3, dev's head d68520a fetched as data, the base's tools/dco over the range) judged 6 commits ok. To get a DCO run I opened #25, a draft pull request into dev with one empty signed-off commit. No DCO run occurred (the DCO workflow's latest runs are still #24's 44672295778 and #23's). Cause, confirmed from GitHub's changelog of 2025-11-07 and the docs ('Securely using pull_request_target'): since 2025-12-08 a pull_request_target workflow's file and checkout commit always come from the repository's default branch (main), whatever the pull request's base. main's dco.yml still triggers on pull_request only; under pull_request the workflow comes from the pull request's merge ref, whose dco.yml is now pull_request_target only. So, while dev has ae6dba9 and main does not: no pull request into dev gets a DCO run; and the closing pull request dev to main would get no 'Check sign-off' at all, which main's ruleset 27701690 requires with no bypass, so it could not merge. The commit message of ae6dba9 (and my note in it) that the fix 'applies to PRs into dev once it is on dev' is wrong for the same reason. Second finding, same sources: GitHub's default policy blocks pull_request_target workflows in public repositories without an applicable Actions event policy that allows it; it runs in evaluate mode now and is enforced on 2026-12-02 (changelog 2026-09-17, with an editor's note of 2026-10-21). soorma-sdk is public, so the rewritten DCO job would be blocked from 2026-12-02 unless the user allows pull_request_target by an event policy (a repository or organization setting). Also from the docs: a git fetch of the PR head is not covered by actions/checkout's fork protection, and is safe only while nothing fetched is run, which the new workflow-check rule enforces. #25 closed unmerged, its branch deleted. OBL-03 not marked discharged; Build and Test's gate stays held. #24 and #20 recorded as the user directed."
+**Context**: Construction, Build and Test gate (held); OBL-03; stopped for the user
+
+---
+
+## OBL-03: the user's decisions
+**Timestamp**: 2026-11-20T05:01:44Z
+**User Input**: "Your diagnosis is right, and the mistake was mine. Since 2025-12-08, a pull_request_target workflow always comes from the default branch, which I didn't account for. Thank you for stopping.
+
+Decision 1: revert ae6dba9 now, the whole commit (git revert -s ae6dba9). Afterwards dco.yml, tools/workflows/check.ts and check.test.ts must match 73d88c3 exactly; show the empty diff. Run the gate, push, and wait for dev's CI to go green. The revert supersedes ae6dba9's commit-message claim; say so in the revert's message.
+
+Decision 2 (the user's, through the reviewer): OBL-03 closes as an ACCEPTED RISK. DCO stays on pull_request. Record in OBL-03's row:
+- The risk: a fork PR can edit dco.yml or tools/dco so its own DCO check passes.
+- Why the fix was dropped: pull_request_target always runs the default branch's workflow (since 2025-12-08), and GitHub blocks it by default in public repositories from 2026-12-02 unless an Actions event policy allows it. Cite the two GitHub changelogs you used.
+- The mitigation: the user merges every PR, and GitHub asks for approval before running a first-time contributor's workflows. Before trusting a fork PR's DCO result, the maintainer checks whether it touches .github/ or tools/dco. Write that check down where a maintainer will see it: CONTRIBUTING.md if it exists, otherwise the README's contributing section.
+- When to revisit: when outside contributors start sending PRs, or when GitHub offers a way to judge a PR without pull_request_target.
+- Status: Accepted risk, with the user's decision timestamp.
+
+Then update build-and-test-summary.md (OBL-03, the revert, #25 closed unmerged) and the open-obligations count, and present the Build and Test gate again. Log this message word for word in audit.md. Commit signed off and push."
+**AI Response**: "Logged. Reverting ae6dba9 whole with git revert -s; then OBL-03 recorded as an accepted risk, the maintainer's check written in CONTRIBUTING.md, the summary updated, dev's CI waited on, and the gate presented again."
+**Context**: Construction, Build and Test gate (held); OBL-03 decided
+
+---
+
+## OBL-03 closed as an accepted risk; Build and Test gate again
+**Timestamp**: 2026-11-20T05:07:11Z
+**User Input**: (none)
+**AI Response**: "Decision 1: git revert -s ae6dba9, the whole commit, as 23759e0; its message amended before pushing to say it supersedes ae6dba9's claim that the fix applies to pull requests into dev once on dev. git diff 73d88c3 HEAD -- .github/workflows/dco.yml tools/workflows/check.ts tools/workflows/check.test.ts: empty (0 lines). The gate passed (Node: typecheck, lint, format, build, pnpm checks all ok, Vitest 302, pnpm audit, audit exceptions; Python: ruff, mypy 49 files, pytest 395). Pushed; dev's CI on 23759e0, run 44678425492: success. Decision 2: OBL-03's row now reads Accepted risk (2026-11-20T05:01:44Z), with the risk, why the fix was dropped (the two GitHub changelogs, 2025-11-07 and 2026-09-17, linked), the mitigation, main's protection (ruleset 27701690 active since 2026-11-20T04:50:36Z; Check sign-off required, no bypass; dev unprotected; the job's name kept), and when to revisit. The maintainer's check is written in CONTRIBUTING.md, 'For maintainers: trusting the DCO check on a fork pull request', with the commands. build-and-test-summary.md: runs 45 to 48 added (the fix's gate, the local simulation, #25 with no DCO run and its cause, the revert's gate and CI); 48 runs, 4 failed, each with its cause; OBL-03 closed as an accepted risk; one obligation open (OBL-05); #24 merged and my wrong 'split' note corrected. Build and Test gate presented again."
+**Context**: Construction, Build and Test gate (presented again)
+
+---
+
+## Build and Test: approved
+**Timestamp**: 2026-11-20T05:13:36Z
+**User Input**: "Build and Test is approved, with one fix first.
+
+In CONTRIBUTING.md, the \"### For maintainers: trusting the DCO check on a fork pull request\" subsection went into the middle of \"Sign your commits\". That left the existing \"There is no CLA here\" paragraph and the soorma-core paragraph after it under the maintainers' heading. Move the subsection, unchanged, to the end of the \"Sign your commits\" section, after those paragraphs. No other wording changes. Show the resulting heading outline of that section.
+
+Then:
+1. Commit signed off, push, and wait for dev's CI to go green.
+2. Record Build and Test as approved in aidlc-state.md. Operations is a placeholder, so mark it skipped.
+3. Open the closing PR, dev → main. Its body: what the initiative delivered (U1 to U4), the brief's done-when items 2, 3 and 5 as passed with their evidence, open obligations (OBL-05 = soorma-core#36; OBL-03 accepted risk), the specification gaps (1 open, 2 awaiting a PRD), and the carried security obligations. It needs \"Check sign-off\", which main's ruleset requires; name that run in the body.
+4. Stop when every check is green, and give me the PR number and head commit. Don't merge it, and don't record it as merged.
+5. In your stop message, list what's left for the user to move the M1 brief's soorma-sdk part to Done (AI-DLC never edits the brief).
+
+Log this message word for word in audit.md."
+**AI Response**: "Logged. Moving the CONTRIBUTING.md subsection unchanged to the end of 'Sign your commits'; then the commit, dev's CI, the state, and the closing PR."
+**Context**: Construction, Build and Test APPROVED
+
+---
+
+## The closing PR
+**Timestamp**: 2026-11-20T05:18:00Z
+**User Input**: (none)
+**AI Response**: "CONTRIBUTING.md's subsection moved unchanged (the removed and added lines are identical as sets), now the last subsection of 'Sign your commits', after the CLA and soorma-core paragraphs and 'Third-party material': 93c5459, CI 44679629990 green. Build and Test recorded as APPROVED and Operations as SKIPPED (a placeholder) in aidlc-state.md (50c8f0a); my slicing slip left the checkbox as '[x ]' once more, corrected before committing. soorma-ai/soorma-sdk#26 opened, dev to main, its body: the four units delivered, the brief's done-when items 2, 3 and 5 passed with their evidence, OBL-05 open (soorma-core#36), OBL-03 an accepted risk, 1 gap open and 2 awaiting a PRD, the six carried security obligations, and the 'Check sign-off' run on the final head (filled in once it has run). This entry and the stage line are the PR's last commit. Not to be merged by this session; not recorded as merged."
+**Context**: Construction complete; the closing PR
+
+---
