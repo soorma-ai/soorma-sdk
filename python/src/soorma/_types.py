@@ -3,8 +3,8 @@
 # The public value types (domain-entities §2.2): frozen, holding no credential.
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
+from collections.abc import Awaitable, Callable, Iterator, Mapping
+from dataclasses import dataclass, field
 from typing import TypeAlias
 
 from ._generated.envelope import Envelope
@@ -18,9 +18,29 @@ SecretProvider: TypeAlias = Callable[[], "Awaitable[str] | str"]
 
 @dataclass(frozen=True, slots=True)
 class EnvironmentRef:
+    """The credential's environment, read only (CDI-01). Every member as the platform sent
+    it, unknown ones included (CDI-04), is readable as `environment["name"]`; iteration
+    gives the member names."""
+
     organization: str
     project: str
     environment: str
+    _members: Mapping[str, JsonValue] = field(default_factory=dict, repr=False, compare=False)
+
+    def __getitem__(self, name: str) -> JsonValue:
+        if name in self._members:
+            return self._members[name]
+        if name in ("organization", "project", "environment"):
+            return str(getattr(self, name))
+        raise KeyError(name)
+
+    def __iter__(self) -> Iterator[str]:
+        names = dict.fromkeys(("organization", "project", "environment"))
+        names.update(dict.fromkeys(self._members))
+        return iter(names)
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self)
 
 
 @dataclass(frozen=True, slots=True)
