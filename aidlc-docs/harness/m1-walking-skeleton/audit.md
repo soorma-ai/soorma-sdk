@@ -2011,3 +2011,21 @@ Log this message word for word in audit.md, then finish Step 13, run G3's gate, 
 **Context**: Construction, U4 python-harness, Code Generation Part 2, between G4 and G5, stopped
 
 ---
+
+## U4 Code Generation — the user decides the strict-TLS findings
+**Timestamp**: 2026-11-20T02:30:41Z
+**User Input**: "All three approved.
+
+1. Add subjectKeyIdentifier=hash and authorityKeyIdentifier=keyid,issuer to makeServer's server-certificate extensions in conformance/runner/src/rundir.ts, covering both the trusted and the untrusted server certificate. It's a change to U1's test helper, covered by this message; record its class with the diff. Show it changes nothing else: the self-test passes with every fault set unchanged, TypeScript passes 97 of 97 on Node 24 and 26, and a 3.15 handshake against the stub succeeds. Also run openssl verify -x509_strict on both certificates.
+
+2. Yes, open the soorma-core issue. Cite contract-v0.1.0 (c1e3d7f3) and deploy/local/scripts/stack-certs.ts: the leaf extensions have no subjectKeyIdentifier or authorityKeyIdentifier, while the CA has a subjectKeyIdentifier. Include the reproduction (the exact openssl arguments, openssl verify -x509_strict output, and a Python 3.13+ ssl.create_default_context() handshake failing with \"Missing Authority Key Identifier\") and the two-line fix. Say the fix reaches soorma-sdk only through a new contract tag. Record it as OBL-05 with the issue number. End the issue body with the attribution line.
+
+3. Keep Python's strict default: the SDK never clears VERIFY_X509_STRICT, and a test asserts the context keeps it on 3.13+. The package README states the local-stack limitation for Python 3.13+, citing the issue. e2e-python stays on 3.11.
+
+I've removed the leftover folder of test certificates (/var/folders/.../soorma-conformance-run-8lzloy); note that in the audit.
+
+Log this message word for word in audit.md, then go on to G5."
+**AI Response**: "Approved: (1) the makeServer change to U1's helper, with evidence that it changes nothing else; (2) the soorma-core issue, recorded as OBL-05; (3) the strict default kept, with a test, and the README note. Noted: the user removed the leftover test-certificate folder /var/folders/tz/wx_q8xc93q18h1yllz5l1_c00000gn/T/soorma-conformance-run-8lzloy that the safety check had stopped the session removing. Then G5."
+**Context**: Construction, U4 python-harness, Code Generation Part 2: user decisions on strict TLS
+
+---

@@ -74,7 +74,10 @@ function makeServer(
   const ext = join(dir, `${name}.ext`);
   writeFileSync(
     ext,
-    'subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1\nextendedKeyUsage=serverAuth\nbasicConstraints=critical,CA:FALSE\n',
+    // The key identifiers (added at U4): Python 3.13+ verifies with VERIFY_X509_STRICT by
+    // default, which rejects a certificate without an Authority Key Identifier.
+    'subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1\nextendedKeyUsage=serverAuth\nbasicConstraints=critical,CA:FALSE\n' +
+      'subjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n',
   );
   openssl(['ecparam', '-name', 'prime256v1', '-genkey', '-noout', '-out', key], dir);
   openssl(['req', '-new', '-key', key, '-subj', '/CN=localhost', '-out', csr], dir);
