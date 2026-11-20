@@ -12,6 +12,12 @@
 //     description (U2 NFR-U2-13)
 //   - the end-to-end jobs (`changes`, `e2e`, `e2e-*`) reference no repository
 //     secret: they run a stack from soorma-core's code (U2 NFR-U2-13)
+//   - the DCO workflow, and any workflow on pull_request_target, never checks
+//     out, installs or runs anything from the pull request it judges (OBL-03):
+//     it triggers on pull_request_target only (under pull_request the pull
+//     request supplies the workflow file itself); every checkout is exactly the
+//     base commit; no step changes the working tree to other commits or
+//     installs dependencies; the pull request's commits are fetched as data
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parse } from 'yaml';
@@ -31,6 +37,74 @@ const isReadOnly = (p: unknown): boolean =>
   p !== null &&
   Object.keys(p).length === 1 &&
   (p as Json).contents === 'read';
+
+export const DCO_WORKFLOW = 'dco.yml';
+export const BASE_SHA = '${{ github.event.pull_request.base.sha }}';
+/** A git command that puts other commits in the working tree, or applies them. */
+const TREE_CHANGING_GIT =
+  /\bgit\s+(?:checkout|switch|worktree|reset|restore|merge|rebase|cherry-pick|am|apply|pull|stash|read-tree|checkout-index)\b/;
+/** Installing dependencies, which runs the installed packages' code. */
+const INSTALL =
+  /\b(?:npm\s+(?:ci|install|i)\b|pnpm\s+(?:install|i|add)\b|yarn\b|npx\b|pip\s+install|uv\s+(?:sync|pip|run|tool)\b)/;
+
+const triggers = (on: unknown): string[] =>
+  typeof on === 'string'
+    ? [on]
+    : Array.isArray(on)
+      ? on.map(String)
+      : typeof on === 'object' && on !== null
+        ? Object.keys(on)
+        : [];
+
+/**
+ * OBL-03: a workflow that judges a pull request runs only the base branch's code.
+ * Applies to dco.yml, and to any workflow triggered by pull_request_target.
+ */
+export function checkJudgingWorkflow(file: string, doc: Record<string, unknown>): string[] {
+  const on = triggers(doc.on ?? doc[true as unknown as string]);
+  const isDco = file.endsWith(`/${DCO_WORKFLOW}`) || file === DCO_WORKFLOW;
+  if (!isDco && !on.includes('pull_request_target')) return [];
+  const failures: string[] = [];
+  if (isDco && (on.length !== 1 || on[0] !== 'pull_request_target')) {
+    failures.push(
+      `${file}: triggers on ${JSON.stringify(on)}: the DCO workflow runs on pull_request_target only (under pull_request the pull request supplies this file)`,
+    );
+  }
+  for (const [name, job] of Object.entries(
+    (doc.jobs ?? {}) as Record<string, Record<string, unknown>>,
+  )) {
+    for (const step of (job.steps ?? []) as Record<string, unknown>[]) {
+      const uses = String(step.uses ?? '');
+      const w = (step.with ?? {}) as Record<string, unknown>;
+      if (uses.startsWith('actions/checkout@')) {
+        if (w.ref !== BASE_SHA || 'repository' in w) {
+          failures.push(
+            `${file}: job ${name} checks out ${JSON.stringify(w.ref ?? '(the default ref)')}${'repository' in w ? ` from ${JSON.stringify(w.repository)}` : ''}: only ${BASE_SHA} may be checked out`,
+          );
+        }
+      }
+      const code = `${String(step.run ?? '')}\n${String(w.script ?? '')}`;
+      if (TREE_CHANGING_GIT.test(code)) {
+        failures.push(
+          `${file}: job ${name} runs a git command that puts the pull request's commits in the working tree`,
+        );
+      }
+      if (INSTALL.test(code)) {
+        failures.push(
+          `${file}: job ${name} installs or runs packages: nothing from the pull request runs`,
+        );
+      }
+      for (const m of String(w.script ?? '').matchAll(/\b(?:import|require)\(\s*['"`]([^'"`]*)/g)) {
+        if (!(m[1] ?? '').startsWith('${{ github.workspace }}/tools/')) {
+          failures.push(
+            `${file}: job ${name} loads ${JSON.stringify(m[1])}: only the base checkout's tools/ may run`,
+          );
+        }
+      }
+    }
+  }
+  return failures;
+}
 
 export function checkWorkflow(file: string, text: string): string[] {
   const failures: string[] = [];
@@ -52,6 +126,7 @@ export function checkWorkflow(file: string, text: string): string[] {
   } catch (error) {
     return [...failures, `${file}: not valid YAML (${(error as Error).message})`];
   }
+  failures.push(...checkJudgingWorkflow(file, doc));
   if (!isReadOnly(doc.permissions))
     failures.push(`${file}: workflow permissions must be exactly contents: read`);
   for (const [name, job] of Object.entries((doc.jobs ?? {}) as Record<string, Json>)) {
