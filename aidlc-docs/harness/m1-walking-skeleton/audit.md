@@ -2175,3 +2175,11 @@ Log this message word for word in audit.md. Commit signed off and push."
 **Context**: Construction, after U4's code PR; Dependency Updates
 
 ---
+
+## Build and Test: start
+**Timestamp**: 2026-11-20T04:10:58Z
+**User Input**: (none; the user's message of 2026-11-20T04:08:26Z: "Then Build and Test.")
+**AI Response**: "Build and Test started. Rules loaded: construction/build-and-test.md (Recording Runs; Step 1a, the README from a fresh clone; the instruction files; L1 conformance; the summary's open obligations and the brief's Proves items); soorma-platform-invariants (invariant-conformance-test-instructions.md; I8 across all units); security-baseline (carried obligations reported); pr-checkpoint, qa-test-cases and tickets have no Build and Test trigger. Every unit's L1 and invariant matrices are Verified or N/A (U1 to U4). The brief @ 0aad84a assigns soorma-sdk done-when items 2, 3 and 5, through the SDK against a running soorma-core. Also fixed: U4's Stage Progress checkbox, which my previous edit left as '[x ]'. Every run is recorded with its log under construction/working/build-and-test-runs/ (git-ignored; one file per run, numbered, never overwritten)."
+**Context**: Construction, Build and Test
+
+---
