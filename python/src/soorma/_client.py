@@ -27,7 +27,7 @@ from ._errors import ClientStateError, ProblemError, TransportError
 from ._json import payload_text
 from ._keeper import KeeperCore
 from ._options import AgentClientOptions
-from ._subscription import Subscription
+from ._subscription import Subscription, SubscriptionCore
 from ._tracing import start_send
 from ._transport import Tls, load_tls, post, problem_from
 from ._types import CredentialInfo, JsonValue, PublishAccepted
@@ -65,7 +65,7 @@ class ClientCore:
         self.loop: asyncio.AbstractEventLoop | None = None
         self._ops: set[asyncio.Task[Any]] = set()
         self._closing: asyncio.Future[None] | None = None
-        self.subscription: Any = None  # the active SubscriptionCore (G7)
+        self.subscription: SubscriptionCore | None = None
         self.keeper = KeeperCore(
             s3=options.data_gateway_url,
             agent=options.agent,
@@ -80,6 +80,10 @@ class ClientCore:
         if self.tls is None:
             raise ClientStateError(self.state)
         return self.tls
+
+    def tls_context(self) -> Tls:
+        """The client's TLS context, for its subscription's requests."""
+        return self._tls()
 
     # ---- operations ----
 
@@ -128,6 +132,20 @@ class ClientCore:
         self.assert_started()
         text = payload_text(payload)  # refused before any request (PH-PUB-01)
         return await self.run(self._publish(text, inbound, received_trace))
+
+    async def forward(
+        self, payload: JsonValue, envelope_text: str, seal: str, received_trace: object
+    ) -> PublishAccepted:
+        """A Delivery's publish: forwards its context (FWD-01)."""
+        return await self.publish(payload, Inbound(envelope_text, seal), received_trace)
+
+    def subscribe(self) -> SubscriptionCore:
+        """One active subscription per client (SUB-04); the stream opens now (SUB-01)."""
+        self.assert_started()
+        if self.subscription is not None and not self.subscription.finished:
+            raise ClientStateError("subscribed")
+        self.subscription = SubscriptionCore(self)
+        return self.subscription
 
     async def _publish(
         self, text: str, inbound: Inbound | None, received_trace: object
@@ -249,9 +267,10 @@ class AgentClient:
         return await self._core.publish(payload, None, None)
 
     def subscribe(self) -> Subscription:
-        """Subscribes (SUB-01). One active subscription per client (SUB-04)."""
-        self._core.assert_started()
-        raise ClientStateError("subscribe arrives in G7")
+        """Subscribes (SUB-01): the stream opens now, and its items are read as tenant code
+        pulls them (SUB-06). One active subscription per client; another is allowed once it
+        is closed or finished (SUB-04). Use `async with client.subscribe() as s:`."""
+        return Subscription._make(self._core.subscribe())
 
     async def close(self) -> None:
         """Releases every stream, request and timer; idempotent (PRB-07; PH-LIFE-01)."""

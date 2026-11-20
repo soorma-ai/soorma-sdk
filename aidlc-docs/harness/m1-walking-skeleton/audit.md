@@ -2061,3 +2061,19 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G6
 
 ---
+
+## Code Generation Part 2: G6 CI
+**Timestamp**: 2026-11-20T03:18:11Z
+**User Input**: (none)
+**AI Response**: "0bee91e (G6, signed off) pushed to dev. CI run 44665689842: success, every job."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G6 to G7
+
+---
+
+## Code Generation Part 2: G7 (Steps 26 to 28)
+**Timestamp**: 2026-11-20T03:18:11Z
+**User Input**: (none)
+**AI Response**: "G7 written. _reader.py: the strict iterative scanner (regex-assisted strings, numbers and whitespace; an explicit container stack; NaN and Infinity refused); exact spans; a duplicate envelope, seal or payload is duplicate-member; the envelope parsed only within D_lang and frozen iteratively (MappingProxyType, tuples), else envelope-too-deep, and one failing json.loads after the scan (the digit limit, RecursionError) is envelope-unparsed; the payload parsed within D_lang as plain types, else, or on a parse failure, left unparsed with payload raising PayloadNotParsed and hasattr false; the digit limit never changed; Delivery read only, not constructible, not picklable, its repr holding no payload. _subscription.py: SubscriptionCore, U3's P-04 state machine in asyncio (the queue of N_buf, pause_reading on a full queue, T_idle and W_super only while reading, a resume restarting T_idle, the replacement held paused, a lineage change forcing the switch, L_ends, credential_refused terminal and revoking, Retry-After then backoff, SUB-05's raise with no terminal end, SUB-04), under a thin Subscription handle with weakref.finalize (P-10). _connection.py gains on_bytes, called on every read, so T_idle counts bytes, heartbeats included (STR-02), not events. _tracing.received_context accepts any Mapping (the frozen envelope's traceContext). Design note, recorded: Functional Design §6 said the first __anext__ opens the stream; SUB-01 says subscribe() sends the request, U3 opens at subscribe(), and CC-STR-13 waits for the request before its first next. The implementation follows SUB-01 and U3: the stream opens when subscribe() is called (it needs the running loop, which a started client has; PH-API-02). This is the specification's own behaviour, so no gap and no case change. A 200 subscribe answer that is not text/event-stream is TransportError unusable-response (never retried). Tests: test_reader (36: TC-PH-068, 069, 073, 079's read half), test_subscription (15: order, heartbeats, an end resubscribed, close and async with, SUB-04, SUB-05, a 503 retried, TC-PH-081 paused past three T_idle without an end and T_idle restarting on resume, TC-PH-082 the replacement behind a full queue, RCV-09's event-too-large, L_ends, credential_refused, forwarding byte for byte, TC-PH-076's subscription half with the server seeing the socket close and nothing scheduled, a closed subscription collected silently, TC-PH-071 a child process exiting within 1 s after its main coroutine returns, with async with and with a bare async for left open). The subscription and client tests ran five times in a row, all passing. Gate: ruff, mypy (43 files) clean; pytest 395 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, the six checks, audit exceptions, vitest 299 passed. Plan Steps 26 to 28 ticked."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G7
+
+---

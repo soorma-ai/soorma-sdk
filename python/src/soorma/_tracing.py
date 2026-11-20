@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import re
 import secrets
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from opentelemetry import context as otel_context
@@ -102,7 +102,7 @@ def parse_tracestate(text: str) -> list[tuple[str, str]]:
 
 def received_context(tc: object) -> SpanContext | None:
     """A received trace context as a remote span context, or None if it does not parse."""
-    if not isinstance(tc, dict):
+    if not isinstance(tc, Mapping):
         return None
     traceparent = tc.get("traceparent")
     tracestate = tc.get("tracestate")

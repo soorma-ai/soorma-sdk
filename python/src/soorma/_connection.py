@@ -36,6 +36,9 @@ class Connection(asyncio.Protocol):
         self._error: BaseException | None = None
         self.sent = False
         self._received = False
+        # Called on every read, before parsing: a stream's T_idle counts bytes, heartbeats
+        # included, not events (STR-02).
+        self.on_bytes: Callable[[], None] | None = None
         # Futures nobody awaits must not report "exception never retrieved".
         for f in (self._head, self._body):
             f.add_done_callback(lambda f: f.cancelled() or f.exception())
@@ -51,6 +54,8 @@ class Connection(asyncio.Protocol):
 
     def data_received(self, data: bytes) -> None:
         self._received = True
+        if self.on_bytes is not None:
+            self.on_bytes()
         try:
             events = self._parser.feed(data)
         except TransportError as e:
