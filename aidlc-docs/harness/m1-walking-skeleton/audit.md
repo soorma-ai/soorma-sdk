@@ -1923,3 +1923,11 @@ Log this message word for word in audit.md."
 **Context**: Construction, U4 python-harness: design gate merged; dev synced; Dependabot grouping
 
 ---
+
+## U4 python-harness — Code Generation Part 1: plan, approval prompt
+**Timestamp**: 2026-11-20T00:31:28Z
+**User Input**: (none)
+**AI Response**: "Merged on dev and pushed: 73235a5 (the Dependabot opentelemetry group; the design gate and #21 recorded); push run 44645782790 green; #20 closed with a comment. Code Generation plan written (construction/working/python-harness-code-generation-plan.md, the single source of truth): eleven commit groups. G1 the changes to U1, each its own step with the self-test after each: the two Python-only name rows (class 1); L_event and B_body in §0, the runner's named values, the schema, the reference driver's defaults (class 1); RCV-09 with spec.test.ts 104 to 105 (class 3); the stub's generated-body directive (class 1); CC-RCV-09 and CC-RCV-10 with cases.test.ts 95 to 97 (cases class 1, count class 3); the reference driver declaring them only if it passes. G2 the TypeScript fix, its own commit, with TypeScript's suite re-run and the new cases passing. G3 the Python project, checks, CI's first Python steps, the uv Dependabot entry with its opentelemetry group. G4 the HTTP parser with its table-driven and fuzz tests before anything uses it. G5 to G7 the package. G8 the driver and the first full run, timed against the 5-minute budget, CDI-05. G9 conformance-python and the floor run (OBL-04). G10 the example, e2e-python, package-python, the README, the local run. G11 the summaries, matrices and the code PR with OBL-04 discharged for Python. Points for approval: 1.1 the two counts as class 3 made with the plan's approval; 1.2 RCV-09 and the cases named; 1.3 the directive; 1.4 the reference driver; 1.5 the pinned uv in the scratch directory, the machine's uv untouched; 1.6 the early budget check; 1.7 the local end-to-end run. Refusal sweep: CC-PRB-08, CC-PUB-03, CC-RCV-07 and the ClientStateError cases keep exactly one cause. Approval prompt presented; no code written."
+**Context**: Construction, U4 python-harness, Code Generation Part 1, Steps 1 to 6
+
+---
