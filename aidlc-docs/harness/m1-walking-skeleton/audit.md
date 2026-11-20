@@ -1903,3 +1903,23 @@ Log this message word for word in audit.md."
 **Context**: Construction, U4 python-harness, Construction Design PR gate: stopped for the user
 
 ---
+
+## U4 python-harness — Design PR #22 merged; dev synced; Dependabot group
+**Timestamp**: 2026-11-20T00:25:40Z
+**User Input**: "soorma-ai/soorma-sdk#22 is merged: merge commit 91c225e340aff7db23b7f7d103a930b06e1f3560 on main, 2026-11-20T00:18:21Z, with parents 7fcb499 (main) and 98c0c13 (the PR head). Dependabot's #21 (prettier 3.10.1) was then merged into dev as 7408b9e, at 00:18:30Z; dev's push CI on it is green (44644810119). Confirm both on GitHub, then:
+
+1. Sync dev. It can't fast-forward any more: main has #22's merge commit and dev has #21's. Make one merge on dev, signed off, as the DCO rule allows when a merge can't be avoided: git fetch origin && git merge --no-ff --signoff origin/main. The trees differ only by #21, so expect no conflicts; if there are any, stop and tell me. Check that dev then contains main.
+2. Record U4's Construction Design PR gate as approved and merged, with the runs at 98c0c13: CI (pull request) 44644003717, DCO 44644003786, CI (push) 43994308 as you recorded it (use the exact ID from your notes). Record #21's merge in the Dependency Updates section.
+3. Dependabot #20 is held. It moves @opentelemetry/context-async-hooks to 3.1.1 while @opentelemetry/sdk-trace-base stays at 2.12.0, and OpenTelemetry's SDK packages are released together and meant to match. In .github/dependabot.yml, add a group so @opentelemetry/sdk-trace-base, @opentelemetry/context-async-hooks and any other @opentelemetry/* development packages update together, in every npm directory that has them. Leave the @opentelemetry/api peer range alone. Add the same kind of group to the uv ecosystem for the Python opentelemetry packages. Add a line to DEPENDENCIES.md, then close #20 with a comment explaining that a grouped update replaces it. Signed-off commit.
+4. Log this message word for word in audit.md, push, wait for CI.
+5. Write U4's Code Generation plan and stop for my approval before writing any code. As for U3, cover:
+   - every change to U1 as its own step, classed, with the self-test after each: the two Python-only name rows, L_event and B_body, their statement, their two cases, and the stub's generated-body directive;
+   - the TypeScript fix as its own commit, with TypeScript's suite re-run;
+   - an early full run under the Python driver, timed against the 5-minute budget;
+   - CDI-05 for failing cases;
+   - the CI job order, with OBL-04 discharged for Python on the code PR;
+   - the HTTP parser's tests before anything uses the parser."
+**AI Response**: "Confirmed on GitHub: #22 MERGED 2026-11-20T00:18:21Z as 91c225e (parents 7fcb499, 98c0c13); #21 merged into dev as 7408b9e at 00:18:30Z; push run 44644810119 on 7408b9e green. dev fast-forwarded to 7408b9e, then one signed-off merge of origin/main, no conflicts: ea3e7a3 (parents 7408b9e, 91c225e; the message rewritten so Signed-off-by and Co-Authored-By form one trailer block); dev contains main and differs from it only by #21. Recorded: the U4 design gate APPROVED (merged), final head 98c0c13: CI 44644003717, DCO 44644003786, push 44643994308 (the exact ID); #21 and #20 in Dependency Updates. .github/dependabot.yml: an opentelemetry group in the npm entry (patterns @opentelemetry/*, excluding @opentelemetry/api), which covers every workspace package. The uv group is not added now: python/ does not exist yet, so a uv entry would fail Dependabot's job for it every week; the group's YAML goes into the Code Generation plan step that adds the uv entry, and DEPENDENCIES.md says both. #20 to be closed with a comment once the commit is pushed."
+**Context**: Construction, U4 python-harness: design gate merged; dev synced; Dependabot grouping
+
+---
