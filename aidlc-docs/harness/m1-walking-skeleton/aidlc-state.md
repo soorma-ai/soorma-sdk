@@ -218,6 +218,9 @@ Dependabot PRs into `dev` (NFR-U1-27), merged by the user with the reviewer; con
 |---|---|---|---|---|
 | #21 | `prettier` 3.10.0 → 3.10.1 | `f19f54f` | `7408b9e325e3cf8a9a4924966d1f46ad64cc3c08` | 2026-11-20T00:18:30Z (confirmed on GitHub 2026-11-20T00:25:40Z); dev's push CI 44644810119 green |
 | #20 | `@opentelemetry/context-async-hooks` 2.12.0 → 3.1.1 | — | **Closed, not merged** (2026-11-20T00:25:40Z): it would split OpenTelemetry's SDK packages (`sdk-trace-base` stays 2.12.0); replaced by the `opentelemetry` group in `.github/dependabot.yml` | — |
+| #24 | `@opentelemetry/context-async-hooks` 2.12.0 → 3.1.1, "in the opentelemetry group" (opened 2026-11-20T04:07:28Z by the npm job run at #23's merge) | — | **Open, held for the user**: the same split as #20 (`typescript/package.json` keeps `@opentelemetry/sdk-trace-base` 2.12.0); the group holds only this one package's major, so it does not prevent the split | — |
+
+**Dependabot's `uv` ecosystem, first run** (plan Step 13; the user, 2026-11-20T00:37:17Z): triggered by #23's merge to `main` (`73d88c3`); run 44672183241 (`uv in /python - Update #1718066419`) **success**, and the dependency-graph run 44672183239 success. It read `python/uv.lock` on `dev`, applied the `opentelemetry` group and the 7-day cooldown, and checked every dependency (`opentelemetry-api`, `opentelemetry-sdk`, `mypy`, `pytest`, `pytest-asyncio`, `ruff`, `pip-audit`, `uv-build`): no update needed, two newer releases held back by the cooldown (`pytest-asyncio`, `uv-build`), no error, no PR.
 
 ## Open Obligations
 
