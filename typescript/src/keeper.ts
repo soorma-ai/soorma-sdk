@@ -191,6 +191,7 @@ export class Keeper {
         `"instance":${JSON.stringify(this.#o.instance)}}`,
       ca: this.#o.ca(),
       timeoutMs: this.#o.limits.T_req,
+      maxBody: this.#o.limits.B_body,
       signal: this.#o.signal,
     });
   }
@@ -264,6 +265,7 @@ export class Keeper {
       headers: { authorization: `Bearer ${token}`, 'soorma-contract-version': CONTRACT_VERSION },
       ca: this.#o.ca(),
       timeoutMs: this.#o.limits.T_req,
+      maxBody: this.#o.limits.B_body,
       signal: this.#o.signal,
     });
     if (reply.status !== 200) throw problemFrom(reply);

@@ -17,10 +17,12 @@ import type { JsonValue } from './types.ts';
 export const CONTRACT_VERSION = '0.1.0';
 
 /** A request that failed without an answer. Internal: surfaced as TransportError. */
+export type FailureReason = 'tls' | 'connection' | 'timeout' | 'response-too-large';
+
 export class TransportFailure extends Error {
-  readonly reason: 'tls' | 'connection' | 'timeout';
+  readonly reason: FailureReason;
   readonly sent: boolean;
-  constructor(reason: 'tls' | 'connection' | 'timeout', sent: boolean) {
+  constructor(reason: FailureReason, sent: boolean) {
     super(`transport: ${reason}`);
     this.reason = reason;
     this.sent = sent;
@@ -68,6 +70,8 @@ export interface RequestSpec {
   /** T_req: the wait for the response head. */
   timeoutMs: number;
   signal?: AbortSignal;
+  /** B_body: the most bytes a non-stream body may hold (RCV-09). */
+  maxBody: number;
 }
 
 export function flatten(h: IncomingMessage['headers']): Record<string, string> {
@@ -135,11 +139,21 @@ function send(
   });
 }
 
-/** One POST, read whole. */
+/** One POST, read whole, at most `maxBody` bytes (RCV-09: never the bytes past it). */
 export function post(spec: RequestSpec): Promise<Reply> {
   return send(spec, (res, settle) => {
     const chunks: Buffer[] = [];
-    res.on('data', (c: Buffer) => chunks.push(c));
+    let size = 0;
+    res.on('data', (c: Buffer) => {
+      size += c.length;
+      if (size > spec.maxBody) {
+        chunks.length = 0;
+        res.destroy();
+        settle(undefined, new TransportFailure('response-too-large', true));
+        return;
+      }
+      chunks.push(c);
+    });
     res.on('end', () =>
       settle({
         status: res.statusCode ?? 0,
@@ -190,18 +204,40 @@ export function problemFrom(reply: Reply): ProblemError {
   });
 }
 
-/** A non-200 stream response read whole, as a Reply; `signal` destroys it (PRB-07). */
-export function readReply(res: IncomingMessage, signal?: AbortSignal): Promise<Reply> {
+/**
+ * A non-200 stream response read whole, as a Reply, at most `maxBody` bytes
+ * (RCV-09); `signal` destroys it (PRB-07).
+ */
+export function readReply(
+  res: IncomingMessage,
+  maxBody: number,
+  signal?: AbortSignal,
+): Promise<Reply> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
+    let size = 0;
+    let over = false;
     const onAbort = (): void => {
       res.destroy();
       reject(signal?.reason);
     };
     if (signal?.aborted) return onAbort();
     signal?.addEventListener('abort', onAbort, { once: true });
-    res.on('data', (c: Buffer) => chunks.push(c));
+    res.on('data', (c: Buffer) => {
+      if (over) return;
+      size += c.length;
+      if (size > maxBody) {
+        over = true;
+        chunks.length = 0;
+        signal?.removeEventListener('abort', onAbort);
+        res.destroy();
+        reject(new TransportFailure('response-too-large', true));
+        return;
+      }
+      chunks.push(c);
+    });
     res.on('end', () => {
+      if (over) return;
       signal?.removeEventListener('abort', onAbort);
       resolve({
         status: res.statusCode ?? 0,
@@ -210,6 +246,7 @@ export function readReply(res: IncomingMessage, signal?: AbortSignal): Promise<R
       });
     });
     res.on('error', () => {
+      if (over) return;
       signal?.removeEventListener('abort', onAbort);
       reject(new TransportFailure('connection', true));
     });

@@ -144,6 +144,7 @@ export class AgentClient {
         body: publishBody(draftText(span.traceContext, inbound), text),
         ca: this.#ca,
         timeoutMs: this.#limits.T_req,
+        maxBody: this.#limits.B_body,
         signal: this.#abort.signal,
       });
     } catch (error) {

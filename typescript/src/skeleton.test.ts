@@ -54,6 +54,9 @@ describe('the named values (NFR-U3-06)', () => {
       N_buf: 64,
       T_idle: 45_000,
       T_req: 10_000,
+      // Added at U4 (RCV-09; class 1: items added to this exact check).
+      L_event: 1_048_576,
+      B_body: 1_048_576,
     });
     expect(D_LANG).toBe(512);
   });
