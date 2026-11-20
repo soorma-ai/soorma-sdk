@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION complete (Build and Test APPROVED); OPERATIONS skipped (placeholder). The closing PR, `dev` → `main`, open for the user's merge
+- **Current Stage**: CONSTRUCTION complete (Build and Test APPROVED); OPERATIONS skipped (placeholder). The closing PR soorma-ai/soorma-sdk#26, `dev` → `main`, open for the user's merge; not recorded as merged until GitHub shows it
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
