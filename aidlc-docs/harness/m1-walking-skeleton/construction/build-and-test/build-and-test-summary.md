@@ -54,9 +54,15 @@ Runs 1 to 12 and 31 to 44 ran in fresh clones; runs 13 to 30 in the working tree
 | 29 | The Python scenario (3.11.18) | Pass, 60 s: every step held | | `029-e2e-scenario-python.log` |
 | 30 | `e2e:core-down` | Pass: 16 logs searched clean; the stack, its volumes and `.e2e/` removed | | `030-e2e-core-down.log` |
 | 31–44 | README as fixed, fresh clone at `2a64284`: install; static checks; `pnpm test` (302); build; `pnpm checks`; `pnpm checks --offline`; self-test (four faults as declared); TypeScript conformance (96, 1 not run, 120 s); audits; `uv sync --locked`; ruff; mypy (49 files) and pytest (395); `scripts/audit.sh`; Python conformance (96, 1 not run, 87 s) | Pass, all 14 | | `031-` to `044-…log` |
+| 45 | OBL-03's fix (`ae6dba9`, DCO on `pull_request_target`): the Node gate (typecheck, lint, format, build, `pnpm checks`, Vitest 310, audits) | Pass | | Terminal; recorded in `audit.md` (*OBL-03: the fix cannot run as specified*) |
+| 46 | The new DCO job simulated locally: a clone at `main`'s tip `73d88c3`, `dev`'s head `d68520a` fetched as data, the base's `tools/dco` over the range | Pass: 6 commits judged, 5 signed off, 1 Dependabot commit exempt as verified | | Terminal; `audit.md`, the same entry |
+| 47 | The new DCO workflow on a pull request into `dev`: #25, a draft with one empty signed-off commit | **Fail**: no DCO run occurred | **Since 2025-12-08 GitHub takes a `pull_request_target` workflow from the default branch** (`main`, whose `dco.yml` triggered on `pull_request` only), whatever the pull request's base; under `pull_request` the pull request's own `dco.yml` (`pull_request_target` only) did not trigger. With the fix on `dev`, no pull request into `dev` got a DCO run, and the closing pull request into `main` could never get the required `Check sign-off`. Not rerun: `ae6dba9` reverted whole (`23759e0`); OBL-03 closed as an accepted risk (the user). #25 closed unmerged, its branch deleted | GitHub, soorma-ai/soorma-sdk#25; `audit.md` |
+| 48 | After the revert (`23759e0`): the full gate (Node: typecheck, lint, format, build, `pnpm checks` all ok, Vitest 302, audits; Python: ruff, mypy 49 files, pytest 395); `dco.yml`, `tools/workflows/check.ts` and `check.test.ts` diff-empty against `73d88c3`; `dev`'s CI on the revert, run 44678425492 | Pass | | Terminal; `audit.md`; CI 44678425492 |
 
-**44 runs, 3 failed, each with its established cause** (two README defects); each failed step
-passed when the README, fixed, was followed again in a new clone.
+**48 runs, 4 failed, each with its established cause**: two README defects (runs 4, 5, 12; each
+failed step passed when the README, fixed, was followed again in a new clone), and OBL-03's
+`pull_request_target` fix, which GitHub's default-branch rule makes unable to run (run 47;
+reverted, not rerun).
 
 **CI evidence** for what a laptop cannot run (CC-SEC-05 needs a second user; the API floors), on
 soorma-ai/soorma-sdk#23's pull-request run **44670863814** (head `fb3ae20`; final head
@@ -129,20 +135,31 @@ failed, 0 not run (TypeScript: Node 24.22.3 with API 1.9.0, 123 s, and 1.10.0, 1
     **Worked around**: the OpenTelemetry API only, no exporter; the span shape documented as
     unstable, with DEC-U1-01's deviation; proved by a test-installed exporter.
 - **Other open obligations**:
-  - **OBL-03, open**: the DCO check still imports `tools/dco` from the pull request's own
-    checkout, so a pull request from a fork could change the code that judges it. Owed "after
-    #10 merges, in a later PR"; not yet done.
+  - **OBL-03, closed as an accepted risk** (the user's decision, 2026-11-20T05:01:44Z). The DCO
+    check stays on `pull_request`, so a fork pull request can edit `dco.yml` or `tools/dco/` to
+    pass its own check. The fix on `pull_request_target` (`ae6dba9`) was reverted whole
+    (`23759e0`): since 2025-12-08 GitHub always takes a `pull_request_target` workflow from the
+    default branch, and it blocks the event by default in public repositories from 2026-12-02
+    unless an Actions event policy allows it (run 47; #25 closed unmerged). Mitigation: the user
+    merges every pull request; GitHub asks for approval before running a first-time
+    contributor's workflows; a maintainer checks whether a fork pull request touches `.github/`
+    or `tools/dco/` before trusting its DCO result (`CONTRIBUTING.md`). Revisit when outside
+    contributors start sending pull requests, or when GitHub offers a way to judge a pull
+    request without `pull_request_target`. `main` is protected (ruleset 27701690, active since
+    2026-11-20T04:50:36Z): `Check sign-off` is a required check with no bypass, so the job keeps
+    that exact name.
   - **OBL-05, open**: soorma-core's local stack certificates lack key identifiers
     (soorma-ai/soorma-core#36); Python 3.13+ refuses them, so `e2e-python` and the Python example
     run on 3.11 or 3.12. It closes with a contract tag carrying the fix.
-  - OBL-01, OBL-02 and OBL-04 (both languages) are discharged.
+  - OBL-01, OBL-02 and OBL-04 (both languages) are discharged; OBL-03 is closed as an accepted
+    risk. **One obligation stays open: OBL-05.**
 - **Carried security obligations** (`local-only`): 6, owed by the first hosted deployment or the
   first published release: SECURITY-01 (encryption at rest), SECURITY-02 (load balancer and
   gateway logs), SECURITY-03 (centralized logs), SECURITY-07 (private subnets and endpoints),
   SECURITY-10 (an SBOM, likely the first to apply here, at the first published release),
   SECURITY-14 (alerting, log integrity and retention). Not blocking.
 - **Status**: **Pass** for the stage's rule (0 deferred questions open; the one open gap and the
-  two awaiting a PRD each record what was built). OBL-03 and OBL-05 are owed, and reported here.
+  two awaiting a PRD each record what was built). OBL-05 is owed, and reported here.
 
 ### Slice Brief: This Repository's *Proves* Items
 
@@ -169,12 +186,14 @@ soorma-core#28).
 ## Overall Status
 - **Build**: Success
 - **All tests**: Pass
-- **Ready for Operations**: Yes. Nothing is deployed or published in M1; OBL-03 and OBL-05 stay
-  owed (above).
+- **Ready for Operations**: Yes. Nothing is deployed or published in M1; OBL-05 stays owed,
+  and OBL-03 is an accepted risk (above).
 
 ## Next Steps
 
 Operations is a placeholder in AI-DLC. For this repository, the next steps are the owed items:
-OBL-03 (the DCO check reading the base branch's code), OBL-05 (with soorma-core's next contract
-tag), soorma-core#34 (GAP-CAC-001), and the PRD gaps as their PRDs land. Dependabot #24 is held
-(`aidlc-state.md`, *Dependency Updates*).
+OBL-05 (with soorma-core's next contract tag), soorma-core#34 (GAP-CAC-001), the PRD gaps as
+their PRDs land, and OBL-03's revisit conditions. Dependabot #24
+(`@opentelemetry/context-async-hooks` 3.1.1) was merged into `dev` as `d68520a`, all 16 checks
+green; my earlier note that it repeated a "split" was wrong (`aidlc-state.md`, *Dependency
+Updates*).

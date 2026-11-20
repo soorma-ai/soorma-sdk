@@ -2241,3 +2241,30 @@ Record this with OBL-03, not as an open item. Keep the DCO job's name exactly \"
 **Context**: Construction, Build and Test gate (held); OBL-03; stopped for the user
 
 ---
+
+## OBL-03: the user's decisions
+**Timestamp**: 2026-11-20T05:01:44Z
+**User Input**: "Your diagnosis is right, and the mistake was mine. Since 2025-12-08, a pull_request_target workflow always comes from the default branch, which I didn't account for. Thank you for stopping.
+
+Decision 1: revert ae6dba9 now, the whole commit (git revert -s ae6dba9). Afterwards dco.yml, tools/workflows/check.ts and check.test.ts must match 73d88c3 exactly; show the empty diff. Run the gate, push, and wait for dev's CI to go green. The revert supersedes ae6dba9's commit-message claim; say so in the revert's message.
+
+Decision 2 (the user's, through the reviewer): OBL-03 closes as an ACCEPTED RISK. DCO stays on pull_request. Record in OBL-03's row:
+- The risk: a fork PR can edit dco.yml or tools/dco so its own DCO check passes.
+- Why the fix was dropped: pull_request_target always runs the default branch's workflow (since 2025-12-08), and GitHub blocks it by default in public repositories from 2026-12-02 unless an Actions event policy allows it. Cite the two GitHub changelogs you used.
+- The mitigation: the user merges every PR, and GitHub asks for approval before running a first-time contributor's workflows. Before trusting a fork PR's DCO result, the maintainer checks whether it touches .github/ or tools/dco. Write that check down where a maintainer will see it: CONTRIBUTING.md if it exists, otherwise the README's contributing section.
+- When to revisit: when outside contributors start sending PRs, or when GitHub offers a way to judge a PR without pull_request_target.
+- Status: Accepted risk, with the user's decision timestamp.
+
+Then update build-and-test-summary.md (OBL-03, the revert, #25 closed unmerged) and the open-obligations count, and present the Build and Test gate again. Log this message word for word in audit.md. Commit signed off and push."
+**AI Response**: "Logged. Reverting ae6dba9 whole with git revert -s; then OBL-03 recorded as an accepted risk, the maintainer's check written in CONTRIBUTING.md, the summary updated, dev's CI waited on, and the gate presented again."
+**Context**: Construction, Build and Test gate (held); OBL-03 decided
+
+---
+
+## OBL-03 closed as an accepted risk; Build and Test gate again
+**Timestamp**: 2026-11-20T05:07:11Z
+**User Input**: (none)
+**AI Response**: "Decision 1: git revert -s ae6dba9, the whole commit, as 23759e0; its message amended before pushing to say it supersedes ae6dba9's claim that the fix applies to pull requests into dev once on dev. git diff 73d88c3 HEAD -- .github/workflows/dco.yml tools/workflows/check.ts tools/workflows/check.test.ts: empty (0 lines). The gate passed (Node: typecheck, lint, format, build, pnpm checks all ok, Vitest 302, pnpm audit, audit exceptions; Python: ruff, mypy 49 files, pytest 395). Pushed; dev's CI on 23759e0, run 44678425492: success. Decision 2: OBL-03's row now reads Accepted risk (2026-11-20T05:01:44Z), with the risk, why the fix was dropped (the two GitHub changelogs, 2025-11-07 and 2026-09-17, linked), the mitigation, main's protection (ruleset 27701690 active since 2026-11-20T04:50:36Z; Check sign-off required, no bypass; dev unprotected; the job's name kept), and when to revisit. The maintainer's check is written in CONTRIBUTING.md, 'For maintainers: trusting the DCO check on a fork pull request', with the commands. build-and-test-summary.md: runs 45 to 48 added (the fix's gate, the local simulation, #25 with no DCO run and its cause, the revert's gate and CI); 48 runs, 4 failed, each with its cause; OBL-03 closed as an accepted risk; one obligation open (OBL-05); #24 merged and my wrong 'split' note corrected. Build and Test gate presented again."
+**Context**: Construction, Build and Test gate (presented again)
+
+---
