@@ -105,9 +105,9 @@ Bootstrap, renewal and subscribe are retried with backoff after a transient fail
 never is. A credential the platform refuses (`credential_refused`) revokes the client: every
 later call raises `ClientStateError` with `state` `revoked`.
 
-If a TLS failure happens on a Python whose default certificate store is empty (python.org's
-macOS installer leaves it so until you run its *Install Certificates* command), the
-`TransportError` says so.
+**Python from python.org's macOS installer starts with no CA certificates**: every TLS
+connection to a public endpoint fails until you run its *Install Certificates* command (or pass
+the endpoint's CA as `ca_file`). The SDK's `TransportError` (`tls`) then names that step.
 
 ## Subscribing
 

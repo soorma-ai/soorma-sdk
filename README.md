@@ -3,10 +3,11 @@
 The client harness SDKs for the soorma.ai platform, in every language they ship
 in.
 
-> **Early construction.** Built so far: the language-neutral layer every language
-> package is judged against: the vendored wire contract, the harness behaviour
-> specification, the conformance suite, and the repository checks. The TypeScript
-> and Python packages follow.
+> **Early construction (M1).** Built so far: the language-neutral layer every
+> language package is judged against (the vendored wire contract, the harness
+> behaviour specification, the conformance suite, and the repository checks), and
+> the TypeScript and Python packages, each passing every conformance case. Neither
+> is published to a registry yet: install from this repository.
 
 ## What this is
 
@@ -30,6 +31,8 @@ does as a courtesy the platform independently re-checks.
 | [`contract/`](contract/) | soorma-core's wire contract at `contract-v0.1.0`, byte for byte; never edited (see [`contract.md`](contract.md)) |
 | [`spec/`](spec/) | The [behaviour specification](spec/behaviour.md) every language implements, and the [name table](spec/names.md) |
 | [`conformance/`](conformance/) | The conformance suite: cases, runner, stub, and the test-only reference driver ([README](conformance/README.md)) |
+| [`typescript/`](typescript/) | `@soorma/sdk`, the TypeScript package ([README](typescript/README.md)), its conformance driver, example and end-to-end scenario |
+| [`python/`](python/) | `soorma`, the Python package ([README](python/README.md)), its conformance driver, example and end-to-end scenario |
 | [`e2e/`](e2e/) | The end-to-end stack: a fresh soorma-core at the contract tag, with agents registered, for the end-to-end tests ([README](e2e/README.md)); never part of a package |
 | [`tools/`](tools/) | Repository checks: contract drift, SPDX, workflows, generated types, names, packaging, DCO, audit exceptions |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | Every exception to the dependency policy |
@@ -49,6 +52,17 @@ pnpm conformance:self-test   # the reference driver, then the four negative cont
 pnpm audit --audit-level moderate && pnpm check:audit-exceptions
 ```
 
+The Python package is its own [`uv`](https://docs.astral.sh/uv/) project in `python/` (uv
+0.13.8, Python 3.11 and 3.15):
+
+```sh
+cd python && uv sync --locked
+uv run --locked ruff check && uv run --locked ruff format --check
+uv run --locked mypy && uv run --locked pytest -q
+scripts/audit.sh             # pip-audit over every resolution in uv.lock
+cd .. && pnpm conformance run --driver "python/.venv/bin/python python/conformance_driver/driver.py"
+```
+
 The conformance suite runs on Linux and macOS (it needs the `openssl` CLI); Windows is not
 supported in M1. CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs all of these on
 pull requests and pushes to `dev`, with every action pinned by commit SHA, `ubuntu-24.04`, and
@@ -58,13 +72,13 @@ read-only permissions.
 ([`dco.yml`](.github/workflows/dco.yml)). The one exemption is a commit GitHub's API reports as
 authored by `dependabot[bot]` **and** verified (GitHub signs Dependabot's commits); a failed
 lookup fails the check. Dependabot updates npm packages and actions weekly, after a 7-day
-cooldown, into `dev`.
+cooldown, into `dev`; and, from U4, the Python packages in `python/uv.lock`.
 
 ### The end-to-end stack
 
 The end-to-end tests run against a fresh soorma-core at `contract-v0.1.0`, brought up from
 soorma-core's own code and taken down again ([`e2e/`](e2e/README.md)). The same commands run in
-CI's `e2e-typescript` job and on your machine:
+CI's `e2e-typescript` and `e2e-python` jobs and on your machine:
 
 ```sh
 pnpm e2e:core-up --core-node "$(nvm which 26.13.0)"   # clone soorma-core at the tag, build, start
@@ -72,11 +86,13 @@ pnpm e2e:setup --agents agent-a,agent-b              # register the agents; writ
 pnpm e2e:prove-stack                                 # one bootstrap per agent: the stack works
 pnpm --filter @soorma/sdk build                      # the TypeScript scenario uses the built package
 pnpm e2e:scenario-typescript                         # two agents, one real renewal, one trace (about 1 minute)
+python/.venv/bin/python python/e2e/scenario.py       # the same in Python, on Python 3.11 or 3.12 (soorma-ai/soorma-core#36)
 pnpm e2e:core-down                                   # search soorma-core's logs, then take it all down
 ```
 
-The example agents the scenario stands for are in
-[`typescript/examples/two-agents/`](typescript/examples/two-agents/README.md).
+The example agents the scenarios stand for are in
+[`typescript/examples/two-agents/`](typescript/examples/two-agents/README.md) and
+[`python/examples/two_agents/`](python/examples/two_agents/README.md).
 
 **Prerequisites**: Linux or macOS (Windows is not supported in M1); Docker Engine 26 or later and
 Docker Compose 2.26.0 or later (soorma-core's floor); `git`; and **Node.js 26.13.0** for

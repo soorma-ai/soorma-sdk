@@ -336,6 +336,42 @@ jobs:
   # base with GitHub's test merge commit; commit SHAs only, through env; a diff
   # that cannot be computed runs the job. Never on a push to main: the pull
   # request's run already tested the merge result.
+  # soorma as a tenant receives it (TS-U4-04; PH-API-06; TC-PH-058, 065): the
+  # wheel and the sdist built and guarded (no test-only path, no values hook);
+  # on 3.11 and 3.15, the wheel installed offline, hash-checked, into a fresh
+  # environment with the runtime dependencies from uv.lock; importing soorma
+  # constructs an AgentClient; the hook is not importable; the example's agent
+  # files type-checked (mypy --strict) against the installed wheel and imported.
+  package-python:
+    name: Package, Python (wheel and sdist, installed fresh offline, import, the example)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node from .node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Set up uv (exact version)
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.8'
+          enable-cache: false
+
+      - name: Python 3.11.18 and 3.15.2, and the locked environment (mypy; the wheels cached)
+        working-directory: python
+        run: |
+          uv python install 3.11.18 3.15.2
+          uv sync --locked --python 3.11.18
+
+      - name: Build, guard, install fresh and offline, import; the example checked
+        run: node tools/package-python/check.ts --python 3.11.18 --python 3.15.2
+
   changes:
     name: Changed files (does the end-to-end job run?)
     if: github.event_name != 'push' || github.ref != 'refs/heads/main'
@@ -429,6 +465,86 @@ jobs:
 
       - name: The TypeScript scenario (two agents, one real renewal, one trace)
         run: pnpm e2e:scenario-typescript
+
+      - name: core-down (searches the logs every run; prints them if the job failed or was cancelled)
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ "$JOB_STATUS" = success ]; then
+            pnpm e2e:core-down
+          else
+            pnpm e2e:core-down --logs
+          fi
+
+  # e2e-python (U4; PH-E2E; TC-PH-061 to 063): as e2e-typescript, with the Python
+  # scenario (python/e2e/scenario.py; both agents, time.time patched for one real
+  # renewal, the decoy span) run from the built wheel, installed into a fresh
+  # environment with the scenario's dependencies from uv.lock, hash-checked. On
+  # 3.11: the local stack's certificates fail 3.13+'s strict verification
+  # (soorma-ai/soorma-core#36, OBL-05). No cache, no artifact, no secret.
+  e2e-python:
+    name: End-to-end, Python (soorma-core at the contract tag)
+    needs: changes
+    if: needs.changes.outputs.e2e == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Set up Node 26.13.0 for soorma-core's own steps
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26.13.0
+
+      - name: Keep soorma-core's Node path for core-up --core-node
+        id: core-node
+        run: echo "path=$(command -v node)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node from .node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up uv (exact version)
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.8'
+          enable-cache: false
+
+      - name: Python 3.11.18; the wheel built and installed into a fresh environment
+        run: |
+          uv python install 3.11.18
+          uv build --project python --wheel --out-dir "$RUNNER_TEMP/dist"
+          uv venv "$RUNNER_TEMP/e2e-venv" --python 3.11.18 --no-project
+          uv export --project python --locked --no-default-groups --group otel-latest \
+            --no-emit-project --format requirements-txt --output-file "$RUNNER_TEMP/e2e-requirements.txt"
+          uv pip install --python "$RUNNER_TEMP/e2e-venv/bin/python" --require-hashes \
+            -r "$RUNNER_TEMP/e2e-requirements.txt"
+          uv pip install --python "$RUNNER_TEMP/e2e-venv/bin/python" --no-deps "$RUNNER_TEMP"/dist/soorma-*.whl
+
+      - name: core-up
+        env:
+          CORE_NODE: ${{ steps.core-node.outputs.path }}
+        run: pnpm e2e:core-up --core-node "$CORE_NODE"
+
+      - name: setup
+        run: pnpm e2e:setup --agents agent-a,agent-b
+
+      - name: prove-stack
+        run: pnpm e2e:prove-stack
+
+      - name: The Python scenario (two agents, one real renewal, one trace)
+        run: '"$RUNNER_TEMP/e2e-venv/bin/python" -I python/e2e/scenario.py'
 
       - name: core-down (searches the logs every run; prints them if the job failed or was cancelled)
         if: always()

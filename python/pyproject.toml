@@ -88,7 +88,7 @@ ignore = ["PLR2004", "PLR0913", "PLR0911", "PLR0912", "PLR0915", "S101"]
 strict = true
 python_version = "3.11"
 mypy_path = "src:conformance_driver"
-files = ["src", "tests", "conformance_driver"]
+files = ["src", "tests", "conformance_driver", "e2e", "examples"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
