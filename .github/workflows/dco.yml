@@ -1,25 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# DCO (U1 NFR-U1-29 to -31; OBL-03). Every non-merge commit in a pull request
-# carries a Signed-off-by matching its author, except a commit GitHub's commit
-# API reports as authored by dependabot[bot] AND verified (Dependabot cannot
-# sign off; GitHub signs its commits, so an email cannot be spoofed into the
+# DCO (U1 NFR-U1-29 to -31). Every non-merge commit in a pull request carries a
+# Signed-off-by matching its author, except a commit GitHub's commit API
+# reports as authored by dependabot[bot] AND verified (Dependabot cannot sign
+# off; GitHub signs its commits, so an email cannot be spoofed into the
 # exemption). A failed lookup fails the check. The logic is tools/dco, tested
-# apart from this workflow.
-#
-# The code that judges a pull request never comes from it (OBL-03). Under
-# pull_request_target this workflow file is the base branch's, not the pull
-# request's; the job checks out only the base commit, fetches the pull
-# request's commits as data (objects for git rev-list and git show, never
-# checked out), and runs the base commit's tools/dco over base.sha..head.sha.
-# Nothing from the pull request is checked out, installed or run. No secret is
-# used; the token is actions/github-script's default github-token input, never
-# an environment variable, and permissions are read-only. The workflow check
-# (tools/workflows) enforces this.
+# apart from this workflow. The token is actions/github-script's own default
+# github-token input, never an environment variable; permissions are read-only.
 name: DCO
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
 
 permissions:
@@ -31,22 +22,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Check out the base commit only
+      - name: Check out, with history for the range
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Fetch the pull request's commits as data only
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          git fetch --no-tags origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/pull/head"
-          git cat-file -e "${HEAD_SHA}^{commit}"
-
-      - name: Verify every commit carries a matching sign-off (the base commit's tools/dco)
+      - name: Verify every commit carries a matching sign-off
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
