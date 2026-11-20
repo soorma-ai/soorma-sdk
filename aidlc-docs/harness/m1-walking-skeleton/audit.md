@@ -2077,3 +2077,19 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G7
 
 ---
+
+## Code Generation Part 2: G7 CI
+**Timestamp**: 2026-11-20T03:32:47Z
+**User Input**: (none)
+**AI Response**: "530bbe9 (G7, signed off) pushed to dev. CI run 44666800108: success, every job."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G7 to G8
+
+---
+
+## Code Generation Part 2: G8 (Steps 29 to 32)
+**Timestamp**: 2026-11-20T03:32:47Z
+**User Input**: (none)
+**AI Response**: "G8 written. python/conformance_driver/: driver.py (every protocol command, run concurrently as tasks; create through the values hook, cleared after construction; the test provider returns one string and U1's sys.getrefcount check compares with a baseline taken before start; warnings recorded with catch_warnings(record=True), SoormaWarning's SOORMA_CLOCK_SKEW reported as clock-skew; openResources from the loop: socket transports not closing, timers not cancelled, tasks that are not the driver's; next keeps one pending pull across timeouts), names.py (names and surface by introspection of soorma: __all__, and each exported class's members, dataclass fields and __init__'s self assignments, from soorma's own classes only; TypedDict keys are wire data), spans.py (a test tracer provider with an in-memory exporter; a tenant span as the current span). python/README.md written now, since CC-SPN-08 reads its Spans and Delivery sections through docs (G10's Step 39 completes it); it already carries the Python 3.13+ local-stack note citing soorma-ai/soorma-core#36. Step 30, the early budget check: the first full run, 3.11, 94 passed, 2 failed, 1 not run (CC-SEC-05, --local-skip), 91 s, against the 5-minute budget. Step 31, CDI-05: both failures judged the driver's, no case or helper changed, no SDK change, no specification question: CC-RCV-05 (the driver wrote Infinity, which is not JSON, for the payload's 1e400, which Python parses natively as inf; it now writes null, as JSON.stringify does) and CC-PRB-07 (the driver counted its own main task as an open task). Step 32: 3.11 96 passed in 87 s, 3.15.2 96 passed in 88 s; final runs 88 s on each; tools/names/drivers.json gains the Python driver (uv run --locked --project python), and the names check passes for 2 languages. mypy now checks conformance_driver/. Gate: ruff, mypy (46 files) clean; pytest 395 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, the six checks (names: 2 languages), audit exceptions, vitest 299 passed. Plan Steps 29 to 32 ticked; the CDI-05 log (plan §4) filled."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G8
+
+---

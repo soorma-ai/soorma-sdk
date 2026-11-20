@@ -2,5 +2,17 @@
   {
     "language": "TypeScript",
     "command": ["node", "--expose-gc", "typescript/conformance-driver/driver.ts"]
+  },
+  {
+    "language": "Python",
+    "command": [
+      "uv",
+      "run",
+      "--locked",
+      "--project",
+      "python",
+      "python",
+      "python/conformance_driver/driver.py"
+    ]
   }
 ]
