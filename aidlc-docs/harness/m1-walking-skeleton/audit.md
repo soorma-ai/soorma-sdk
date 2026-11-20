@@ -2204,3 +2204,40 @@ Log this message word for word in audit.md. Commit signed off and push."
 **Context**: Construction, Build and Test, completion; awaiting the user's approval
 
 ---
+
+## Build and Test: gate held; #24 and OBL-03
+**Timestamp**: 2026-11-20T04:47:36Z
+**User Input**: "Not approving Build and Test yet. Two things first, then show me the gate again.
+
+1. Dependabot #24 is merged into dev as d68520a (2026-11-20T04:45:41Z; the user's decision, through the reviewer). Pull dev. Record #24 as merged in the Dependency Updates table. Correct #20's row: the \"split\" premise was wrong. context-async-hooks 3.1.1 is that package's own latest release, sdk-trace-base has no 3.x release to group with, and the package only touches @opentelemetry/api (peer >=1.0.0 <1.11.0). All 16 checks on #24 passed, including TypeScript conformance on API 1.9.0 and 1.10.0 and e2e-typescript.
+
+2. Fix OBL-03 now. Taking the tools from the base commit alone isn't enough: under pull_request, the PR also supplies dco.yml itself. Change dco.yml to:
+   - on: pull_request_target (opened, synchronize, reopened); permissions: contents: read; no secrets.
+   - Check out only github.event.pull_request.base.sha (fetch-depth 0, persist-credentials false).
+   - Fetch the PR's commits as data only (git fetch origin +refs/pull/<n>/head), then run the base's tools/dco over base.sha..head.sha.
+   - Never check out, install or run anything from the PR.
+   Add a rule to the repository's workflow check that fails if dco.yml checks out the PR head or runs anything from it, plus a test the rule fails on (checking out head.sha). Keep the tools/dco tests passing. Say in the commit that pull_request_target uses the base branch's workflow, so the fix applies to PRs into dev once it's on dev, and to PRs into main only after it's merged there. Mark OBL-03 Discharged, citing the commit and a green DCO run. Record that main isn't protected (ruleset 27701690 \"protect main\" is disabled), so DCO isn't a required check; requiring it is the user's repository setting, not this session's.
+
+Then add both to build-and-test-summary.md, update the open obligations count, wait for dev's CI to go green, and present the Build and Test gate again. After approval, open the closing PR dev → main. Log this message word for word in audit.md. Commit signed off and push."
+**AI Response**: "Logged. Pulling dev (fast-forward), then: #24 recorded as merged and #20's row corrected; OBL-03 fixed as specified, with the workflow check's new rule and its test; then the summary, dev's CI, and the gate again."
+**Context**: Construction, Build and Test gate (held)
+
+---
+
+## Build and Test: main's protection (correction)
+**Timestamp**: 2026-11-20T04:51:41Z
+**User Input**: "Correction to my last message: main is now protected (2026-11-20T04:50:36Z, the user's change, through the reviewer). Ruleset 27701690 \"protect main\" is active. No deletion or force push. Changes only through a PR, with 0 approvals and merge commits only. \"Check sign-off\" (GitHub Actions) is a required check, with no bypass. dev stays unprotected.
+
+Record this with OBL-03, not as an open item. Keep the DCO job's name exactly \"Check sign-off\": the rule matches that name, so a rename would block every PR into main. Log this message word for word in audit.md."
+**AI Response**: "It matches what GitHub showed me before this message arrived: ruleset 27701690 'protect main' enforcement active on ~DEFAULT_BRANCH (updated 2026-11-20T04:50:30Z), rules deletion, non_fast_forward, pull_request (0 approvals, merge only), required_status_checks [{context 'Check sign-off', integration 15368}]; main protected. To be recorded with OBL-03, not as an open item. The rewritten DCO job (ae6dba9) keeps its name exactly 'Check sign-off'."
+**Context**: Construction, Build and Test gate (held); OBL-03
+
+---
+
+## OBL-03: the fix cannot run as specified (stopped for the user)
+**Timestamp**: 2026-11-20T04:54:02Z
+**User Input**: (none)
+**AI Response**: "ae6dba9 (dco.yml on pull_request_target, base-only checkout, the PR's commits fetched as data; the workflow check's rule and 8 tests; tools/dco unchanged) pushed to dev; the Node gate passed (310 tests, every check ok), and a local simulation of the job (a clone at main's tip 73d88c3, dev's head d68520a fetched as data, the base's tools/dco over the range) judged 6 commits ok. To get a DCO run I opened #25, a draft pull request into dev with one empty signed-off commit. No DCO run occurred (the DCO workflow's latest runs are still #24's 44672295778 and #23's). Cause, confirmed from GitHub's changelog of 2025-11-07 and the docs ('Securely using pull_request_target'): since 2025-12-08 a pull_request_target workflow's file and checkout commit always come from the repository's default branch (main), whatever the pull request's base. main's dco.yml still triggers on pull_request only; under pull_request the workflow comes from the pull request's merge ref, whose dco.yml is now pull_request_target only. So, while dev has ae6dba9 and main does not: no pull request into dev gets a DCO run; and the closing pull request dev to main would get no 'Check sign-off' at all, which main's ruleset 27701690 requires with no bypass, so it could not merge. The commit message of ae6dba9 (and my note in it) that the fix 'applies to PRs into dev once it is on dev' is wrong for the same reason. Second finding, same sources: GitHub's default policy blocks pull_request_target workflows in public repositories without an applicable Actions event policy that allows it; it runs in evaluate mode now and is enforced on 2026-12-02 (changelog 2026-09-17, with an editor's note of 2026-10-21). soorma-sdk is public, so the rewritten DCO job would be blocked from 2026-12-02 unless the user allows pull_request_target by an event policy (a repository or organization setting). Also from the docs: a git fetch of the PR head is not covered by actions/checkout's fork protection, and is safe only while nothing fetched is run, which the new workflow-check rule enforces. #25 closed unmerged, its branch deleted. OBL-03 not marked discharged; Build and Test's gate stays held. #24 and #20 recorded as the user directed."
+**Context**: Construction, Build and Test gate (held); OBL-03; stopped for the user
+
+---
