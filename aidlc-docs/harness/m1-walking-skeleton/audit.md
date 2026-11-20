@@ -1903,3 +1903,249 @@ Log this message word for word in audit.md."
 **Context**: Construction, U4 python-harness, Construction Design PR gate: stopped for the user
 
 ---
+
+## U4 python-harness — Design PR #22 merged; dev synced; Dependabot group
+**Timestamp**: 2026-11-20T00:25:40Z
+**User Input**: "soorma-ai/soorma-sdk#22 is merged: merge commit 91c225e340aff7db23b7f7d103a930b06e1f3560 on main, 2026-11-20T00:18:21Z, with parents 7fcb499 (main) and 98c0c13 (the PR head). Dependabot's #21 (prettier 3.10.1) was then merged into dev as 7408b9e, at 00:18:30Z; dev's push CI on it is green (44644810119). Confirm both on GitHub, then:
+
+1. Sync dev. It can't fast-forward any more: main has #22's merge commit and dev has #21's. Make one merge on dev, signed off, as the DCO rule allows when a merge can't be avoided: git fetch origin && git merge --no-ff --signoff origin/main. The trees differ only by #21, so expect no conflicts; if there are any, stop and tell me. Check that dev then contains main.
+2. Record U4's Construction Design PR gate as approved and merged, with the runs at 98c0c13: CI (pull request) 44644003717, DCO 44644003786, CI (push) 43994308 as you recorded it (use the exact ID from your notes). Record #21's merge in the Dependency Updates section.
+3. Dependabot #20 is held. It moves @opentelemetry/context-async-hooks to 3.1.1 while @opentelemetry/sdk-trace-base stays at 2.12.0, and OpenTelemetry's SDK packages are released together and meant to match. In .github/dependabot.yml, add a group so @opentelemetry/sdk-trace-base, @opentelemetry/context-async-hooks and any other @opentelemetry/* development packages update together, in every npm directory that has them. Leave the @opentelemetry/api peer range alone. Add the same kind of group to the uv ecosystem for the Python opentelemetry packages. Add a line to DEPENDENCIES.md, then close #20 with a comment explaining that a grouped update replaces it. Signed-off commit.
+4. Log this message word for word in audit.md, push, wait for CI.
+5. Write U4's Code Generation plan and stop for my approval before writing any code. As for U3, cover:
+   - every change to U1 as its own step, classed, with the self-test after each: the two Python-only name rows, L_event and B_body, their statement, their two cases, and the stub's generated-body directive;
+   - the TypeScript fix as its own commit, with TypeScript's suite re-run;
+   - an early full run under the Python driver, timed against the 5-minute budget;
+   - CDI-05 for failing cases;
+   - the CI job order, with OBL-04 discharged for Python on the code PR;
+   - the HTTP parser's tests before anything uses the parser."
+**AI Response**: "Confirmed on GitHub: #22 MERGED 2026-11-20T00:18:21Z as 91c225e (parents 7fcb499, 98c0c13); #21 merged into dev as 7408b9e at 00:18:30Z; push run 44644810119 on 7408b9e green. dev fast-forwarded to 7408b9e, then one signed-off merge of origin/main, no conflicts: ea3e7a3 (parents 7408b9e, 91c225e; the message rewritten so Signed-off-by and Co-Authored-By form one trailer block); dev contains main and differs from it only by #21. Recorded: the U4 design gate APPROVED (merged), final head 98c0c13: CI 44644003717, DCO 44644003786, push 44643994308 (the exact ID); #21 and #20 in Dependency Updates. .github/dependabot.yml: an opentelemetry group in the npm entry (patterns @opentelemetry/*, excluding @opentelemetry/api), which covers every workspace package. The uv group is not added now: python/ does not exist yet, so a uv entry would fail Dependabot's job for it every week; the group's YAML goes into the Code Generation plan step that adds the uv entry, and DEPENDENCIES.md says both. #20 to be closed with a comment once the commit is pushed."
+**Context**: Construction, U4 python-harness: design gate merged; dev synced; Dependabot grouping
+
+---
+
+## U4 python-harness — Code Generation Part 1: plan, approval prompt
+**Timestamp**: 2026-11-20T00:31:28Z
+**User Input**: (none)
+**AI Response**: "Merged on dev and pushed: 73235a5 (the Dependabot opentelemetry group; the design gate and #21 recorded); push run 44645782790 green; #20 closed with a comment. Code Generation plan written (construction/working/python-harness-code-generation-plan.md, the single source of truth): eleven commit groups. G1 the changes to U1, each its own step with the self-test after each: the two Python-only name rows (class 1); L_event and B_body in §0, the runner's named values, the schema, the reference driver's defaults (class 1); RCV-09 with spec.test.ts 104 to 105 (class 3); the stub's generated-body directive (class 1); CC-RCV-09 and CC-RCV-10 with cases.test.ts 95 to 97 (cases class 1, count class 3); the reference driver declaring them only if it passes. G2 the TypeScript fix, its own commit, with TypeScript's suite re-run and the new cases passing. G3 the Python project, checks, CI's first Python steps, the uv Dependabot entry with its opentelemetry group. G4 the HTTP parser with its table-driven and fuzz tests before anything uses it. G5 to G7 the package. G8 the driver and the first full run, timed against the 5-minute budget, CDI-05. G9 conformance-python and the floor run (OBL-04). G10 the example, e2e-python, package-python, the README, the local run. G11 the summaries, matrices and the code PR with OBL-04 discharged for Python. Points for approval: 1.1 the two counts as class 3 made with the plan's approval; 1.2 RCV-09 and the cases named; 1.3 the directive; 1.4 the reference driver; 1.5 the pinned uv in the scratch directory, the machine's uv untouched; 1.6 the early budget check; 1.7 the local end-to-end run. Refusal sweep: CC-PRB-08, CC-PUB-03, CC-RCV-07 and the ClientStateError cases keep exactly one cause. Approval prompt presented; no code written."
+**Context**: Construction, U4 python-harness, Code Generation Part 1, Steps 1 to 6
+
+---
+
+## U4 python-harness — Code Generation Part 1: plan approved
+**Timestamp**: 2026-11-20T00:37:17Z
+**User Input**: "Plan approved, including your deviation: the uv Dependabot entry and its opentelemetry-* group go in at Step 13, when python/ exists, not now.
+
+Approving the plan covers the two count changes (statements 104 to 105, cases 95 to 97) as class 3 changes. Each is recorded with its before and after, and the cases test keeps checking every U1 ID.
+
+Two reminders:
+- G2: the TypeScript fix must also pass CC-RCV-09 and CC-RCV-10 under the TypeScript driver on Node 24 and 26, and conformance-typescript must still pass 97 of 97 on all three entries in CI.
+- Step 13: when you add the uv entry, check on the first scheduled or manual run that Dependabot's uv job succeeds, and record it.
+
+Log this message word for word in audit.md, then start G1."
+**AI Response**: "Plan approved, with the uv deviation and the two class 3 count changes. The reminders added to the plan at Steps 8e and 13. Starting G1."
+**Context**: Construction, U4 python-harness, Code Generation Part 1 approved; Part 2 starts
+
+---
+
+## U4 Code Generation — G1: the changes to U1, each with its class (Step 7)
+**Timestamp**: 2026-11-20T00:51:53Z
+**User Input**: (none)
+**AI Response**: "Step 1, class 1: spec/names.md gains two Python-only rows, '| payload not parsed (Python only: TypeScript leaves payload absent) | — | PayloadNotParsed |' and '| warning category (Python only: Node's is a process warning, not an export) | — | SoormaWarning |' (TypeScript cells hold no backticked name; the TypeScript names check unchanged). Step 2, class 1: spec §0 gains L_event and B_body (1 MiB each); the runner's NAMED_VALUES, case.schema.json's values enum and the reference driver's Values and DEFAULTS (1 048 576 each) gain them; no test asserts the named-value list exactly (U3's skeleton.test.ts pins LIMITS and changes in G2). Step 4, class 1: the stub gains the generated-body directive (generate: {bytes, line, event?, member?}, produced at send time) for stream events and bodies, with four stub tests; existing scripts unchanged. Steps 3 and 5 together (two-way links): spec §12 gains RCV-09; conformance/cases/rcv/CC-RCV-09.json and CC-RCV-10.json added (class 1). Class 3, approved with the plan (2026-11-20T00:37:17Z): spec.test.ts 'holds the 104 statements ... toHaveLength(104)' became 'holds the 105 statements ... toHaveLength(105)'; cases.test.ts 'holds U1's 90 cases and the 5 added at U3 ... toHaveLength(95)' became '... and the 2 added at U4 ... toHaveLength(97)', with U4_CASES ['CC-RCV-09', 'CC-RCV-10'] checked and every U1 and U3 id still checked. Step 6: the reference driver fails both new cases, so it does not declare them. The self-test after each step passed, every fault set as declared (147, 147, 149, 147 s). G1 is committed and pushed together with G2 (the new cases need G2's fix under the TypeScript driver)."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G1
+
+---
+
+## U4 Code Generation — G2: the TypeScript fix
+**Timestamp**: 2026-11-20T01:03:55Z
+**User Input**: (none)
+**AI Response**: "G2 (Steps 8a to 8f), its own commit: typescript/src/limits.ts gains L_event and B_body (1 MiB); subscription.ts splits text into complete events plus the partial one, past L_event discarding until the blank line (split across chunks too) and queuing one event-too-large delivery error, no text, also for an over-bound event arriving whole; transport.ts bounds post and readReply at B_body (TransportFailure response-too-large, never the bytes); retry.ts never retries it; every request passes maxBody. Tests: five in g5.test.ts, six in bounds.test.ts (against U1's stub); each new over-bound test fails with the fix removed. Change to an earlier unit's test, class 1: typescript/src/skeleton.test.ts's exact LIMITS gains 'L_event: 1_048_576' and 'B_body: 1_048_576' (items added; nothing removed). Gate green on Node 24.22.3: 297 tests, checks, build, package-typescript, audit, self-test (146 s, fault sets as declared). The suite under the TypeScript driver, Node 24.22.3 and 26.13.0: 96 passed, 1 not run (CC-SEC-05, locally), CC-RCV-09 and CC-RCV-10 passing, 122 s and 124 s. Step 8f: the Python suite's scripted time equals the TypeScript suite's (the values differ only in D_lang), about 2 minutes against the 5-minute budget. G1 and G2 pushed together."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G2
+
+---
+
+## U4 Code Generation — G3: stopped for the user (opentelemetry-api floor advisories)
+**Timestamp**: 2026-11-20T01:15:05Z
+**User Input**: (none)
+**AI Response**: "G3 Steps 9 to 12 done locally, not yet committed: uv 0.13.8 (checksum verified, scratch directory), CPython 3.11.18 and 3.15.2 (3.15.2's json parses about 65 000 levels; D_lang 256 stands, bounded by 3.11); python/pyproject.toml and uv.lock (opentelemetry-api >=1.14.0,<2; otel-latest 1.45.2 and otel-floor 1.14.0 conflicting groups); the package skeleton (ruff, mypy --strict, 3 tests green on 3.11); python/scripts/generate.ts and the generated TypedDicts; the generated-types check skipping __pycache__ and the packaging guard's pyproject.toml branch, each with a test; pnpm checks green. Before Step 13, pip-audit on the floor resolution found two advisories in opentelemetry-api 1.14.0: GHSA-xcq7-p3pf-p88h / CVE-2026-114603 (TraceState.from_header, quadratic tracestate parsing; fixed in 1.45.1) and GHSA-mf5v-w3w3-f6cg / CVE-2026-126360 (TraceContextTextMapPropagator.extract, quadratic traceparent parsing; fixed in 1.45.2), CVSS 3.1 A:L, network, no privileges. The latest resolution is clean. Stopped for the user: the floor of the runtime range and how the floor run is audited are the user's decision."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G3, stopped
+
+---
+
+## U4 Code Generation — G3: the user decides the opentelemetry-api floor
+**Timestamp**: 2026-11-20T01:20:08Z
+**User Input**: "B: raise the opentelemetry-api floor to 1.45.2, the first release with both fixes (released 2026-10-29, past the 7-day cooldown). The range becomes >=1.45.2,<2. Every resolution must audit clean, with no accepted advisory. The SDK is new and its first users are my own apps, so requiring a current OpenTelemetry costs little now and keeps \"no known vulnerability accepted\" true.
+
+Keep from A, as defence in depth whatever version a tenant installs: the SDK parses traceparent and tracestate itself, within W3C's limits (tracestate at most 512 characters and 32 list members, more is dropped, as the spec allows), and builds TraceState from its own parsed pairs. A test shows it never calls TraceState.from_header or any propagator's extract.
+
+The floor group stays in uv.lock and its CI run stays. Until a newer release enters the lock it tests the same version as the latest run; say so in DEPENDENCIES.md, and that the floor moves only by hand.
+
+Note for the record: A wouldn't have fitted the existing audit-exceptions register. Its expiry fires once a fix is published and past the cooldown, which is already true here, so A would have needed a new kind of exception scoped to the floor run.
+
+Log this message word for word in audit.md, then finish Step 13, run G3's gate, commit signed off, push and wait for CI."
+**AI Response**: "B: the range becomes opentelemetry-api>=1.45.2,<2; otel-floor pins 1.45.2 (the same as otel-latest until a newer release enters the lock); every resolution must audit clean. Kept from A for G6 (Step 23): the SDK parses traceparent and tracestate itself within W3C's limits (tracestate at most 512 characters and 32 list members, the rest dropped) and builds TraceState from its own pairs, with a test that it never calls TraceState.from_header or any propagator's extract. The note on the audit-exceptions register recorded. Finishing Step 13, then G3's gate."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G3: user decision
+
+---
+
+## U4 Code Generation — G3: the Python project, its checks, CI's first Python steps
+**Timestamp**: 2026-11-20T01:22:21Z
+**User Input**: (none)
+**AI Response**: "Step 9: uv 0.13.8 (newest past the cooldown; SHA-256 a04c2ffeac28b2003a2c13caf538ab425fcd7def3e4a41571f4a8fb370a66af3 checked; scratch directory, the machine's uv untouched), CPython 3.11.18 and 3.15.2, setup-uv v10.3.3 (68559e99…). Step 10: python/pyproject.toml (soorma 0.1.0; opentelemetry-api>=1.45.2,<2 per the user's decision; uv_build 0.13.8; dev pytest 9.2.0, pytest-asyncio 1.5.0, ruff 0.17.5, mypy 2.4.1, pip-audit 2.10.1; otel-latest and otel-floor both 1.45.2, conflicting; exclude-newer 2026-11-13; no-build; _internal excluded from wheel and sdist; ruff with the banned APIs; mypy strict; pytest warnings as errors) and uv.lock. Step 11: the skeleton (__all__ exactly the Python column; errors, PayloadNotParsed, SoormaWarning and value types complete; operations stubbed). Step 12: python/scripts/generate.ts (TypedDicts; received types total=False; forbidden-by-name draft members untyped; functional-form types quoted), listed in tools/generated-types/packages.json; U1's tools: the generated-types check skips __pycache__ (withoutCaches; a test), the packaging guard reads pyproject.toml (checkPythonPackage; a test), python/ listed — configuration and strictly additive, no existing assertion changed. Step 13: ci.yml unit gains Python on 3.11 (setup-uv pinned by SHA, uv 0.13.8; ruff; mypy; pytest; scripts/audit.sh over both resolutions, any advisory failing); checks gains Python 3.11 and the locked environment; dependabot.yml gains the uv ecosystem for /python with its opentelemetry group; DEPENDENCIES.md records the range, that the floor run tests the latest version until a newer release enters the lock, and that the floor moves only by hand. Gate green on Node 24.22.3 (299 tests, audit, checks, build) and Python 3.11.18 (ruff, mypy, 3 tests, pip-audit clean on both resolutions) and 3.15.2 (3 tests, mypy)."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G3
+
+---
+
+## U4 Code Generation — G4: the HTTP parser, tested before anything uses it
+**Timestamp**: 2026-11-20T01:43:19Z
+**User Input**: (none)
+**AI Response**: "Step 14: python/src/soorma/_http.py, the sans-IO ResponseParser (P-07): CRLF only in head and chunked framing, no obs-fold, token header names, HTTP/1.1 status lines, interim responses refused; bounds 1 KiB status line, 8 KiB header line, 100 headers, 64 KiB head, B_body body, 1 KiB chunk-size line, 16 KiB and 32 trailer lines, L_event per SSE event, 1 MiB per SSE line; Content-Length with Transfer-Encoding, differing lengths and codings other than chunked refused; chunk extensions ignored; framing (length, chunked, until close) separate from interpretation (a bounded body, or SSE events), since S4's stream is chunked. Steps 15 and 16: 123 tests (34 malformed/oversized/conflicting/truncated rows, each also fed a byte at a time, reasons only, the marker never in a message; valid responses identical at every split; SSE names, data lines, comments, LF/CRLF/CR, the event bound at exactly L_event and one byte over, the line buffer; a seeded fuzz over 40 seeds), mutation-checked (the Content-Length/Transfer-Encoding check and the event bound each caught). Step 17: _connection.py, the asyncio.Protocol (the request written exactly, head within T_req, bounded body, stream events with pause and resume, synchronous abort; a reset with no answer is connection and sent), 8 tests against a local TLS server. Found on Python 3.15: ssl.create_default_context sets VERIFY_X509_STRICT (3.13 and later), rejecting certificates without full RFC 5280 extensions; the test certificates were completed, and U1's stub certificates are to be checked before the Python driver's 3.15 runs (G8). Gate green on Python 3.11.18 and 3.15.2 (134 tests each, ruff, mypy, pip-audit clean) and the repository's checks."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G4
+
+---
+
+## U4 Code Generation — after G4: stopped for the user (Python 3.13+ strict TLS and the stack certificates)
+**Timestamp**: 2026-11-20T01:47:58Z
+**User Input**: (none)
+**AI Response**: "G4 pushed as b87473f; CI run 44655672879 green. Checked ahead of G8: Python 3.13 and later set VERIFY_X509_STRICT in ssl.create_default_context(), which rejects a certificate without an Authority Key Identifier. U1's stub server certificate (conformance/runner/src/rundir.ts makeServer: subjectAltName, extendedKeyUsage, basicConstraints only) fails it: openssl verify -x509_strict 'Missing Authority Key Identifier', and a Python 3.15.2 handshake fails the same way, so conformance-python on 3.15 would fail every case. soorma-core's local stack issues leaves the same way at contract-v0.1.0 (deploy/local/scripts/stack-certs.ts issueLeaf: no authorityKeyIdentifier); reproduced with its exact openssl arguments: the same failure, so a Python 3.13+ tenant cannot reach the local stack with the SDK's (correct) default verification; e2e-python on 3.11 is unaffected. A scratch test of the proposed U1 fix (subjectKeyIdentifier=hash, authorityKeyIdentifier=keyid,issuer added to the server extension file) passes openssl -x509_strict and a 3.15.2 handshake. Nothing changed in U1 or soorma-core. Stopped for the user."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, between G4 and G5, stopped
+
+---
+
+## U4 Code Generation — the user decides the strict-TLS findings
+**Timestamp**: 2026-11-20T02:30:41Z
+**User Input**: "All three approved.
+
+1. Add subjectKeyIdentifier=hash and authorityKeyIdentifier=keyid,issuer to makeServer's server-certificate extensions in conformance/runner/src/rundir.ts, covering both the trusted and the untrusted server certificate. It's a change to U1's test helper, covered by this message; record its class with the diff. Show it changes nothing else: the self-test passes with every fault set unchanged, TypeScript passes 97 of 97 on Node 24 and 26, and a 3.15 handshake against the stub succeeds. Also run openssl verify -x509_strict on both certificates.
+
+2. Yes, open the soorma-core issue. Cite contract-v0.1.0 (c1e3d7f3) and deploy/local/scripts/stack-certs.ts: the leaf extensions have no subjectKeyIdentifier or authorityKeyIdentifier, while the CA has a subjectKeyIdentifier. Include the reproduction (the exact openssl arguments, openssl verify -x509_strict output, and a Python 3.13+ ssl.create_default_context() handshake failing with \"Missing Authority Key Identifier\") and the two-line fix. Say the fix reaches soorma-sdk only through a new contract tag. Record it as OBL-05 with the issue number. End the issue body with the attribution line.
+
+3. Keep Python's strict default: the SDK never clears VERIFY_X509_STRICT, and a test asserts the context keeps it on 3.13+. The package README states the local-stack limitation for Python 3.13+, citing the issue. e2e-python stays on 3.11.
+
+I've removed the leftover folder of test certificates (/var/folders/.../soorma-conformance-run-8lzloy); note that in the audit.
+
+Log this message word for word in audit.md, then go on to G5."
+**AI Response**: "Approved: (1) the makeServer change to U1's helper, with evidence that it changes nothing else; (2) the soorma-core issue, recorded as OBL-05; (3) the strict default kept, with a test, and the README note. Noted: the user removed the leftover test-certificate folder /var/folders/tz/wx_q8xc93q18h1yllz5l1_c00000gn/T/soorma-conformance-run-8lzloy that the safety check had stopped the session removing. Then G5."
+**Context**: Construction, U4 python-harness, Code Generation Part 2: user decisions on strict TLS
+
+---
+
+## U4 Code Generation — strict TLS: U1's helper changed; soorma-core#36; OBL-05
+**Timestamp**: 2026-11-20T02:39:34Z
+**User Input**: (none)
+**AI Response**: "91049a7: conformance/runner/src/rundir.ts makeServer's extension file gains 'subjectKeyIdentifier=hash' and 'authorityKeyIdentifier=keyid,issuer' (both server certificates, trusted and untrusted). Class: a change to a test helper earlier assertions depend on, shown to behave as before, approved by the user: openssl verify -x509_strict OK on server.pem and untrusted-server.pem; a Python 3.15.2 handshake with the stub, strict on, OK; self-test pass, every fault set as declared (147 s); TypeScript on Node 24.22.3 and 26.13.0 96 passed, 1 not run locally (CC-SEC-05). The check's run directory was removed by the runner's own removeRunDir. soorma-ai/soorma-core#36 opened (stack-certs.ts issueLeaf at contract-v0.1.0 c1e3d7f3: no subjectKeyIdentifier or authorityKeyIdentifier on leaves while the CA has a subjectKeyIdentifier; the reproduction with the exact openssl arguments, openssl verify -x509_strict output, a Python 3.13+ default-context handshake failing with 'Missing Authority Key Identifier'; the two-line fix; the fix reaches soorma-sdk only through a new contract tag; the attribution line). Recorded as OBL-05 in aidlc-state.md. Plan: Step 21 gains the strict-flag test; Step 39 the README note citing soorma-core#36."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, between G4 and G5
+
+---
+
+## Code Generation Part 2: G5 (Steps 18 to 22)
+**Timestamp**: 2026-11-20T02:52:44Z
+**User Input**: (none)
+**AI Response**: "G5 written: _clock.py (wall_now, mono_now; time.time read on each call); the clock check (tests/test_clock_binding.py: alias-aware AST check over the package, each forbidden form failing with its file and line, a patched time.time reaching the SDK, no published module importing _internal; TC-PH-078); _limits.py (D_LANG 256, L_event and B_body 1048576, the rest as U3; the slot captured at construction) and _internal/test_values.py; _types.py EnvironmentRef keeps unknown members (CDI-04) through __getitem__, __iter__ and __len__; _secrets.py (O_NONBLOCK open, fstat checks in the reference driver's order, off the loop, Windows refused without opening; TC-PH-012 to 015, 067); _transport.py (Python's default context, TLS 1.2 at least, VERIFY_X509_STRICT kept on 3.13+ and never cleared, the CA file added; the Install Certificates hint only on tls with an empty store; Problems with every member; Retry-After as seconds or an HTTP-date; B_body; post's arguments after path keyword-only, ruff PLR0917); _retry.py (the P-01 table; R_max; Retry-After before backoff; W_max; renewal only while usable); _keeper.py (the provider once per attempt, the str dropped before the request is sent; is_usable the one validity check; the schedule max(R_min floor, wall-clock target); the skew warning once per lineage through a fresh registry, guarded; refusal terminal; REN-03 and REN-04). Technology decision, recorded: a bad CA file's TransportError('ca-file') names the path in its message (TC-PH-084 asks for the path; TransportError has no path field, so the path is passed as the message's parenthetical, never the file's contents). Tests: test_secrets (17), test_transport (20, including the strict-flag test the user asked for and an AST check that no module assigns verify_flags, check_hostname or verify_mode, or uses an unverified context or CERT_NONE), test_retry (45), test_keeper (18: TC-PH-072's, 075's and 083's unit halves, 077, 080's renewal half; the stream half of 080 lands with the subscription in G7). Gate: ruff format and check, mypy (33 files) clean; pytest 249 passed on 3.11.18 and on 3.15.2; scripts/audit.sh: no known vulnerabilities in dev + otel-latest or dev + otel-floor; Node 24.22.3: typecheck, lint, prettier, checks (contract drift, spdx, workflows, generated types, names, packaging), audit exceptions, vitest 299 passed. Plan Steps 18 to 22 ticked."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G5
+
+---
+
+## Code Generation Part 2: G5 CI
+**Timestamp**: 2026-11-20T02:56:29Z
+**User Input**: (none)
+**AI Response**: "8e30397 (G5, signed off) pushed to dev. CI run 44663915379: success, every job (typecheck, lint, format, tests, audit with the Python steps on 3.11.18; repository checks; conformance TypeScript on all three entries; package; self-test; end-to-end TypeScript). Starting G6."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G5 to G6
+
+---
+
+## Code Generation Part 2: G6 (Steps 23a to 25)
+**Timestamp**: 2026-11-20T03:08:21Z
+**User Input**: (none)
+**AI Response**: "G6 written. _json.py: the payload walk (PH-PUB-01), iterative, exact types, refusals by path and kind and never the value, an int past sys.get_int_max_str_digits() refused (the limit read, never changed), lone surrogates escaped, text equal to compact json.dumps otherwise. The path is built only on refusal (a linked node per level): a string per level made a 1 000 000-deep payload quadratic (67 s); now linear (under 5 s). _draft.py (DRF-01 to DRF-03; FWD-02's splice; FWD-03). _tracing.py (Step 23a, the user's defence in depth): traceparent and tracestate parsed by the SDK; tracestate read to at most 32 list members and 512 characters, members past either limit dropped, invalid members and repeated keys dropped; TraceState built from these pairs only, so its constructor never logs; send and receive spans per PH-SPN-03 and -04; semantic conventions 1.45.0 as constants. _client.py: AgentClient a thin handle over ClientCore, with weakref.finalize(_collect, core, name) (P-10); start, publish (never retried; credential_expired noted), credential, close (idempotent, concurrent callers share one close; close during start aborts the bootstrap with ClientStateError closed; the caller's own cancellation passes through), async with; repr and pickling hold no credential (CredentialInfo pickling also refused). subscribe() raises until G7. Two findings, both in my tests, none in the specification: (1) opentelemetry-sdk 1.45 sets W3C Level 2's random-trace-id flag, so a sampled span's flags are 03, not 01; the draft carries the span's flags as TRC-02 requires, and the test now expects them; (2) without an SDK, Python's no-op tracer returns an invalid span (JavaScript's returns the parent's context): TRC-03 then makes a client publish random with flags 00, which the implementation did; the test expected the active trace and was wrong. Added: a conftest loop exception handler failing any test with an unretrieved task exception or a raising callback (P-11; probed with a deliberately unretrieved task, which failed as it should); a static check that no module reads the environment or the host (PH-API-05; TC-PH-006's unit half). Tests: test_json (42), test_draft (3), test_tracing (28, including the test that TraceState.from_header, the trace-context propagator's extract, propagate.extract and the global propagator's extract are never called), test_client (20, including TC-PH-076's client half: a forgotten started client's weakref dies on gc.collect(), exactly one ResourceWarning 'unclosed AgentClient 'agent-a'', the renewal timer cancelled, no SDK task left, nothing scheduled; a closed or unstarted client collected warns nothing), test_no_environment (2). Gate: ruff, mypy (41 files) clean; pytest 344 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, checks, audit exceptions, vitest 299 passed. Plan Steps 23a to 25 ticked."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G6
+
+---
+
+## Code Generation Part 2: G6 CI
+**Timestamp**: 2026-11-20T03:18:11Z
+**User Input**: (none)
+**AI Response**: "0bee91e (G6, signed off) pushed to dev. CI run 44665689842: success, every job."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G6 to G7
+
+---
+
+## Code Generation Part 2: G7 (Steps 26 to 28)
+**Timestamp**: 2026-11-20T03:18:11Z
+**User Input**: (none)
+**AI Response**: "G7 written. _reader.py: the strict iterative scanner (regex-assisted strings, numbers and whitespace; an explicit container stack; NaN and Infinity refused); exact spans; a duplicate envelope, seal or payload is duplicate-member; the envelope parsed only within D_lang and frozen iteratively (MappingProxyType, tuples), else envelope-too-deep, and one failing json.loads after the scan (the digit limit, RecursionError) is envelope-unparsed; the payload parsed within D_lang as plain types, else, or on a parse failure, left unparsed with payload raising PayloadNotParsed and hasattr false; the digit limit never changed; Delivery read only, not constructible, not picklable, its repr holding no payload. _subscription.py: SubscriptionCore, U3's P-04 state machine in asyncio (the queue of N_buf, pause_reading on a full queue, T_idle and W_super only while reading, a resume restarting T_idle, the replacement held paused, a lineage change forcing the switch, L_ends, credential_refused terminal and revoking, Retry-After then backoff, SUB-05's raise with no terminal end, SUB-04), under a thin Subscription handle with weakref.finalize (P-10). _connection.py gains on_bytes, called on every read, so T_idle counts bytes, heartbeats included (STR-02), not events. _tracing.received_context accepts any Mapping (the frozen envelope's traceContext). Design note, recorded: Functional Design §6 said the first __anext__ opens the stream; SUB-01 says subscribe() sends the request, U3 opens at subscribe(), and CC-STR-13 waits for the request before its first next. The implementation follows SUB-01 and U3: the stream opens when subscribe() is called (it needs the running loop, which a started client has; PH-API-02). This is the specification's own behaviour, so no gap and no case change. A 200 subscribe answer that is not text/event-stream is TransportError unusable-response (never retried). Tests: test_reader (36: TC-PH-068, 069, 073, 079's read half), test_subscription (15: order, heartbeats, an end resubscribed, close and async with, SUB-04, SUB-05, a 503 retried, TC-PH-081 paused past three T_idle without an end and T_idle restarting on resume, TC-PH-082 the replacement behind a full queue, RCV-09's event-too-large, L_ends, credential_refused, forwarding byte for byte, TC-PH-076's subscription half with the server seeing the socket close and nothing scheduled, a closed subscription collected silently, TC-PH-071 a child process exiting within 1 s after its main coroutine returns, with async with and with a bare async for left open). The subscription and client tests ran five times in a row, all passing. Gate: ruff, mypy (43 files) clean; pytest 395 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, the six checks, audit exceptions, vitest 299 passed. Plan Steps 26 to 28 ticked."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G7
+
+---
+
+## Code Generation Part 2: G7 CI
+**Timestamp**: 2026-11-20T03:32:47Z
+**User Input**: (none)
+**AI Response**: "530bbe9 (G7, signed off) pushed to dev. CI run 44666800108: success, every job."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G7 to G8
+
+---
+
+## Code Generation Part 2: G8 (Steps 29 to 32)
+**Timestamp**: 2026-11-20T03:32:47Z
+**User Input**: (none)
+**AI Response**: "G8 written. python/conformance_driver/: driver.py (every protocol command, run concurrently as tasks; create through the values hook, cleared after construction; the test provider returns one string and U1's sys.getrefcount check compares with a baseline taken before start; warnings recorded with catch_warnings(record=True), SoormaWarning's SOORMA_CLOCK_SKEW reported as clock-skew; openResources from the loop: socket transports not closing, timers not cancelled, tasks that are not the driver's; next keeps one pending pull across timeouts), names.py (names and surface by introspection of soorma: __all__, and each exported class's members, dataclass fields and __init__'s self assignments, from soorma's own classes only; TypedDict keys are wire data), spans.py (a test tracer provider with an in-memory exporter; a tenant span as the current span). python/README.md written now, since CC-SPN-08 reads its Spans and Delivery sections through docs (G10's Step 39 completes it); it already carries the Python 3.13+ local-stack note citing soorma-ai/soorma-core#36. Step 30, the early budget check: the first full run, 3.11, 94 passed, 2 failed, 1 not run (CC-SEC-05, --local-skip), 91 s, against the 5-minute budget. Step 31, CDI-05: both failures judged the driver's, no case or helper changed, no SDK change, no specification question: CC-RCV-05 (the driver wrote Infinity, which is not JSON, for the payload's 1e400, which Python parses natively as inf; it now writes null, as JSON.stringify does) and CC-PRB-07 (the driver counted its own main task as an open task). Step 32: 3.11 96 passed in 87 s, 3.15.2 96 passed in 88 s; final runs 88 s on each; tools/names/drivers.json gains the Python driver (uv run --locked --project python), and the names check passes for 2 languages. mypy now checks conformance_driver/. Gate: ruff, mypy (46 files) clean; pytest 395 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, the six checks (names: 2 languages), audit exceptions, vitest 299 passed. Plan Steps 29 to 32 ticked; the CDI-05 log (plan §4) filled."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G8
+
+---
+
+## Code Generation Part 2: G8 CI
+**Timestamp**: 2026-11-20T03:36:14Z
+**User Input**: (none)
+**AI Response**: "3b24eba (G8, signed off) pushed to dev. CI run 44668464349: success, every job; the checks job's names check ran the Python driver (uv run --locked --project python) and passed for both languages."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G8 to G9
+
+---
+
+## Code Generation Part 2: G9 (Step 33)
+**Timestamp**: 2026-11-20T03:36:14Z
+**User Input**: (none)
+**AI Response**: "ci.yml gains conformance-python: 3.11.18 and 3.15.2 with the otel-latest group, and 3.11.18 with otel-floor (P-14); each syncs exactly its group from uv.lock (uv sync --locked --no-default-groups --group dev --group <group>), and runs the driver with the synced environment's interpreter directly, so no uv run re-syncs the default groups over the floor; a step asserts the installed opentelemetry-api equals the group's pin (TC-PH-090); the second local user and --foreign-user soorma-foreign (P-15); no --local-skip. Checked locally before pushing: the floor sync and the version step's script in a scratch environment (opentelemetry-api installed 1.45.2, otel-floor pins 1.45.2), and seven cases (CC-SPN-01, CC-SPN-03, CC-FWD-05, CC-ACQ-08, CC-REN-06, CC-STR-13, CC-PRB-07) with the floor environment's interpreter: 7 passed. The workflows check passes. Step 34 is checked on this push's run."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G9
+
+---
+
+## Code Generation Part 2: G9 CI (Step 34)
+**Timestamp**: 2026-11-20T03:45:19Z
+**User Input**: (none)
+**AI Response**: "28f1be6 (G9, signed off) pushed to dev. CI run 44668858650: success, every job. Step 34 from the job logs: each conformance-python entry ran 97 passed, 0 failed, 0 not run (CC-SEC-05 passed, not skipped): 3.11.18 with otel-latest (job 136064710030) 79 s, 3.15.2 with otel-latest (job 136064710188) 79 s, 3.11.18 with otel-floor (job 136064709919) 79 s; the floor entry's TC-PH-090 step printed 'opentelemetry-api: installed 1.45.2, otel-floor pins 1.45.2'. OBL-04 is recorded discharged for Python only on the code PR's own run (Step 43)."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G9 to G10
+
+---
+
+## Code Generation Part 2: G10 (Steps 35 to 40)
+**Timestamp**: 2026-11-20T03:45:19Z
+**User Input**: (none)
+**AI Response**: "G10 written. Step 35: python/examples/two_agents/ (agent_a.py, agent_b.py: one marked configuration block each and async def run(config), run directly through asyncio.run; async with closing the client and the subscription; README.md: e2e/core-up and e2e/setup, start B first (live only), the unstable span shape and DEC-U1-01's deviation, the secret file's settings and Windows, Python 3.11 or 3.12 against the local stack (soorma-ai/soorma-core#36), the macOS Install Certificates step, PayloadNotParsed and the digit limit, SoormaWarning). Step 36: python/e2e/scenario.py, a plain asyncio script run from the installed wheel: only time.time and time.time_ns patched 14 minutes ahead; two SoormaWarnings, one per lineage; B's one real renewal no sooner than R_min, none again within R_min; the real clock restored; the decoy span current while B subscribes; A's send span the parent of B's receive span, the decoy neither parent nor linked; both closed, no socket left, no ResourceWarning. Its payload is annotated JsonValue: a module-level dict[str, str] is not one to mypy (dict is invariant); tenant code annotating a payload will meet the same, and the README's examples pass literals. Step 37: ci.yml gains e2e-python on 3.11.18 (gated by changes): the wheel built, installed with --no-deps into a fresh environment after the otel-latest group's pins exported from uv.lock and installed hash-checked; core-up, setup, prove-stack, the scenario (python -I), core-down always with the log search. Step 38: tools/package-python/check.ts and its test (the guard over the wheel's and sdist's file lists: no test-only path, no _internal, no test_values; required files; LICENSE and NOTICE in the wheel's licenses): build, guard, on 3.11.18 and 3.15.2 a fresh environment with the runtime dependencies from uv.lock installed offline and hash-checked, then the wheel; import constructs an AgentClient, License-Expression Apache-2.0, soorma._internal.test_values not importable; the agent files copied, imported, and type-checked with mypy --strict against the installed wheel. ci.yml gains package-python. Locally: package-python passes on 3.11.18 and 3.15.2. Step 39: the package README (written in G8) now states that every public TLS connection fails on python.org's macOS Python until Install Certificates is run (NFR-U4-35); every NFR-U4-35 topic checked present. The repository README: the banner (both packages built, not yet published), rows for typescript/ and python/, the Python commands, the Python scenario in the end-to-end section, Dependabot's uv entry. mypy now also checks e2e/ and examples/. Step 40, the local run (plan 1.7): no soorma-local project or volume beforehand (a volume soorma-postgres-data exists, labelled for the compose project soorma, created 2026-04-18: not this stack's, left alone). core-up (Node 26.13.0) 34 s; setup 2 s; prove-stack pass; the wheel built and installed into a fresh 3.11.18 environment as e2e-python does; the scenario passed in 59 s ('every step held'); core-down exit 0, every service's log searched clean, no soorma-local project or volume left. Then the example as written, on a second fresh stack (core-up 31 s): agent B's stream started, agent A published and printed its traceparent, B printed the envelope and A's trace id, and B exited 0 on Ctrl-C with no traceback; core-down 8 s. One harness finding, not the SDK's: the first example run's B ignored SIGINT because a non-interactive shell starts background jobs with SIGINT ignored and Python then installs no KeyboardInterrupt handler (shown: SIG_IGN in the background job, default_int_handler once restored); the rerun restored the default disposition, as a terminal does. Gate: ruff, mypy (49 files) clean; pytest 395 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, the six checks, audit exceptions, vitest 302 passed. Plan Steps 34 to 40 ticked."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G10
+
+---
+
+## Code Generation Part 2: G10 CI red; Step 38a
+**Timestamp**: 2026-11-20T03:49:58Z
+**User Input**: (none)
+**AI Response**: "c883b94 (G10, signed off) pushed to dev. CI run 44669854985: failure in package-python only; every other job green, e2e-python included on its first run (2 min 49 s for the job; the scenario printed 'e2e-python: every step held', every log searched clean). The failure: the offline install of uv export's requirements resolves name==version against the index, and CI's cache, filled only by uv sync from the lock's URLs, holds no index metadata ('opentelemetry-api was not found in the cache'); locally the cache happened to hold it from earlier locking. Step 38a added to the plan first, then: the fresh environment gets the runtime dependencies with uv sync --locked --offline --no-default-groups --no-install-project (UV_PROJECT_ENVIRONMENT set to it), which reads the lock's URLs from the cache and checks the lock's hashes; the wheel then with uv pip install --offline --no-deps. Proved with a cold cache filled only by uv sync, as CI's is: package-python pass on 3.11.18 and 3.15.2. Typecheck, lint, prettier and the guard's tests pass. G11 prepared meanwhile, uncommitted until this is green: construction/python-harness/code/code-summary.md; the L1 matrix (25 rows) and the invariant matrix (9) to Implemented, with the I9 search of python/src/soorma/ (no local-stack value, tenant identifier or event name) and the I10 statement."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G10 (Step 38a)
+
+---
+
+## Code Generation Part 2: G11 (Steps 41, 42)
+**Timestamp**: 2026-11-20T03:54:11Z
+**User Input**: (none)
+**AI Response**: "ab8eea7 (Step 38a, signed off) pushed: CI run 44670360719 success, every job (package-python green on 3.11.18 and 3.15.2; e2e-python green). G11: construction/python-harness/code/code-summary.md (the files; the F42 changes with class, diff and covering message: G1 under the plan approval 2026-11-20T00:37:17Z, the stub's key identifiers under the user's message 2026-11-20T02:30:41Z, the U3 fix in G2; CDI-05's two driver findings; the budgets; each group's commit and run; the technology decisions; the local run). The L1 matrix's 25 applicable rows and the invariant matrix's 9 to Implemented; I9's search of python/src/soorma/ found no local-stack value, tenant identifier or event name; I10 stated. Both become Verified on the code PR's own run. Plan Steps 41 and 42 ticked. Next: Step 43, the code PR, dev to main."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G11
+
+---
+
+## Code Generation Part 2: the code PR (Step 43)
+**Timestamp**: 2026-11-20T03:58:57Z
+**User Input**: (none)
+**AI Response**: "1cc0d1d (G11) and fb3ae20 (the state) pushed. soorma-ai/soorma-sdk#23 opened, dev to main. Every check green at head fb3ae20: CI run 44670863814 (pull request): unit, repository checks, conformance self-test, changes, conformance-typescript x3, conformance-python x3, e2e-typescript, e2e-python, package-typescript, package-python, dependency review; DCO run 44670863789. OBL-04 discharged for U4 on this run: CC-SEC-05 passed, not skipped, on every conformance-python entry, each 97 passed, 0 failed, 0 not run (3.11.18 otel-latest 77 s, 3.15.2 otel-latest 79 s, 3.11.18 otel-floor 79 s; the floor entry installed opentelemetry-api 1.45.2, its pin). AD-13: e2e-python 161 s, the scenario 60 s, under 8 minutes. CDI-05: two driver faults, no SDK failure, no case change, no specification question. The L1 (25) and invariant (9) matrices to Verified. Code summary, aidlc-state (OBL-04 discharged for U4; the stage; the U4 line) and this entry committed after the run they record. Stopped for the user's merge; not recorded as merged."
+**Context**: Construction, U4 python-harness, Code Generation, code PR
+
+---

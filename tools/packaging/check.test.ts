@@ -60,4 +60,31 @@ describe('packaging guard (NFR-U1-23)', () => {
       'p: dependencies names test-only @soorma-sdk/e2e@workspace:*',
     ]);
   });
+
+  // Added at U4: a Python package (pyproject.toml, src/ layout).
+  it('checks a Python package: its dependencies and what it would publish', () => {
+    const py = mkdtempSync(join(tmpdir(), 'pypkg-'));
+    try {
+      mkdirSync(join(py, 'src', 'soorma', '_internal'), { recursive: true });
+      writeFileSync(join(py, 'src', 'soorma', '__init__.py'), '');
+      writeFileSync(join(py, 'src', 'soorma', '_internal', 'test_values.py'), '');
+      const pyproject = (deps: string) =>
+        writeFileSync(
+          join(py, 'pyproject.toml'),
+          `[project]\nname = "soorma"\ndependencies = [${deps}]\n\n[tool.uv.build-backend]\nsource-exclude = ["src/soorma/_internal"]\n`,
+        );
+      pyproject('"opentelemetry-api>=1.14.0,<2"');
+      expect(checkPackage(py)).toEqual([]);
+      pyproject('"soorma-sdk-conformance==0.1.0"');
+      expect(checkPackage(py)).toEqual([
+        'soorma: dependencies names test-only soorma-sdk-conformance==0.1.0',
+      ]);
+      pyproject('"opentelemetry-api"');
+      mkdirSync(join(py, 'src', 'soorma', 'e2e'));
+      writeFileSync(join(py, 'src', 'soorma', 'e2e', 'scenario.py'), '');
+      expect(checkPackage(py)).toEqual(['soorma: would publish src/soorma/e2e/scenario.py']);
+    } finally {
+      rmSync(py, { recursive: true, force: true });
+    }
+  });
 });

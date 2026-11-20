@@ -11,6 +11,8 @@ export default tseslint.config(
       'aidlc-docs/**',
       '**/node_modules/**',
       '.e2e/**',
+      '**/.venv/**',
+      'python/dist/**',
       'typescript/dist/**',
       'typescript/src/generated/**',
     ],

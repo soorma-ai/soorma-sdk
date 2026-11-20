@@ -19,6 +19,9 @@ export const NAMED_VALUES = [
   'T_idle',
   'T_req',
   'R_min',
+  // Added at U4 (RCV-09): bytes, not milliseconds.
+  'L_event',
+  'B_body',
 ] as const;
 export type NamedValue = (typeof NAMED_VALUES)[number];
 export type Values = Partial<Record<NamedValue, number>>;

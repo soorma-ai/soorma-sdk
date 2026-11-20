@@ -1,0 +1,98 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# soorma, the Python harness (U4). uv project; uv.lock committed with hashes
+# (NFR-U4-24). Dependencies are installed from wheels only and released at
+# least 7 days before the lock was refreshed (exclude-newer). The values hook
+# (soorma/_internal/) is excluded from the wheel and the sdist (PH-API-06).
+
+[project]
+name = "soorma"
+version = "0.1.0"
+description = "The soorma agent SDK for Python: acquire, renew and present an agent credential; draft, publish, forward and subscribe on the data face; emit spans through the OpenTelemetry API. Advisory only: the platform enforces everything."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.11"
+# The one runtime dependency (NFR-U4-23): the tenant's own API, a range from
+# 1.45.2, the first release fixing GHSA-xcq7-p3pf-p88h and GHSA-mf5v-w3w3-f6cg
+# (the user, U4 G3), up to 2. The floor moves only by hand.
+dependencies = ["opentelemetry-api>=1.45.2,<2"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.15",
+  "Typing :: Typed",
+]
+
+[build-system]
+requires = ["uv_build==0.13.8"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "soorma"
+module-root = "src"
+# PH-API-06: the values hook never ships.
+source-exclude = ["src/soorma/_internal"]
+wheel-exclude = ["soorma/_internal"]
+
+[dependency-groups]
+dev = [
+  "pytest==9.2.0",
+  "pytest-asyncio==1.5.0",
+  "ruff==0.17.5",
+  "mypy==2.4.1",
+  "pip-audit==2.10.1",
+]
+# The API at both ends of the range (P-14), each with its matching test SDK.
+# Until a newer release enters the lock, both are the same version.
+otel-latest = ["opentelemetry-api==1.45.2", "opentelemetry-sdk==1.45.2"]
+otel-floor = ["opentelemetry-api==1.45.2", "opentelemetry-sdk==1.45.2"]
+
+[tool.uv]
+default-groups = ["dev", "otel-latest"]
+conflicts = [[{ group = "otel-latest" }, { group = "otel-floor" }]]
+# The 7-day release cooldown, set when the lock is refreshed (NFR-U4-24).
+exclude-newer = "2026-11-13T00:00:00Z"
+# Wheels only for dependencies: no third-party build code runs at install.
+no-build = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests", "conformance_driver", "e2e", "examples"]
+# The generated types are compared byte for byte with the generator's output.
+extend-exclude = ["src/soorma/_generated"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF", "TID", "T20", "S", "ASYNC", "PL"]
+ignore = ["PLR2004", "PLR0913", "PLR0911", "PLR0912", "PLR0915", "S101"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+# CFG-05, CFG-07 (PH-API-05; TS-U4-16): the package reads no environment variable
+# and nothing about the host.
+"os.environ".msg = "CFG-07: the SDK reads no environment variable"
+"os.getenv".msg = "CFG-07: the SDK reads no environment variable"
+"os.environb".msg = "CFG-07: the SDK reads no environment variable"
+"socket.gethostname".msg = "CFG-05: nothing is derived from the host"
+"platform.node".msg = "CFG-05: nothing is derived from the host"
+
+[tool.ruff.lint.per-file-ignores]
+# Only the package is held to the bans; tests, the driver, the example and the
+# end-to-end test may print and read their own environment.
+"tests/**" = ["TID251", "T20", "S", "PLC0415"]
+"conformance_driver/**" = ["TID251", "T20", "S"]
+"e2e/**" = ["TID251", "T20", "S"]
+"examples/**" = ["T20"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+mypy_path = "src:conformance_driver"
+files = ["src", "tests", "conformance_driver", "e2e", "examples"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+# Any warning a test does not expect fails it (NFR-U4-33).
+filterwarnings = ["error"]

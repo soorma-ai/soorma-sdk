@@ -15,6 +15,13 @@ updates:
       default-days: 7
     versioning-strategy: increase
     open-pull-requests-limit: 5
+    groups:
+      # OpenTelemetry's SDK packages are released together and meant to match:
+      # they update in one pull request, in every workspace package that has
+      # them. The @opentelemetry/api peer range is not part of the group.
+      opentelemetry:
+        patterns: ['@opentelemetry/*']
+        exclude-patterns: ['@opentelemetry/api']
     ignore:
       # @types/node follows engines.node's major (Node 24): types for a newer
       # major would let code use APIs Node 24 lacks. Its major moves only
@@ -25,6 +32,21 @@ updates:
       # peer range's floor, tested in CI's 1.9.0 conformance run: it moves
       # only with that range, by hand (DEPENDENCIES.md, Update rules).
       - dependency-name: 'opentelemetry-api-floor'
+
+  # The Python package (U4): uv.lock, the same cooldown and target branch.
+  - package-ecosystem: uv
+    directory: /python
+    target-branch: dev
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      # OpenTelemetry's Python packages are released together and meant to
+      # match. The opentelemetry-api range in pyproject.toml moves by hand.
+      opentelemetry:
+        patterns: ['opentelemetry-*']
 
   - package-ecosystem: github-actions
     directory: /

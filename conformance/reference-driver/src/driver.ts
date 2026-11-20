@@ -74,6 +74,9 @@ const DEFAULTS: Values = {
   T_idle: 20000,
   T_req: 5000,
   R_min: 1000,
+  // Added at U4 (RCV-09): 1 MiB each, as every language's.
+  L_event: 1_048_576,
+  B_body: 1_048_576,
 };
 const DEPTH = 64;
 const faultArg = process.argv.indexOf('--fault');

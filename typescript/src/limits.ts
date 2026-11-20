@@ -19,6 +19,9 @@ export interface Limits {
   readonly N_buf: number;
   readonly T_idle: number;
   readonly T_req: number;
+  /** RCV-09 (added at U4): bytes. */
+  readonly L_event: number;
+  readonly B_body: number;
 }
 
 /** NFR Requirements' values (U3-NFR-Q1 A). */
@@ -35,6 +38,9 @@ export const LIMITS: Limits = Object.freeze({
   N_buf: 64,
   T_idle: 45_000,
   T_req: 10_000,
+  // RCV-09 (added at U4; U4 NFR Requirements): 1 MiB each, in every language.
+  L_event: 1_048_576,
+  B_body: 1_048_576,
 });
 
 /** The parse-depth bound `D_lang` (NFR-03). Not one of the values a case may set. */

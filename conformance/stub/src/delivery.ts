@@ -48,6 +48,56 @@ export function atSend(v: J, now: number = Date.now()): J {
   return v;
 }
 
+/**
+ * Generated content (added at U4 for RCV-09): `{"bytes": n, "line": text}` is
+ * produced when the stub sends, so a case file never holds a megabyte.
+ */
+export interface Generate {
+  bytes: number;
+  line: string;
+  /** A stream event's name (`event:` line); a body ignores it. */
+  event?: string;
+  /** A body: the member of `json` the filler is written into. */
+  member?: string;
+}
+
+export function generateSpec(g: J): Generate {
+  const o = (g ?? {}) as Record<string, J>;
+  const bytes = Number(o.bytes);
+  const line = typeof o.line === 'string' ? o.line : 'x';
+  if (!Number.isFinite(bytes) || bytes < 0 || line.length === 0 || /[\r\n]/.test(line))
+    throw new Error('generate needs bytes (a number) and a one-line, non-empty line');
+  return {
+    bytes,
+    line,
+    ...(typeof o.event === 'string' ? { event: o.event } : {}),
+    ...(typeof o.member === 'string' ? { member: o.member } : {}),
+  };
+}
+
+/**
+ * One SSE event of many `data:` lines, each `data: <line>`, at least `bytes`
+ * bytes before its terminating blank line (the blank line not counted).
+ */
+export function generatedEvent(g: Generate): string {
+  const head = g.event ? `event: ${g.event}\n` : '';
+  const one = `data: ${g.line}\n`;
+  const each = Buffer.byteLength(one);
+  const n = Math.max(1, Math.ceil((g.bytes - Buffer.byteLength(head)) / each));
+  return `${head}${one.repeat(n)}\n`;
+}
+
+/** A JSON body of at least `bytes` bytes: `json` with `member` filled by the line, repeated. */
+export function generatedBody(json: J, g: Generate): string {
+  const base = (json ?? {}) as Record<string, J>;
+  const member = g.member ?? 'detail';
+  const empty = Buffer.byteLength(JSON.stringify({ ...base, [member]: '' }));
+  const need = Math.max(0, g.bytes - empty);
+  const per = Buffer.byteLength(JSON.stringify(g.line)) - 2;
+  const fill = g.line.repeat(Math.ceil(need / Math.max(1, per)) || 0);
+  return JSON.stringify({ ...base, [member]: fill });
+}
+
 /** A payload nested `depth` levels: {"n":{"n":...{"n":1}}}. */
 export function deepPayload(depth: number): string {
   return `${'{"n":'.repeat(depth)}1${'}'.repeat(depth)}`;

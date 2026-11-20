@@ -764,3 +764,72 @@ describe('with the client (SUB-04; FWD-01, FWD-02)', () => {
     await c.close();
   });
 });
+
+// ---- RCV-09: the event bound (added at U4; the U3 defect fix, NFR-U4-38) ----
+
+describe('an SSE event over L_event (RCV-09; TC-PH-089)', () => {
+  const L = 4096;
+  /** An event of many short data lines, at least `bytes`, without its blank line. */
+  const bigEvent = (bytes: number): string[] => {
+    const parts = ['event: delivery\n'];
+    for (let n = 0; n * 100 < bytes; n++) parts.push(`data: ${'x'.repeat(93)}\n`);
+    return parts;
+  };
+  /** A delivery event of exactly `bytes` bytes before its blank line. */
+  const exactEvent = (bytes: number): string => {
+    const head = (pad: string) => `event: delivery\ndata: ${line(7, JSON.stringify(pad))}`;
+    const pad = 'p'.repeat(bytes - Buffer.byteLength(head('')));
+    const event = head(pad);
+    expect(Buffer.byteLength(event)).toBe(bytes);
+    return `${event}\n\n`;
+  };
+
+  async function items(
+    writes: string[],
+    n: number,
+  ): Promise<{ got: string[]; first?: DeliveryError }> {
+    const res = new FakeRes();
+    for (const w of writes) res.write(w);
+    streams = [() => res];
+    const { sub, it } = subscription(fakeKeeper(), { L_event: L });
+    const got: string[] = [];
+    let first: DeliveryError | undefined;
+    for (let k = 0; k < n; k++) {
+      const r = await it.next();
+      const v = r.value as Item;
+      if (!first && (v as { kind?: string }).kind === 'deliveryError') first = v as DeliveryError;
+      got.push(r.done ? 'done' : label(v));
+    }
+    await sub.close();
+    return { got, ...(first ? { first } : {}) };
+  }
+
+  it('arriving in many chunks of short lines, is one event-too-large, with no text; the next Delivery follows', async () => {
+    const { got, first } = await items([...bigEvent(L * 4), '\n', delivery(1)], 3);
+    expect(got).toEqual(['S', 'X:event-too-large', 'D:e1']);
+    expect(first).toEqual({ kind: 'deliveryError', reason: 'event-too-large', text: '' });
+  });
+
+  it('arriving whole in one chunk, is the same', async () => {
+    const { got } = await items([`${bigEvent(L * 2).join('')}\n${delivery(2)}`], 3);
+    expect(got).toEqual(['S', 'X:event-too-large', 'D:e2']);
+  });
+
+  it('ends at its blank line even when that line is split across chunks', async () => {
+    const { got } = await items([...bigEvent(L * 2), '\n', delivery(3)], 3);
+    expect(got).toEqual(['S', 'X:event-too-large', 'D:e3']);
+  });
+
+  it('at exactly L_event is read; one byte more is not', async () => {
+    const at = await items([exactEvent(L), delivery(4)], 3);
+    expect(at.got).toEqual(['S', 'D:e7', 'D:e4']);
+    const over = await items([exactEvent(L + 1), delivery(5)], 3);
+    expect(over.got).toEqual(['S', 'X:event-too-large', 'D:e5']);
+  });
+
+  it('two oversized events in a row are two errors, and the stream continues', async () => {
+    const big = [...bigEvent(L * 2), '\n'];
+    const { got } = await items([...big, ...big, delivery(6)], 4);
+    expect(got).toEqual(['S', 'X:event-too-large', 'X:event-too-large', 'D:e6']);
+  });
+});

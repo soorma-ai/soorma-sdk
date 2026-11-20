@@ -6,6 +6,7 @@
 //   connection failure, request not sent  retry (renewal: while usable)
 //   failure after the request was sent    retry (renewal: while usable)
 //   TLS failure, 429, other 4xx, 500      never
+//   a body over B_body (RCV-09)           never
 // Retry-After first, else backoff; at most R_max attempts and W_max of waiting.
 import { monoNow, sleep } from './clock.ts';
 import { ProblemError } from './errors.ts';
@@ -24,7 +25,8 @@ export interface RetryContext {
 export function retryable(kind: RetryKind, error: unknown, ctx: RetryContext): boolean {
   const stillUsable = kind !== 'renewal' || (ctx.usable?.() ?? true);
   if (error instanceof ProblemError) return error.status === 503 && stillUsable;
-  if (error instanceof TransportFailure) return error.reason !== 'tls' && stillUsable;
+  if (error instanceof TransportFailure)
+    return error.reason !== 'tls' && error.reason !== 'response-too-large' && stillUsable;
   return false;
 }
 

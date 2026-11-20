@@ -69,12 +69,33 @@ class NotRetried extends Error {
   }
 }
 
+/** A complete event that held more than L_event bytes, already discarded (RCV-09). */
+const TOO_LARGE = Symbol('event-too-large');
+
+const EVENT_TOO_LARGE: DeliveryError = Object.freeze({
+  kind: 'deliveryError',
+  reason: 'event-too-large',
+  text: '',
+});
+
+/** Whether `text` holds more than `limit` bytes of UTF-8, without encoding it when it need not. */
+function overBound(text: string, limit: number): boolean {
+  if (text.length > limit) return true;
+  if (text.length * 3 <= limit) return false;
+  return Buffer.byteLength(text) > limit;
+}
+
 /** One stream: its socket, its unparsed text, and its reading state. */
 class Stream {
   readonly res: IncomingMessage;
   /** The credential epoch the stream was opened with. */
   readonly epoch: number;
-  pending = '';
+  /** Complete events, in order, waiting for room in the queue. */
+  blocks: (string | typeof TOO_LARGE)[] = [];
+  /** The event being read; never more than L_event bytes (RCV-09). */
+  partial = '';
+  /** Past L_event: the event is skipped, keeping nothing, until its blank line. */
+  discarding = false;
   carry = '';
   /** The SDK consumes this stream (it is current, not a held replacement). */
   active = false;
@@ -268,10 +289,11 @@ export class Subscription implements AsyncIterable<SubscriptionItem> {
       body: `{"draft":${draftText(subscribeTraceContext())}}`,
       ca: this.#o.ca(),
       timeoutMs: this.#o.limits.T_req,
+      maxBody: this.#o.limits.B_body,
       signal: this.#abort.signal,
     });
     if (res.statusCode === 200) return new Stream(res, epoch);
-    throw problemFrom(await readReply(res, this.#abort.signal));
+    throw problemFrom(await readReply(res, this.#o.limits.B_body, this.#abort.signal));
   }
 
   #makeCurrent(s: Stream): void {
@@ -395,9 +417,42 @@ export class Subscription implements AsyncIterable<SubscriptionItem> {
       s.carry = '\r';
       text = text.slice(0, -1);
     }
-    s.pending += text.replace(/\r\n?/g, '\n');
+    this.#take(s, text.replace(/\r\n?/g, '\n'));
     if (s.flowing) this.#restartIdle(s);
     this.#pump(s);
+  }
+
+  /**
+   * Splits text into events at blank lines (RCV-09): an event over L_event,
+   * whole or still arriving, is discarded up to its blank line, keeping no more
+   * than the bound, and queued as one event-too-large marker in its place.
+   */
+  #take(s: Stream, text: string): void {
+    const limit = this.#o.limits.L_event;
+    let rest = s.partial + text;
+    s.partial = '';
+    for (;;) {
+      const at = rest.indexOf('\n\n');
+      if (s.discarding) {
+        if (at < 0) {
+          s.partial = rest.endsWith('\n') ? '\n' : '';
+          return;
+        }
+        s.blocks.push(TOO_LARGE);
+        s.discarding = false;
+      } else {
+        if (at < 0) break;
+        const block = rest.slice(0, at);
+        s.blocks.push(overBound(block, limit) ? TOO_LARGE : block);
+      }
+      rest = rest.slice(at + 2);
+    }
+    if (overBound(rest, limit)) {
+      s.discarding = true;
+      s.partial = rest.endsWith('\n') ? '\n' : '';
+    } else {
+      s.partial = rest;
+    }
   }
 
   #onUpstreamDone(s: Stream): void {
@@ -417,11 +472,10 @@ export class Subscription implements AsyncIterable<SubscriptionItem> {
         this.#pauseRead(s);
         return;
       }
-      const at = s.pending.indexOf('\n\n');
-      if (at < 0) break;
-      const block = s.pending.slice(0, at);
-      s.pending = s.pending.slice(at + 2);
-      this.#dispatch(s, block);
+      const block = s.blocks.shift();
+      if (block === undefined) break;
+      if (block === TOO_LARGE) this.#push(EVENT_TOO_LARGE);
+      else this.#dispatch(s, block);
       if (s.finished || this.#finished) return;
     }
     if (s.upstreamDone) this.#streamEnded(s, null);
