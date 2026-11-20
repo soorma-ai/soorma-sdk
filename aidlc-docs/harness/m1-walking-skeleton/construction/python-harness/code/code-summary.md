@@ -150,3 +150,9 @@ not reopened.
 **CDI-05's outcome**: two driver faults, no SDK failure, no case change, no specification question.
 
 The matrices' *Verified* includes this run.
+
+The records of that run were committed as `0a9cd90`, the final head, whose runs were also green:
+CI (pull_request) 44671323748, DCO 44671323729, CI (push) 44671318552.
+
+**Merged** as `73d88c3` (merge commit) at 2026-11-20T04:06:30Z, head `0a9cd90`; `dev`
+fast-forwarded to it.

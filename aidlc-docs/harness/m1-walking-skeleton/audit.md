@@ -2149,3 +2149,21 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation, code PR
 
 ---
+
+## Code Generation: code PR merged
+**Timestamp**: 2026-11-20T04:08:26Z
+**User Input**: "#23 is merged as 73d88c3 (2026-11-20T04:06:30Z, merge commit; head 0a9cd90). Record the merge in aidlc-state.md and the code summary.
+
+1. Fast-forward dev to main (git merge --ff-only origin/main; if a merge is unavoidable, use --signoff) and push.
+
+2. Fix a run-ID slip: your last message gave the final head's runs as \"PR run 44671323729, DCO 44671323748\"; they're the other way round. At 0a9cd90: CI (pull_request) 44671323748, DCO 44671323729, CI (push) 44671318552. The code summary records fb3ae20's runs (44670863814, 44670863789), which are correct; add 0a9cd90's with the labels above.
+
+3. Functional Design business-logic-model.md line 121 still says \"the first __anext__ opens the stream\". The code opens it when subscribe() is called (SUB-01, U3, CC-STR-13), as the audit and code summary record. Correct the line and cite the audit entry, in the same commit as the records above.
+
+4. Then check Dependabot's first uv job and record its outcome. Then Build and Test.
+
+Log this message word for word in audit.md. Commit signed off and push."
+**AI Response**: "Checked on GitHub: #23 MERGED as 73d88c3 at 2026-11-20T04:06:30Z. dev fast-forwarded from 0a9cd90 to 73d88c3 (git merge --ff-only origin/main; no merge needed) and pushed. The run IDs confirmed with gh: at 0a9cd90, CI (pull_request) 44671323748 success, DCO 44671323729 success, CI (push) 44671318552 success; my previous message had the first two swapped. Recorded: the merge and 0a9cd90's runs in the code summary and aidlc-state.md; business-logic-model.md §6 corrected to say the stream opens when subscribe() is called, citing the audit entry 'Code Generation Part 2: G7 (Steps 26 to 28)' (2026-11-20T03:18:11Z). Next: Dependabot's first uv job, then Build and Test."
+**Context**: Construction, U4 python-harness, Code Generation complete (merged)
+
+---
