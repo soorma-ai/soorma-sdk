@@ -2268,3 +2268,22 @@ Then update build-and-test-summary.md (OBL-03, the revert, #25 closed unmerged) 
 **Context**: Construction, Build and Test gate (presented again)
 
 ---
+
+## Build and Test: approved
+**Timestamp**: 2026-11-20T05:13:36Z
+**User Input**: "Build and Test is approved, with one fix first.
+
+In CONTRIBUTING.md, the \"### For maintainers: trusting the DCO check on a fork pull request\" subsection went into the middle of \"Sign your commits\". That left the existing \"There is no CLA here\" paragraph and the soorma-core paragraph after it under the maintainers' heading. Move the subsection, unchanged, to the end of the \"Sign your commits\" section, after those paragraphs. No other wording changes. Show the resulting heading outline of that section.
+
+Then:
+1. Commit signed off, push, and wait for dev's CI to go green.
+2. Record Build and Test as approved in aidlc-state.md. Operations is a placeholder, so mark it skipped.
+3. Open the closing PR, dev → main. Its body: what the initiative delivered (U1 to U4), the brief's done-when items 2, 3 and 5 as passed with their evidence, open obligations (OBL-05 = soorma-core#36; OBL-03 accepted risk), the specification gaps (1 open, 2 awaiting a PRD), and the carried security obligations. It needs \"Check sign-off\", which main's ruleset requires; name that run in the body.
+4. Stop when every check is green, and give me the PR number and head commit. Don't merge it, and don't record it as merged.
+5. In your stop message, list what's left for the user to move the M1 brief's soorma-sdk part to Done (AI-DLC never edits the brief).
+
+Log this message word for word in audit.md."
+**AI Response**: "Logged. Moving the CONTRIBUTING.md subsection unchanged to the end of 'Sign your commits'; then the commit, dev's CI, the state, and the closing PR."
+**Context**: Construction, Build and Test APPROVED
+
+---
