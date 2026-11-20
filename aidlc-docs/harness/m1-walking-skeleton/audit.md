@@ -2003,3 +2003,11 @@ Log this message word for word in audit.md, then finish Step 13, run G3's gate, 
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G4
 
 ---
+
+## U4 Code Generation — after G4: stopped for the user (Python 3.13+ strict TLS and the stack certificates)
+**Timestamp**: 2026-11-20T01:47:58Z
+**User Input**: (none)
+**AI Response**: "G4 pushed as b87473f; CI run 44655672879 green. Checked ahead of G8: Python 3.13 and later set VERIFY_X509_STRICT in ssl.create_default_context(), which rejects a certificate without an Authority Key Identifier. U1's stub server certificate (conformance/runner/src/rundir.ts makeServer: subjectAltName, extendedKeyUsage, basicConstraints only) fails it: openssl verify -x509_strict 'Missing Authority Key Identifier', and a Python 3.15.2 handshake fails the same way, so conformance-python on 3.15 would fail every case. soorma-core's local stack issues leaves the same way at contract-v0.1.0 (deploy/local/scripts/stack-certs.ts issueLeaf: no authorityKeyIdentifier); reproduced with its exact openssl arguments: the same failure, so a Python 3.13+ tenant cannot reach the local stack with the SDK's (correct) default verification; e2e-python on 3.11 is unaffected. A scratch test of the proposed U1 fix (subjectKeyIdentifier=hash, authorityKeyIdentifier=keyid,issuer added to the server extension file) passes openssl -x509_strict and a 3.15.2 handshake. Nothing changed in U1 or soorma-core. Stopped for the user."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, between G4 and G5, stopped
+
+---
