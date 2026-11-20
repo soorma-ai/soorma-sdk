@@ -70,3 +70,28 @@ Unit abbreviation: PH = python-harness
 | TC-PH-064 | The example runs and prints the envelope and trace id | python-harness / FR-20 | happy-path | Medium |
 | TC-PH-065 | The agent file copies into a new project | python-harness / FR-20 | edge/boundary | Medium |
 | TC-PH-066 | The example's README states what is not promised | python-harness / FR-20 | happy-path | Low |
+| TC-PH-067 | `file_secret` is refused on Windows without opening the path | python-harness / FR-04 | negative | High |
+| TC-PH-068 | A delivery line with a duplicate `envelope`, `seal` or `payload` is a delivery error | python-harness / FR-12 | negative | Medium |
+| TC-PH-069 | Every member of the `Envelope` type is optional, and the envelope is read only | python-harness / FR-12 | edge/boundary | Medium |
+| TC-PH-070 | `publish` refuses a payload JSON cannot carry exactly, naming the path, never the value | python-harness / FR-10 | negative | High |
+| TC-PH-071 | Leaving `async with` closes the subscription; a process whose main coroutine returns exits | python-harness / FR-11 | edge/boundary | Medium |
+| TC-PH-072 | A client whose clock runs fast renews at most once per `R_min` and warns once per lineage | python-harness / FR-05 | edge/boundary | High |
+| TC-PH-073 | An envelope nested deeper than `D_lang` is a delivery error; the stream continues | python-harness / FR-12 | edge/boundary | Medium |
+| TC-PH-074 | An unknown option, such as a misspelt TLS switch, is refused | python-harness / FR-15 | negative | High |
+| TC-PH-075 | A client more than a lifetime ahead uses its credential until S3 answers `credential_expired`, then bootstraps once | python-harness / FR-05 | edge/boundary | High |
+| TC-PH-076 | An unclosed subscription or client, forgotten, is collected, closes its socket synchronously and emits one `ResourceWarning` | python-harness / FR-13 | edge/boundary | High |
+| TC-PH-077 | With warnings set to error, the skew path still renews at the floor | python-harness / FR-05 | edge/boundary | High |
+| TC-PH-078 | A module binding `time.time`, `time.time_ns` or `datetime.now` at import fails the clock check | python-harness / FR-05 | negative | High |
+| TC-PH-079 | A payload holding a 5000-digit integer is left unparsed, its Delivery intact | python-harness / FR-12, FR-10 | edge/boundary | High |
+| TC-PH-080 | On a skewed lineage, a `503` on renewal is retried and a dropped stream is resubscribed, without a bootstrap | python-harness / FR-05, FR-11 | edge/boundary | High |
+| TC-PH-081 | A stream paused for backpressure does not time out; a resume restarts `T_idle` | python-harness / FR-11 | edge/boundary | High |
+| TC-PH-082 | A replacement with a full buffer yields the old stream's remaining Deliveries, its `superseded` end, then the new stream's | python-harness / FR-11 | edge/boundary | High |
+| TC-PH-083 | A retried bootstrap calls the provider once per attempt and holds no secret during the wait | python-harness / FR-04 | edge/boundary | High |
+| TC-PH-084 | A bad CA file fails `start()` before anything is sent | python-harness / FR-15 | negative | Medium |
+| TC-PH-085 | The response parser refuses malformed, oversized and conflicting input, table-driven | python-harness / FR-13 | negative | High |
+| TC-PH-086 | Random bytes never hang the parser or raise anything but `TransportError` | python-harness / FR-13 | edge/boundary | High |
+| TC-PH-087 | An SSE event over `L_event` is a delivery error, and the next Delivery still arrives | python-harness / FR-12 | negative | High |
+| TC-PH-088 | A non-stream response body over `B_body` is a transport error | python-harness / FR-13 | negative | High |
+| TC-PH-089 | The TypeScript fix bounds each SSE event and each non-stream body | python-harness / FR-12, FR-13 | negative | High |
+| TC-PH-090 | Every case passes at the `opentelemetry-api` floor, from the lock | python-harness / FR-14, FR-18 | edge/boundary | High |
+| TC-PH-091 | A TLS failure on a Python with no CA certificates hints at *Install Certificates* | python-harness / FR-15 | negative | Medium |

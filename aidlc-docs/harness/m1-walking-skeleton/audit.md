@@ -1666,3 +1666,240 @@ Log this message word for word in audit.md."
 **Context**: Construction, typescript-harness, Code Generation Part 2, G9; code PR CHECKS_GREEN; stopped for the user
 
 ---
+
+## Code Generation: typescript-harness approved; code PR #19 merged
+**Timestamp**: 2026-11-19T18:30:58Z
+**User Input**: "Continue to Next Stage: U3 Code Generation approved. soorma-ai/soorma-sdk#19 is merged: merge commit 7fcb4998ace85efbee73cac78c0c3b3498929f1b on main, 2026-11-19T18:29:42Z, with parents 06b9df8 (main) and 1c8c5ee (the PR head). Confirm it on GitHub, then:
+
+1. Sync dev by fast-forward only: git fetch origin && git merge --ff-only origin/main. If it won't fast-forward, stop and tell me.
+2. Record #19 as MERGED with the runs at 1c8c5ee: CI (pull request) 44584492128, DCO 44584491713, CI (push) 44584478257. Mark U3 complete and tick the plan's last step.
+3. Log this message word for word in audit.md, commit signed off, push, wait for CI.
+4. Start U4 python-harness: Unit Initialization, the L1 gate, then its stages as planned. Stop at each gate as before. Carry into its design everything U3 settled that is language-neutral, so Python is judged by the same spec:
+   - REN-07 with R_min and the skew rule (a skewed lineage's expiry is judged by S3), and CDI-06's single validity check;
+   - SEC-01 per attempt (CC-ACQ-08);
+   - STR-02 and STR-05: timers count only while reading, and the new stream stays paused until the old one ends;
+   - the values hook the driver protocol requires, kept out of the published package;
+   - the state name row, and Python's own idioms for the names check;
+   - CDI-04 for Python's typed envelope; CDI-05 for any failing case; the case authors' T_idle rule;
+   - OBL-04 for the Python conformance job; e2e-python on the same steps as e2e-typescript, with prove-stack kept;
+   - your per-runtime limit values in NFR Requirements, set for Python (D_lang above all, since CPython's json recursion limit is low)."
+**AI Response**: "Confirmed on GitHub: #19 MERGED 2026-11-19T18:29:42Z, merge commit 7fcb4998ace85efbee73cac78c0c3b3498929f1b, parents 06b9df85c117024f63904904fb0b9ebee7794910 and 1c8c5eeb7f1153500772f275243bde15e2b9acf2. dev fast-forwarded 1c8c5ee..7fcb499 (no merge commit). Recorded #19 MERGED with the final head's runs (CI 44584492128, DCO 44584491713, push 44584478257); U3 marked complete; the plan's Step 44 carries the merge and Part 2 is complete. Next: U4 python-harness, Unit Initialization and the L1 gate, carrying U3's language-neutral settlements into its design."
+**Context**: Construction, typescript-harness: Code Generation approved; U3 complete. Start of U4 python-harness
+
+---
+
+## U4 python-harness — Unit Initialization
+**Timestamp**: 2026-11-19T18:36:38Z
+**User Input**: "(none: U4 starts under the user's message above)"
+**AI Response**: "Unit Initialization: loaded extension rules for [security-baseline, soorma-platform-invariants, pr-checkpoint, qa-test-cases, tickets] (unit: python-harness). prd-gap-classification.md loaded (PRD Intake exists). Unit context: U4 python-harness, harness shape (face: none; S3 and S4 only), ticket soorma-ai/soorma-sdk#7; depends on U1 and U2, after U3; proves every case on Python 3.11 and the newest release, and done when 2, 3, 5."
+**Context**: Construction, U4 python-harness, Unit Initialization
+
+---
+
+## U4 python-harness — L1 Domain Coverage Gate
+**Timestamp**: 2026-11-19T18:36:38Z
+**User Input**: (none)
+**AI Response**: "L1 sources: PF @ prd-platform-foundations-v1.3 (the rows L1-01 to L1-30 in U1's and U3's matrices); ID @ prd-identity-v1.0 has no L1 source in this repository's scope (its §11 binds as constraints). U4 carries the same rows to Python as U3 did to TypeScript: 25 applicable (each to get a Python implementation target and a verification target: its cases through the Python driver on 3.11 and the newest release, plus e2e-python where named), 5 N/A (L1-08, L1-10, L1-14, L1-21: the platform's; L1-28: no human operation). Missing: 0. The matrix is written at Functional Design's generation step."
+**Context**: Construction, U4 python-harness, L1 gate: covered 25 / non-applicable 5 / missing 0
+
+---
+
+## U4 python-harness — Functional Design: questions
+**Timestamp**: 2026-11-19T18:37:46Z
+**User Input**: (none)
+**AI Response**: "Functional Design plan written (construction/working/python-harness-functional-design-plan.md, git-ignored), carrying U1's and U3's language-neutral settlements as listed by the user (REN-07 and R_min with the skew rule, CDI-06, SEC-01 per attempt, STR-02 and STR-05, the values hook out of the package, the state row and Python's idioms, CDI-01 to CDI-05, the case authors' T_idle rule, GAP-CAC-001, GAP-INT-001, GAP-INT-002, PUB-04's unlimited depth, U3's example and end-to-end answers; OBL-04, e2e-python with prove-stack, the named values with D_lang first, the packed-distribution check carried to NFR Requirements and Code Generation). Eight questions, each Awaiting Answer: U4-FD-Q1 the concurrency model (A: asyncio only); Q2 leaving a loop and closing (A: async with as the closing idiom, garbage collection a safety net, __aenter__ does not start); Q3 the deep-payload reader (A: U3's iterative scanner); Q4 file_secret on Windows (A: refused); Q5 the typed envelope and payload (A: TypedDict, every member optional, read-only envelope, plain payload); Q6 payloads JSON cannot carry (A: exact types only, iterative serializer); Q7 REN-07's warning (A: SoormaWarning exported, once per lineage, a name-table row); Q8 the end-to-end clock (A: patch time.time only). Two Python facts drive Q2 and Q7: break out of async for calls nothing on a plain async iterator; the warnings module's default filter shows a warning once per code location."
+**Context**: Construction, U4 python-harness, Functional Design Step 3 and 4: questions awaiting answers
+
+---
+
+## U4 python-harness — Functional Design: answers
+**Timestamp**: 2026-11-19T19:30:41Z
+**User Input**: "Answers for U4's Functional Design: Q1 A, Q3 A, Q4 A, Q5 A, Q6 A. Q2, Q7 and Q8: A, with these additions.
+
+Q2: Cleanup on garbage collection can't await, so it is synchronous: abort the socket and cancel the timers, never schedule a coroutine. It also emits a ResourceWarning naming the unclosed subscription (or client), as asyncio's own transports do. Developers then learn they forgot async with. A test checks both.
+
+Q7: \"tenant filters still apply\" includes the error action (pytest's filterwarnings = error, python -W error). Under it, warnings.warn_explicit raises SoormaWarning inside the SDK's renewal task. Node's emitWarning never throws, so TypeScript never had this. Wrap the emit: if the warning raises, catch it, and renewal carries on unaffected. The warning is advisory, never control flow. Add a test that runs the skew path with warnings set to error and asserts renewal still happens. The name-table row for SoormaWarning is approved as a change to U1's spec, like state.
+
+Q8: patching time.time works only if the SDK's clock module calls time.time() each time it reads the clock, never \"from time import time\" bound at import. Make that a rule of the clock module, and add a check that fails if anything under the package binds time.time, time.time_ns or datetime.now at import. Otherwise the end-to-end test could pass without the skew ever reaching the SDK.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the Functional Design artifacts and the L1 traceability, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U4-FD-Q1: A. U4-FD-Q2: A, with the addition: \"Cleanup on garbage collection can't await, so it is synchronous: abort the socket and cancel the timers, never schedule a coroutine. It also emits a ResourceWarning naming the unclosed subscription (or client), as asyncio's own transports do. Developers then learn they forgot async with. A test checks both.\" U4-FD-Q3: A. U4-FD-Q4: A. U4-FD-Q5: A. U4-FD-Q6: A. U4-FD-Q7: A, with the addition: \"'tenant filters still apply' includes the error action (pytest's filterwarnings = error, python -W error). Under it, warnings.warn_explicit raises SoormaWarning inside the SDK's renewal task. Node's emitWarning never throws, so TypeScript never had this. Wrap the emit: if the warning raises, catch it, and renewal carries on unaffected. The warning is advisory, never control flow. Add a test that runs the skew path with warnings set to error and asserts renewal still happens. The name-table row for SoormaWarning is approved as a change to U1's spec, like state.\" U4-FD-Q8: A, with the addition: \"patching time.time works only if the SDK's clock module calls time.time() each time it reads the clock, never 'from time import time' bound at import. Make that a rule of the clock module, and add a check that fails if anything under the package binds time.time, time.time_ns or datetime.now at import. Otherwise the end-to-end test could pass without the skew ever reaching the SDK.\" No answer is ambiguous; no follow-up needed. Generating the Functional Design artifacts."
+**Context**: Construction, U4 python-harness, Functional Design Step 5: answers collected
+
+---
+
+## U4 python-harness — Functional Design: artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T19:35:36Z
+**User Input**: (none)
+**AI Response**: "Functional Design artifacts generated in construction/python-harness/functional-design/: domain-entities.md (locations; the Python column's shapes, SoormaWarning included; the private modules with _clock.py; states; the lineage with is_usable(), CDI-06; the F42 items); business-rules.md (PH-API, PH-SEC, PH-RD, PH-PUB, PH-LIFE with the synchronous GC finalizer and ResourceWarning, PH-REN with the guarded emit, PH-CLK with the import-binding check, PH-SPN, PH-DRV, PH-E2E, PH-F42; misuse cases); business-logic-model.md (the flows; the driver; the example and e2e-python; planned TC-PH-067 to 078; values for NFR Requirements, D_lang first); l1-coverage-matrix.md (25 Covered, 5 N/A, 0 Missing); invariant-coverage-matrix.md (9 Covered, I4 N/A for this unit, I11 N/A by design; the I8 packaging table). Gap-classification pass: no PRD specification gap; the SoormaWarning row is a change to U1's specification in this repository, approved by the user. Security compliance: SECURITY-03 (no secret in any message, the SDK writes no log; the centralised log service is hosted, carried), SECURITY-05 (input validation at the SDK's own boundary: options, payloads, delivery lines), SECURITY-10 (dependency choices left to NFR Requirements), SECURITY-11 (misuse cases), SECURITY-12 (no hard-coded credential), SECURITY-13 (no unsafe deserialization: strict scanner, json within D_lang), SECURITY-15 (fail closed, resources released, every task's exception retrieved, the warning advisory) compliant; the rest N/A for a client library or N/A for the milestone, carried. Approval prompt presented: Request Changes or Continue to Next Stage (NFR Requirements)."
+**Context**: Construction, U4 python-harness, Functional Design Step 6 and 7
+
+---
+
+## U4 python-harness — Functional Design: approved, with two changes
+**Timestamp**: 2026-11-19T21:02:53Z
+**User Input**: "Continue to Next Stage: U4 Functional Design approved, with two changes recorded before NFR Requirements.
+
+1. Python's own limit on integer length. Since Python 3.11, json.loads raises ValueError on an integer longer than sys.get_int_max_str_digits() (4300 by default); I confirmed it on 3.12 and 3.13. A delivery whose payload holds such a number is valid JSON. If that ValueError escapes, the Delivery's envelope and seal are lost, which RCV-06 forbids for a too-deep payload. Rule: any failure to parse a payload that already passed the scanner's syntax check (the digit limit, RecursionError) is treated like RCV-06. The payload is left unparsed, payload_parsed is False, payload_text is kept, and the envelope and seal are intact and forwardable. Never change sys.set_int_max_str_digits: it's process-global and belongs to the tenant. Add a test case: a payload holding a 5000-digit integer, on 3.11 and the newest release. On the publish side, an int whose decimal form exceeds the limit is refused like the other unsendable values (path named, never the value), since str() would raise there too.
+
+2. Delivery.payload on an unparsed payload: raise a named subclass of AttributeError, PayloadNotParsed (or similar), whose message says the payload wasn't parsed and to check payload_parsed or use payload_text. hasattr() still works. If it's exported, add it to the name table's Python column, as with SoormaWarning.
+
+The other choices you made are accepted: the frozen keyword-only options dataclass, lone surrogates escaped as \uXXXX (as JSON.stringify does), and NaN and Infinity refused in deliveries.
+
+Log this message word for word in audit.md, update the artifacts, commit signed off, push, wait for CI, then start U4's NFR Requirements."
+**AI Response**: "Functional Design approved with two changes, made in the artifacts before NFR Requirements: (1) a payload that passed the scanner but fails to parse (the integer digit limit, RecursionError) is treated as RCV-06; sys.set_int_max_str_digits is never changed; a planned test case with a 5000-digit integer on 3.11 and the newest release; on publish, an int whose decimal form exceeds the process's limit is refused with the path, never the value. (2) Delivery.payload on an unparsed payload raises PayloadNotParsed, an exported AttributeError subclass, with a name-table row (Python only), as SoormaWarning. The frozen keyword-only options dataclass, lone surrogates escaped, and NaN and Infinity refused in deliveries are accepted as made."
+**Context**: Construction, U4 python-harness, Functional Design approval with changes
+
+---
+
+## U4 python-harness — Functional Design: the two changes made
+**Timestamp**: 2026-11-19T21:03:37Z
+**User Input**: (none)
+**AI Response**: "Made in the artifacts: business-rules.md PH-RD-06 (any failure to parse a payload that passed the scanner, the digit limit or RecursionError, is treated as RCV-06; sys.set_int_max_str_digits never called), PH-RD-07 (PayloadNotParsed, an exported AttributeError subclass, its message pointing to payload_parsed and payload_text, no payload text; hasattr stays False), PH-PUB-01 (an int whose decimal form exceeds the process's limit refused with the path, never the value), PH-API-01 and PH-F42-02 (the PayloadNotParsed name-table row, Python only); domain-entities.md (Delivery.payload, PayloadNotParsed, the F42 row); business-logic-model.md (the reader; TC-PH-079, a 5000-digit integer on 3.11 and the newest release; TC-PH-070 extended). One related case decided here, flagged to the user: an envelope that passed the scanner but fails to parse (an over-long integer in an unknown member) is a DeliveryError, envelope-unparsed, and the stream continues, as an envelope too deep is (PH-RD-03), since an envelope the SDK cannot parse cannot be exposed read only. Functional Design marked approved in aidlc-state.md."
+**Context**: Construction, U4 python-harness, Functional Design complete
+
+---
+
+## U4 python-harness — NFR Requirements: questions
+**Timestamp**: 2026-11-19T21:09:27Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements plan written (construction/working/python-harness-nfr-requirements-plan.md, git-ignored), seeded from the harness shape (PF §11, §14) and carrying U3's language-neutral settlements. Checked first: Python releases (python.org and the devguide, fetched 2026-11-19): newest stable 3.15 (3.15.2, 2026-10-25), 3.11 at 3.11.18 in security status, end of life 2027-10, so the matrix is 3.11 and 3.15. json.loads depth measured: 3.12.3 and 3.13.12 about 9 990 levels anywhere; 3.11.12 994 at the top, 985 in an asyncio task, 792 under 200 frames (the recursion limit minus the caller's stack). The default SSL context loads 128 to 186 OS CAs on every local interpreter. Nine questions, each Awaiting Answer: U4-NFR-Q1 the named values (A: U3's, D_lang 256); Q2 the HTTP client (A: stdlib asyncio streams and ssl, a small HTTP/1.1 client); Q3 the trust store (A: OS store through OpenSSL defaults plus the CA); Q4 toolchain and build (A: uv exact with uv.lock, exclude-newer cooldown, wheels only, uv_build, src layout, _internal excluded); Q5 development tools (A: pytest with pytest-asyncio, ruff, mypy --strict, warnings as errors in tests); Q6 opentelemetry-api (A: a range >= floor < 2, tested at the lock and at the floor); Q7 generated types (A: a TypeScript generator emitting TypedDicts, in the existing checks job); Q8 CI jobs (A: conformance-python 3.11 and 3.15 plus the API floor, e2e-python on 3.11, package-python offline); Q9 vulnerability scanning (A: pip-audit on the exported lock, the existing exception register, Dependabot's uv ecosystem)."
+**Context**: Construction, U4 python-harness, NFR Requirements Steps 1 to 4
+
+---
+
+## U4 python-harness — NFR Requirements: answers
+**Timestamp**: 2026-11-19T21:23:35Z
+**User Input**: "Answers for U4's NFR Requirements: Q1 A (D_lang 256), Q4 A, Q5 A, Q6 A, Q7 A, Q8 A, Q9 A. Q2 and Q3: A, with these conditions.
+
+Q2: A, the standard-library client, on condition that its response parser is strict and bounded, since the SDK will be parsing untrusted server responses with its own code:
+- Fail closed on a malformed status line, header line or chunk-size line. No obs-fold, no bare LF unless the contract's server sends it.
+- Limits on the status line's length, each header line's length, the header count, and the non-stream response body (for example 1 MiB).
+- A response carrying both Content-Length and Transfer-Encoding is refused. Chunk extensions are ignored, and trailers are bounded.
+- An SSE line longer than a bound is a delivery error, and the stream continues, consistent with RCV-07.
+- Each failure is a TransportError with a reason, never the bytes.
+Give the parser table-driven tests of malformed input (truncated, oversized, conflicting framing), plus a property or fuzz test that random bytes never hang it or raise anything other than TransportError. If you judge this too much code to own, h11 (pure Python, no dependencies, sans-IO) is acceptable instead. Say which you chose, and why, in tech-stack-decisions.md.
+
+Q3: A. Python installed from python.org's macOS installer can start with no CA certificates until its \"Install Certificates\" script is run, and then every public TLS connection fails. Say so in the package README, and make the TLS failure's message hint at it (reason only, no certificate details).
+
+The envelope-unparsed delivery error for an envelope holding an over-long integer is accepted.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Requirements artifacts, decide whether U4's NFR Design stage runs, and present the completion message."
+**AI Response**: "Answers recorded by question ID: U4-NFR-Q1: A (D_lang 256). U4-NFR-Q2: A, on the user's condition, word for word: \"its response parser is strict and bounded, since the SDK will be parsing untrusted server responses with its own code: Fail closed on a malformed status line, header line or chunk-size line. No obs-fold, no bare LF unless the contract's server sends it. Limits on the status line's length, each header line's length, the header count, and the non-stream response body (for example 1 MiB). A response carrying both Content-Length and Transfer-Encoding is refused. Chunk extensions are ignored, and trailers are bounded. An SSE line longer than a bound is a delivery error, and the stream continues, consistent with RCV-07. Each failure is a TransportError with a reason, never the bytes. Give the parser table-driven tests of malformed input (truncated, oversized, conflicting framing), plus a property or fuzz test that random bytes never hang it or raise anything other than TransportError. If you judge this too much code to own, h11 (pure Python, no dependencies, sans-IO) is acceptable instead. Say which you chose, and why, in tech-stack-decisions.md.\" U4-NFR-Q3: A, on the user's condition, word for word: \"Python installed from python.org's macOS installer can start with no CA certificates until its 'Install Certificates' script is run, and then every public TLS connection fails. Say so in the package README, and make the TLS failure's message hint at it (reason only, no certificate details).\" U4-NFR-Q4: A. U4-NFR-Q5: A. U4-NFR-Q6: A. U4-NFR-Q7: A. U4-NFR-Q8: A. U4-NFR-Q9: A. The envelope-unparsed delivery error (an envelope holding an over-long integer) accepted. No answer ambiguous; generating the artifacts."
+**Context**: Construction, U4 python-harness, NFR Requirements Step 5: answers collected
+
+---
+
+## U4 python-harness — NFR Requirements: artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T21:25:41Z
+**User Input**: (none)
+**AI Response**: "NFR Requirements artifacts generated in construction/python-harness/nfr-requirements/: nfr-requirements.md (NFR-U4-01 to -36: the harness profile; request-path performance; the named values, U3's with D_lang 256; the HTTP response parser under the user's conditions, NFR-U4-07 to -11: CRLF only, no obs-fold, status line 1 KiB, header line 8 KiB, 100 headers, head 64 KiB, non-stream body 1 MiB, chunk-size line 1 KiB, trailers 16 KiB and 32 lines, Content-Length with Transfer-Encoding refused, chunk extensions ignored, SSE lines over 1 MiB a line-too-long delivery error, each failure a TransportError reason never the bytes, sans-IO so it cannot hang, table-driven and seeded fuzz tests; reliability; security, with the TLS failure's Install Certificates hint when the default store loaded no CA; supply chain; the distribution; testing and CI, the checks job gaining Python for the names check; the README, with the macOS installer note; SECURITY-12 per clause; NFR Design runs) and tech-stack-decisions.md (TS-U4-01 to -16; the parser: the SDK's own, chosen over h11 because the contract's HTTP subset is narrow and every condition then holds exactly as written, without a runtime dependency; the jobs). Approval prompt presented: Request Changes or Continue to Next Stage (NFR Design)."
+**Context**: Construction, U4 python-harness, NFR Requirements Steps 6 and 7
+
+---
+
+## U4 python-harness — NFR Requirements: approved, with an addition reaching U3
+**Timestamp**: 2026-11-19T21:59:36Z
+**User Input**: "Continue to Next Stage: U4 NFR Requirements approved, with one addition that also reaches U3.
+
+The SSE limit has to apply to the whole event, not each line. An event can carry many data: lines, so a 1 MiB limit per line still lets a server send an unbounded event. And TypeScript has no limit at all: typescript/src/subscription.ts appends to `pending` until a blank line arrives, and the socket-pause backpressure doesn't help, because no item is ever completed, so the queue never fills. transport.ts also collects non-stream response bodies with no limit.
+
+Make it language-neutral:
+1. Spec: two named values in §0. L_event is the most bytes one SSE event may hold before its terminating blank line (1 MiB, 16 times the contract's 64 KiB payload limit). B_body is the most bytes a non-stream response body may hold (1 MiB). Add a statement next to RCV-07: an event over L_event is discarded up to its terminating blank line, keeping no more than the bound in memory. It yields a delivery error (reason event-too-large, no text), and the stream continues. A non-stream body over B_body is a TransportError (response-too-large), never the bytes.
+2. Conformance cases: the stub sends one oversized event (many data lines, each under 1 MiB) followed by a normal Delivery. Expect the error, then the Delivery, with the stream still open. A second case: a Problem response body over B_body gives the transport error. The stub may need a way to generate a large body without the case file holding it; if so, add it as a change to U1's stub.
+3. Python: apply the limit per event in the parser (NFR-U4-09). The 1 MiB per-line limit can stay as well.
+4. TypeScript: fix subscription.ts and transport.ts to match, with unit tests. It's a defect fix to merged U3 code, made inside U4's code PR, its own commit, listed in U4's code summary under changes to earlier units, with the TypeScript driver passing the new cases.
+Record the spec and case changes as F42 items, classed, and have the reference driver declare the new cases if it already passes them.
+
+Log this message word for word in audit.md, update the NFR Requirements artifacts, commit signed off, push, wait for CI, then start U4's NFR Design."
+**AI Response**: "NFR Requirements approved with the addition. Recorded: L_event and B_body (1 MiB each) as named values in spec §0; a statement beside RCV-07 for an oversized event and an oversized non-stream body; two conformance cases (an oversized event of many data lines followed by a Delivery; a Problem body over B_body), with a stub capability to generate a large body if needed; the Python parser bounding each event; the TypeScript defect fix to subscription.ts and transport.ts inside U4's code PR, its own commit; each an F42 item, classed at Code Generation; the reference driver declaring the new cases if it passes them."
+**Context**: Construction, U4 python-harness, NFR Requirements approval with an addition
+
+---
+
+## U4 python-harness — NFR Requirements: the addition made
+**Timestamp**: 2026-11-19T22:00:09Z
+**User Input**: (none)
+**AI Response**: "Confirmed in the merged TypeScript code: subscription.ts appends to s.pending until '\\n\\n' with no bound (#onData, #pump); transport.ts collects both non-stream bodies (lines 142 and 203) with no bound. Made: nfr-requirements.md (L_event and B_body in the named values; NFR-U4-08 the body bound as B_body; NFR-U4-10 per event, the 1 MiB per-line bound kept as the parser's buffer bound and reported as event-too-large; NFR-U4-37 the specification change, two cases and a stub capability as F42 items; NFR-U4-38 the TypeScript defect fix in U4's code PR, its own commit), tech-stack-decisions.md (TS-U4-14), business-rules.md (PH-F42-02). NFR Requirements marked approved in aidlc-state.md."
+**Context**: Construction, U4 python-harness, NFR Requirements complete
+
+---
+
+## U4 python-harness — NFR Design: questions
+**Timestamp**: 2026-11-19T22:04:06Z
+**User Input**: (none)
+**AI Response**: "NFR Design plan written (construction/working/python-harness-nfr-design-plan.md, git-ignored). Carried from U3's NFR Design: P-01, P-02, P-03, P-04, P-08, P-10. Decided without asking, shown for review: public AgentClient and Subscription as thin handles over internal cores, so collection can close an open subscription (weakref.finalize on the handle, detached by close()); the clock check as an ast walk in the tests; the TLS hint from the default context's CA count recorded at start(); per-event byte counting with a discard mode past L_event, the same in both languages; a stub directive generating a large body at send time (F42 class 1). Two questions, each Awaiting Answer: U4-NFR-D-Q1 the I/O layer (A: an asyncio.Protocol feeding the sans-IO parser); U4-NFR-D-Q2 the opentelemetry-api floor run (A: two conflicting dependency groups in the one uv.lock)."
+**Context**: Construction, U4 python-harness, NFR Design Steps 1 to 4
+
+---
+
+## U4 python-harness — NFR Design: answers
+**Timestamp**: 2026-11-19T22:55:56Z
+**User Input**: "Answers for U4's NFR Design: Q1 A, Q2 A.
+
+Your five decisions are accepted: handles over internal cores with weakref.finalize, the ast clock check, the TLS hint only when the default store was empty, the same event limit in both languages, and the stub generating the large body at send time.
+
+One test to add for the handles: a forgotten AgentClient and a forgotten Subscription are actually collected. Drop the last reference, run gc.collect(), and assert a weakref to the handle is dead, the finalizer ran (sockets aborted, timers cancelled) and one ResourceWarning was emitted. That guards against the finalizer callback holding a reference to the handle, which would keep it alive forever.
+
+Log these answers in audit.md under their question IDs, word for word. Then generate the NFR Design artifacts and present the completion message."
+**AI Response**: "Answers recorded by question ID: U4-NFR-D-Q1: A. U4-NFR-D-Q2: A. The five decisions accepted (handles over internal cores with weakref.finalize; the ast clock check; the TLS hint only when the default store was empty; the same event limit in both languages; the stub generating the large body at send time). Added at the user's direction, word for word: \"a forgotten AgentClient and a forgotten Subscription are actually collected. Drop the last reference, run gc.collect(), and assert a weakref to the handle is dead, the finalizer ran (sockets aborted, timers cancelled) and one ResourceWarning was emitted. That guards against the finalizer callback holding a reference to the handle, which would keep it alive forever.\" Generating the NFR Design artifacts."
+**Context**: Construction, U4 python-harness, NFR Design Step 5: answers collected
+
+---
+
+## U4 python-harness — NFR Design: artifacts generated; approval prompt
+**Timestamp**: 2026-11-19T22:57:44Z
+**User Input**: (none)
+**AI Response**: "NFR Design artifacts generated in construction/python-harness/nfr-design/: nfr-design-patterns.md (P-01 retry policy; P-02 validity check; P-03 renewal and the guarded warning, warned set before the emit; P-04 the supervisor in asyncio; P-05 the clock seam and its ast check; P-06 the trust store and the hint from the default store's CA count; P-07 the asyncio.Protocol over the sans-IO ResponseParser, its states, bounds and reasons, table-driven and fuzz tests; P-08 the event and body bounds in both languages, the TypeScript fix, the stub's generated-body directive; P-09 the reader and the payload walk; P-10 handles over cores, weakref.finalize with a module-level callback taking the core and a name, never the handle, detached by close(), and the user's collection test (weakref dead after gc.collect(), sockets aborted, timers cancelled, exactly one ResourceWarning); P-11 resource release and task exceptions; P-12 hygiene; P-13 the values hook kept out; P-14 the floor run from conflicting groups in one lock; P-15 the CI user helper; security and invariant compliance) and logical-components.md (the package's modules, the components outside the distribution, the F42 changes to U1 and the TypeScript fix, the CI components, NFR to component). Approval prompt presented: Request Changes or Continue to Next Stage (QA enrichment)."
+**Context**: Construction, U4 python-harness, NFR Design Steps 6 and 7
+
+---
+
+## U4 python-harness — NFR Design: approved
+**Timestamp**: 2026-11-19T23:52:12Z
+**User Input**: "Continue to Next Stage: U4 NFR Design approved as written in 5dfdd9e.
+
+Log this message word for word in audit.md, then do QA enrichment for U4. The cases must cover:
+- TC-PH-076 to 079 as designed;
+- the HTTP parser's table-driven and fuzz tests;
+- the event and body limits in both languages (the two new conformance cases, plus TypeScript unit tests for the fix);
+- the API floor run.
+Then ask me before opening U4's Construction Design PR."
+**AI Response**: "NFR Design marked approved. Starting QA enrichment for python-harness (qa-test-cases §2), covering TC-PH-076 to 079, the parser's table-driven and fuzz tests, the event and body limits in both languages, and the API floor run; then asking before the Construction Design PR."
+**Context**: Construction, U4 python-harness, NFR Design approved; QA enrichment starts
+
+---
+
+## U4 python-harness — QA enrichment
+**Timestamp**: 2026-11-19T23:54:27Z
+**User Input**: (none)
+**AI Response**: "QA enrichment for python-harness (qa-test-cases §2): sources the unit's functional-design, nfr-requirements and nfr-design only; inception IDs and forward links unchanged. 35 cases modified (a Construction design sentence in each expected outcome: TC-PH-003, 004, 006, 008, 011, 013, 015, 017 to 019, 021, 026, 027, 033, 036, 037, 040, 041, 044, 045, 049 to 051, 054 to 056, 058 to 066); 25 added, TC-PH-067 to 091, forward links to construction/python-harness/code/: 067 to 079 as designed (076 with the user's collection test, 077 warnings as errors, 078 the clock check, 079 the 5000-digit integer); 080 to 084 Python counterparts of U3's 076 to 080; 085 the parser's table-driven malformed input; 086 the seeded fuzz test; 087 an SSE event over L_event (new conformance case, both drivers); 088 a body over B_body (new conformance case, both drivers); 089 the TypeScript fix's unit tests; 090 the opentelemetry-api floor run from the lock; 091 the TLS hint. test-case-index.md gains 25 rows (91 in all); enrichment-delta.md written. The user is to be asked before the Construction Design PR."
+**Context**: Construction, U4 python-harness, QA enrichment complete
+
+---
+
+## U4 python-harness — Construction Design PR gate: the user's go-ahead
+**Timestamp**: 2026-11-20T00:08:32Z
+**User Input**: "Yes, open U4's Construction Design PR, dev → main, as for #9, #16 and #18. Wait for every check, including DCO and dependency review, record its state with the run IDs, and stop with the PR number. Don't record it merged until I tell you it is and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Branch confirmed for this gate: dev → main. Opening U4's Construction Design PR per pr-checkpoint §5, waiting for every check, recording its state with run IDs, and stopping with the PR number; not recorded merged until the user says so and GitHub shows it."
+**Context**: Construction, U4 python-harness, Construction Design PR gate
+
+---
+
+## U4 python-harness — Construction Design PR gate: instructions and state
+**Timestamp**: 2026-11-20T00:09:04Z
+**User Input**: (none)
+**AI Response**: "pr-checkpoint §5: the functional-design artifacts exist (5.1); NFR Requirements and NFR Design present, Infrastructure Design N/A (5.2); the PR description built (5.3) and written beside the instructions file (5.5), both session artifacts; the gate persisted as PENDING (5.6). Committing the initiative's artifacts and opening the PR from dev to main."
+**Context**: Construction, U4 python-harness, Construction Design PR gate
+
+---
+
+## U4 python-harness — Construction Design PR gate: #22 open, checks green
+**Timestamp**: 2026-11-20T00:12:37Z
+**User Input**: (none)
+**AI Response**: "soorma-ai/soorma-sdk#22 (dev → main) opened 2026-11-20T00:09:08Z, head ab733b0. Every check green at 2026-11-20T00:11:59Z: CI run 44643510982 (pull request): unit, repository checks, conformance self-test, changes, conformance-typescript on all three entries, package-typescript, dependency review; e2e-typescript skipped (aidlc-docs/ only); DCO run 44643512248 green; CI run 44643503126 (push) green. Recorded in aidlc-state.md as PENDING with the run IDs; not merged, and not recorded merged until the user says so and GitHub shows it. Stopped with the PR number."
+**Context**: Construction, U4 python-harness, Construction Design PR gate: stopped for the user
+
+---
