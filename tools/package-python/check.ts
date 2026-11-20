@@ -95,33 +95,35 @@ export function checkPackage(root: string, pythons: string[]): void {
     if (failures.length > 0) throw new Error(failures.join('\n'));
     console.log(`distributions: ${wheel}, ${sdist}: the guard passes`);
 
-    // The runtime dependencies as the lock pins them, hashes included.
-    const runtime = join(work, 'runtime.txt');
-    run(
-      'uv',
-      [
-        'export',
-        '--project',
-        project,
-        '--locked',
-        '--no-default-groups',
-        '--no-emit-project',
-        '--format',
-        'requirements-txt',
-        '--output-file',
-        runtime,
-      ],
-      root,
-    );
-
     let first: string | undefined;
     for (const version of pythons) {
-      // A fresh environment outside the project; installed offline from the cache.
+      // A fresh environment outside the project, holding exactly the lock's runtime
+      // dependencies: uv sync reads the lock's URLs from the cache, offline, and checks
+      // the lock's hashes. (uv pip install -r would resolve against the index, whose
+      // metadata a cache filled by uv sync does not hold.)
       const venv = join(work, `venv-${version}`);
       const py = join(venv, 'bin', 'python');
-      run('uv', ['venv', venv, '--python', version, '--no-project'], work);
+      execFileSync(
+        'uv',
+        [
+          'sync',
+          '--project',
+          project,
+          '--locked',
+          '--offline',
+          '--no-default-groups',
+          '--no-install-project',
+          '--python',
+          version,
+        ],
+        {
+          cwd: root,
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'inherit'],
+          env: { ...process.env, UV_PROJECT_ENVIRONMENT: venv },
+        },
+      );
       const install = ['pip', 'install', '--python', py, '--offline'];
-      run('uv', [...install, '--require-hashes', '-r', runtime], work);
       run('uv', [...install, '--no-deps', join(dist, wheel)], work);
       const fresh = join(work, `fresh-${version}`);
       mkdirSync(fresh);

@@ -2125,3 +2125,11 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G10
 
 ---
+
+## Code Generation Part 2: G10 CI red; Step 38a
+**Timestamp**: 2026-11-20T03:49:58Z
+**User Input**: (none)
+**AI Response**: "c883b94 (G10, signed off) pushed to dev. CI run 44669854985: failure in package-python only; every other job green, e2e-python included on its first run (2 min 49 s for the job; the scenario printed 'e2e-python: every step held', every log searched clean). The failure: the offline install of uv export's requirements resolves name==version against the index, and CI's cache, filled only by uv sync from the lock's URLs, holds no index metadata ('opentelemetry-api was not found in the cache'); locally the cache happened to hold it from earlier locking. Step 38a added to the plan first, then: the fresh environment gets the runtime dependencies with uv sync --locked --offline --no-default-groups --no-install-project (UV_PROJECT_ENVIRONMENT set to it), which reads the lock's URLs from the cache and checks the lock's hashes; the wheel then with uv pip install --offline --no-deps. Proved with a cold cache filled only by uv sync, as CI's is: package-python pass on 3.11.18 and 3.15.2. Typecheck, lint, prettier and the guard's tests pass. G11 prepared meanwhile, uncommitted until this is green: construction/python-harness/code/code-summary.md; the L1 matrix (25 rows) and the invariant matrix (9) to Implemented, with the I9 search of python/src/soorma/ (no local-stack value, tenant identifier or event name) and the I10 statement."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G10 (Step 38a)
+
+---
