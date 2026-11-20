@@ -2141,3 +2141,11 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G11
 
 ---
+
+## Code Generation Part 2: the code PR (Step 43)
+**Timestamp**: 2026-11-20T03:58:57Z
+**User Input**: (none)
+**AI Response**: "1cc0d1d (G11) and fb3ae20 (the state) pushed. soorma-ai/soorma-sdk#23 opened, dev to main. Every check green at head fb3ae20: CI run 44670863814 (pull request): unit, repository checks, conformance self-test, changes, conformance-typescript x3, conformance-python x3, e2e-typescript, e2e-python, package-typescript, package-python, dependency review; DCO run 44670863789. OBL-04 discharged for U4 on this run: CC-SEC-05 passed, not skipped, on every conformance-python entry, each 97 passed, 0 failed, 0 not run (3.11.18 otel-latest 77 s, 3.15.2 otel-latest 79 s, 3.11.18 otel-floor 79 s; the floor entry installed opentelemetry-api 1.45.2, its pin). AD-13: e2e-python 161 s, the scenario 60 s, under 8 minutes. CDI-05: two driver faults, no SDK failure, no case change, no specification question. The L1 (25) and invariant (9) matrices to Verified. Code summary, aidlc-state (OBL-04 discharged for U4; the stage; the U4 line) and this entry committed after the run they record. Stopped for the user's merge; not recorded as merged."
+**Context**: Construction, U4 python-harness, Code Generation, code PR
+
+---

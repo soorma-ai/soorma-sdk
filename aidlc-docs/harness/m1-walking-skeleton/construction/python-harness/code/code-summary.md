@@ -91,7 +91,7 @@ driver on 3.11 and 3.15.
 | Step 30, first run (3.11.18, CC-SEC-05 skipped) | 94 passed, 2 failed, 91 s | Within |
 | Step 32, final runs (local, CC-SEC-05 skipped) | 3.11.18: 96 passed, 88 s; 3.15.2: 96 passed, 88 s | Within |
 | CI, `conformance-python` (push run 44668858650) | 97 of 97 on each entry, 79 s of suite time each | Within |
-| `e2e-python` | Measured on the code PR | 8 minutes (AD-13) |
+| CI, `e2e-python` (pull-request run 44670863814) | 161 s; the scenario 60 s | 8 minutes (AD-13) |
 | The local scenario (Step 40) | 59 s | — |
 
 ## Commit Groups and CI
@@ -134,4 +134,19 @@ exited 0 on Ctrl-C with no traceback; `core-down` exit 0.
 
 ## Code PR
 
-Pending (plan Step 43).
+soorma-ai/soorma-sdk#23 (`dev` → `main`), opened 2026-11-20T03:54Z. Every check was green at head
+`fb3ae20`:
+- CI run 44670863814 (pull request): unit, repository checks, conformance self-test, `changes`, `conformance-typescript` on all three entries, `conformance-python` on all three entries, `e2e-typescript`, `e2e-python`, `package-typescript`, `package-python` and dependency review;
+- DCO run 44670863789.
+
+**OBL-04, discharged for U4 on the PR's own run** (44670863814): CC-SEC-05 passed, not skipped, on
+every `conformance-python` entry; each ran 97 passed, 0 failed, 0 not run (3.11.18 with
+`otel-latest`, 77 s; 3.15.2 with `otel-latest`, 79 s; 3.11.18 with `otel-floor`, 79 s, its
+`opentelemetry-api` 1.45.2 as the group pins: TC-PH-090).
+
+**AD-13**: `e2e-python` took **161 s** (the scenario 60 s), under 8 minutes, so NFR Requirements is
+not reopened.
+
+**CDI-05's outcome**: two driver faults, no SDK failure, no case change, no specification question.
+
+The matrices' *Verified* includes this run.
