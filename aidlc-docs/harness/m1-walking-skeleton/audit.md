@@ -2093,3 +2093,19 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G8
 
 ---
+
+## Code Generation Part 2: G8 CI
+**Timestamp**: 2026-11-20T03:36:14Z
+**User Input**: (none)
+**AI Response**: "3b24eba (G8, signed off) pushed to dev. CI run 44668464349: success, every job; the checks job's names check ran the Python driver (uv run --locked --project python) and passed for both languages."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G8 to G9
+
+---
+
+## Code Generation Part 2: G9 (Step 33)
+**Timestamp**: 2026-11-20T03:36:14Z
+**User Input**: (none)
+**AI Response**: "ci.yml gains conformance-python: 3.11.18 and 3.15.2 with the otel-latest group, and 3.11.18 with otel-floor (P-14); each syncs exactly its group from uv.lock (uv sync --locked --no-default-groups --group dev --group <group>), and runs the driver with the synced environment's interpreter directly, so no uv run re-syncs the default groups over the floor; a step asserts the installed opentelemetry-api equals the group's pin (TC-PH-090); the second local user and --foreign-user soorma-foreign (P-15); no --local-skip. Checked locally before pushing: the floor sync and the version step's script in a scratch environment (opentelemetry-api installed 1.45.2, otel-floor pins 1.45.2), and seven cases (CC-SPN-01, CC-SPN-03, CC-FWD-05, CC-ACQ-08, CC-REN-06, CC-STR-13, CC-PRB-07) with the floor environment's interpreter: 7 passed. The workflows check passes. Step 34 is checked on this push's run."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G9
+
+---

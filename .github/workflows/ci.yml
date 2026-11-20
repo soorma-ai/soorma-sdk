@@ -223,6 +223,80 @@ jobs:
           "$DRIVER_NODE" --version
           pnpm conformance run --driver "$DRIVER_NODE --expose-gc typescript/conformance-driver/driver.ts" --foreign-user soorma-foreign
 
+  # The Python driver over every case (U4; P-14, P-15): 3.11 and 3.15 with the
+  # newest opentelemetry-api in the lock, and 3.11 with the range's floor, each
+  # group installed from uv.lock; the second local user for CC-SEC-05; no
+  # --local-skip. The driver runs in the synced environment directly, so nothing
+  # re-syncs the default groups over the floor.
+  conformance-python:
+    name: Conformance, Python (${{ matrix.python }}, opentelemetry-api ${{ matrix.group }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: 3.11.18
+            group: otel-latest
+          - python: 3.15.2
+            group: otel-latest
+          - python: 3.11.18
+            group: otel-floor
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Set up Node from .node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up uv (exact version)
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.8'
+          enable-cache: false
+
+      - name: Python ${{ matrix.python }}, and the ${{ matrix.group }} group from the lock
+        working-directory: python
+        env:
+          GROUP: ${{ matrix.group }}
+          PYTHON: ${{ matrix.python }}
+        run: |
+          uv python install "$PYTHON"
+          uv sync --locked --python "$PYTHON" --no-default-groups --group dev --group "$GROUP"
+
+      - name: The opentelemetry-api installed is the group's, from the lock (TC-PH-090)
+        working-directory: python
+        env:
+          GROUP: ${{ matrix.group }}
+        run: |
+          installed=$(.venv/bin/python -c 'from importlib.metadata import version; print(version("opentelemetry-api"))')
+          locked=$(.venv/bin/python - "$GROUP" <<'PY'
+          import sys, tomllib
+          groups = tomllib.load(open("pyproject.toml", "rb"))["dependency-groups"][sys.argv[1]]
+          print(next(g.split("==")[1] for g in groups if g.startswith("opentelemetry-api==")))
+          PY
+          )
+          echo "opentelemetry-api: installed $installed, $GROUP pins $locked"
+          test "$installed" = "$locked"
+
+      - name: Create the second local user (P-15)
+        run: sudo useradd --no-create-home --shell /usr/sbin/nologin soorma-foreign
+
+      - name: Conformance, every case
+        run: |
+          python/.venv/bin/python --version
+          pnpm conformance run --driver "python/.venv/bin/python python/conformance_driver/driver.py" --foreign-user soorma-foreign
+
   # @soorma/sdk as a tenant receives it (NFR-U3-21, -22): packed; the guard over
   # the tarball (no test-only code, no values hook); installed offline into a
   # fresh project outside the workspace, the peer API from the lock; an ESM
