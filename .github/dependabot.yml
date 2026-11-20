@@ -33,6 +33,21 @@ updates:
       # only with that range, by hand (DEPENDENCIES.md, Update rules).
       - dependency-name: 'opentelemetry-api-floor'
 
+  # The Python package (U4): uv.lock, the same cooldown and target branch.
+  - package-ecosystem: uv
+    directory: /python
+    target-branch: dev
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      # OpenTelemetry's Python packages are released together and meant to
+      # match. The opentelemetry-api range in pyproject.toml moves by hand.
+      opentelemetry:
+        patterns: ['opentelemetry-*']
+
   - package-ecosystem: github-actions
     directory: /
     target-branch: dev

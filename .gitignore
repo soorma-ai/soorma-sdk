@@ -5,3 +5,10 @@ node_modules/
 coverage/
 typescript/dist/
 *.tgz
+# Python (U4)
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+python/dist/

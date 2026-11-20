@@ -35,6 +35,11 @@ export function compareGenerated(
   return failures;
 }
 
+/** Interpreter caches (Python's `__pycache__`, added at U4) are never committed or generated. */
+export function withoutCaches(tree: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(tree).filter(([p]) => !/(^|\/)__pycache__\//.test(p)));
+}
+
 export function checkPackage(root: string, pkg: GeneratedPackage): string[] {
   const committedDir = resolve(root, pkg.committed);
   if (!existsSync(committedDir)) return [`${pkg.name}: ${pkg.committed} does not exist`];
@@ -42,7 +47,11 @@ export function checkPackage(root: string, pkg: GeneratedPackage): string[] {
   try {
     const [cmd = '', ...args] = pkg.generate.map((a) => a.replace('{out}', out));
     execFileSync(cmd, args, { cwd: root, stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000 });
-    return compareGenerated(hashTree(committedDir, committedDir), hashTree(out, out), pkg.name);
+    return compareGenerated(
+      withoutCaches(hashTree(committedDir, committedDir)),
+      withoutCaches(hashTree(out, out)),
+      pkg.name,
+    );
   } catch (error) {
     return [`${pkg.name}: the generator failed (${(error as Error).message.split('\n')[0]})`];
   } finally {

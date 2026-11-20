@@ -1963,3 +1963,35 @@ Log this message word for word in audit.md, then start G1."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G2
 
 ---
+
+## U4 Code Generation — G3: stopped for the user (opentelemetry-api floor advisories)
+**Timestamp**: 2026-11-20T01:15:05Z
+**User Input**: (none)
+**AI Response**: "G3 Steps 9 to 12 done locally, not yet committed: uv 0.13.8 (checksum verified, scratch directory), CPython 3.11.18 and 3.15.2 (3.15.2's json parses about 65 000 levels; D_lang 256 stands, bounded by 3.11); python/pyproject.toml and uv.lock (opentelemetry-api >=1.14.0,<2; otel-latest 1.45.2 and otel-floor 1.14.0 conflicting groups); the package skeleton (ruff, mypy --strict, 3 tests green on 3.11); python/scripts/generate.ts and the generated TypedDicts; the generated-types check skipping __pycache__ and the packaging guard's pyproject.toml branch, each with a test; pnpm checks green. Before Step 13, pip-audit on the floor resolution found two advisories in opentelemetry-api 1.14.0: GHSA-xcq7-p3pf-p88h / CVE-2026-114603 (TraceState.from_header, quadratic tracestate parsing; fixed in 1.45.1) and GHSA-mf5v-w3w3-f6cg / CVE-2026-126360 (TraceContextTextMapPropagator.extract, quadratic traceparent parsing; fixed in 1.45.2), CVSS 3.1 A:L, network, no privileges. The latest resolution is clean. Stopped for the user: the floor of the runtime range and how the floor run is audited are the user's decision."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G3, stopped
+
+---
+
+## U4 Code Generation — G3: the user decides the opentelemetry-api floor
+**Timestamp**: 2026-11-20T01:20:08Z
+**User Input**: "B: raise the opentelemetry-api floor to 1.45.2, the first release with both fixes (released 2026-10-29, past the 7-day cooldown). The range becomes >=1.45.2,<2. Every resolution must audit clean, with no accepted advisory. The SDK is new and its first users are my own apps, so requiring a current OpenTelemetry costs little now and keeps \"no known vulnerability accepted\" true.
+
+Keep from A, as defence in depth whatever version a tenant installs: the SDK parses traceparent and tracestate itself, within W3C's limits (tracestate at most 512 characters and 32 list members, more is dropped, as the spec allows), and builds TraceState from its own parsed pairs. A test shows it never calls TraceState.from_header or any propagator's extract.
+
+The floor group stays in uv.lock and its CI run stays. Until a newer release enters the lock it tests the same version as the latest run; say so in DEPENDENCIES.md, and that the floor moves only by hand.
+
+Note for the record: A wouldn't have fitted the existing audit-exceptions register. Its expiry fires once a fix is published and past the cooldown, which is already true here, so A would have needed a new kind of exception scoped to the floor run.
+
+Log this message word for word in audit.md, then finish Step 13, run G3's gate, commit signed off, push and wait for CI."
+**AI Response**: "B: the range becomes opentelemetry-api>=1.45.2,<2; otel-floor pins 1.45.2 (the same as otel-latest until a newer release enters the lock); every resolution must audit clean. Kept from A for G6 (Step 23): the SDK parses traceparent and tracestate itself within W3C's limits (tracestate at most 512 characters and 32 list members, the rest dropped) and builds TraceState from its own pairs, with a test that it never calls TraceState.from_header or any propagator's extract. The note on the audit-exceptions register recorded. Finishing Step 13, then G3's gate."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G3: user decision
+
+---
+
+## U4 Code Generation — G3: the Python project, its checks, CI's first Python steps
+**Timestamp**: 2026-11-20T01:22:21Z
+**User Input**: (none)
+**AI Response**: "Step 9: uv 0.13.8 (newest past the cooldown; SHA-256 a04c2ffeac28b2003a2c13caf538ab425fcd7def3e4a41571f4a8fb370a66af3 checked; scratch directory, the machine's uv untouched), CPython 3.11.18 and 3.15.2, setup-uv v10.3.3 (68559e99…). Step 10: python/pyproject.toml (soorma 0.1.0; opentelemetry-api>=1.45.2,<2 per the user's decision; uv_build 0.13.8; dev pytest 9.2.0, pytest-asyncio 1.5.0, ruff 0.17.5, mypy 2.4.1, pip-audit 2.10.1; otel-latest and otel-floor both 1.45.2, conflicting; exclude-newer 2026-11-13; no-build; _internal excluded from wheel and sdist; ruff with the banned APIs; mypy strict; pytest warnings as errors) and uv.lock. Step 11: the skeleton (__all__ exactly the Python column; errors, PayloadNotParsed, SoormaWarning and value types complete; operations stubbed). Step 12: python/scripts/generate.ts (TypedDicts; received types total=False; forbidden-by-name draft members untyped; functional-form types quoted), listed in tools/generated-types/packages.json; U1's tools: the generated-types check skips __pycache__ (withoutCaches; a test), the packaging guard reads pyproject.toml (checkPythonPackage; a test), python/ listed — configuration and strictly additive, no existing assertion changed. Step 13: ci.yml unit gains Python on 3.11 (setup-uv pinned by SHA, uv 0.13.8; ruff; mypy; pytest; scripts/audit.sh over both resolutions, any advisory failing); checks gains Python 3.11 and the locked environment; dependabot.yml gains the uv ecosystem for /python with its opentelemetry group; DEPENDENCIES.md records the range, that the floor run tests the latest version until a newer release enters the lock, and that the floor moves only by hand. Gate green on Node 24.22.3 (299 tests, audit, checks, build) and Python 3.11.18 (ruff, mypy, 3 tests, pip-audit clean on both resolutions) and 3.15.2 (3 tests, mypy)."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G3
+
+---

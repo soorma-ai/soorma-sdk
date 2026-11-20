@@ -3,7 +3,7 @@ import { cpSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { checkPackage } from './check.ts';
+import { checkPackage, withoutCaches } from './check.ts';
 
 let root = '';
 const pkg = {
@@ -44,5 +44,18 @@ describe('generated-types check (US-12 #2)', () => {
     expect(checkPackage(root, pkg)).toEqual([
       'fixture: stale.ts is committed but no longer generated',
     ]);
+  });
+});
+
+describe('interpreter caches (added at U4)', () => {
+  it('leaves __pycache__ out of both sides, and nothing else', () => {
+    expect(
+      withoutCaches({
+        'envelope.py': 'a',
+        '__pycache__/envelope.cpython-311.pyc': 'b',
+        'x/__pycache__/y.pyc': 'c',
+        'pycache.py': 'd',
+      }),
+    ).toEqual({ 'envelope.py': 'a', 'pycache.py': 'd' });
   });
 });

@@ -3,5 +3,10 @@
     "name": "@soorma/sdk",
     "generate": ["node", "typescript/scripts/generate.ts", "{out}"],
     "committed": "typescript/src/generated"
+  },
+  {
+    "name": "soorma",
+    "generate": ["node", "python/scripts/generate.ts", "{out}"],
+    "committed": "python/src/soorma/_generated"
   }
 ]
