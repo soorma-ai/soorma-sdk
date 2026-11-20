@@ -2029,3 +2029,11 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2: user decisions on strict TLS
 
 ---
+
+## U4 Code Generation — strict TLS: U1's helper changed; soorma-core#36; OBL-05
+**Timestamp**: 2026-11-20T02:39:34Z
+**User Input**: (none)
+**AI Response**: "91049a7: conformance/runner/src/rundir.ts makeServer's extension file gains 'subjectKeyIdentifier=hash' and 'authorityKeyIdentifier=keyid,issuer' (both server certificates, trusted and untrusted). Class: a change to a test helper earlier assertions depend on, shown to behave as before, approved by the user: openssl verify -x509_strict OK on server.pem and untrusted-server.pem; a Python 3.15.2 handshake with the stub, strict on, OK; self-test pass, every fault set as declared (147 s); TypeScript on Node 24.22.3 and 26.13.0 96 passed, 1 not run locally (CC-SEC-05). The check's run directory was removed by the runner's own removeRunDir. soorma-ai/soorma-core#36 opened (stack-certs.ts issueLeaf at contract-v0.1.0 c1e3d7f3: no subjectKeyIdentifier or authorityKeyIdentifier on leaves while the CA has a subjectKeyIdentifier; the reproduction with the exact openssl arguments, openssl verify -x509_strict output, a Python 3.13+ default-context handshake failing with 'Missing Authority Key Identifier'; the two-line fix; the fix reaches soorma-sdk only through a new contract tag; the attribution line). Recorded as OBL-05 in aidlc-state.md. Plan: Step 21 gains the strict-flag test; Step 39 the README note citing soorma-core#36."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, between G4 and G5
+
+---
