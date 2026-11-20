@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Iterator, Mapping
 from dataclasses import dataclass, field
-from typing import TypeAlias
+from typing import NoReturn, TypeAlias
 
 from ._generated.envelope import Envelope
 
@@ -51,6 +51,9 @@ class CredentialInfo:
     instance: str
     environment: EnvironmentRef
     expires_at: str
+
+    def __reduce__(self) -> NoReturn:
+        raise TypeError("CredentialInfo is not picklable")
 
 
 @dataclass(frozen=True, slots=True)

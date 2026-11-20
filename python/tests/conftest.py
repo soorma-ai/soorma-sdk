@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+import gc
 import ssl
 import subprocess
 from collections.abc import AsyncIterator, Awaitable, Callable
@@ -166,6 +167,21 @@ async def server(certs: Certs) -> AsyncIterator[Server]:
             w.transport.abort()
         srv.close()
         await asyncio.wait_for(srv.wait_closed(), 5)
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def loop_errors() -> AsyncIterator[list[dict[str, object]]]:
+    """Fails any test whose loop reports an error: an exception never retrieved from a
+    task or future, or a callback that raised (P-11; PH-LIFE-04)."""
+    loop = asyncio.get_running_loop()
+    errors: list[dict[str, object]] = []
+    loop.set_exception_handler(lambda _loop, ctx: errors.append(ctx))
+    yield errors
+    await asyncio.sleep(0)
+    gc.collect()
+    await asyncio.sleep(0)
+    loop.set_exception_handler(None)
+    assert [str(e.get("message")) for e in errors] == []
 
 
 def client_context(ca: Path) -> ssl.SSLContext:

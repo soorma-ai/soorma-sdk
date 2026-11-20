@@ -2045,3 +2045,19 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G5
 
 ---
+
+## Code Generation Part 2: G5 CI
+**Timestamp**: 2026-11-20T02:56:29Z
+**User Input**: (none)
+**AI Response**: "8e30397 (G5, signed off) pushed to dev. CI run 44663915379: success, every job (typecheck, lint, format, tests, audit with the Python steps on 3.11.18; repository checks; conformance TypeScript on all three entries; package; self-test; end-to-end TypeScript). Starting G6."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G5 to G6
+
+---
+
+## Code Generation Part 2: G6 (Steps 23a to 25)
+**Timestamp**: 2026-11-20T03:08:21Z
+**User Input**: (none)
+**AI Response**: "G6 written. _json.py: the payload walk (PH-PUB-01), iterative, exact types, refusals by path and kind and never the value, an int past sys.get_int_max_str_digits() refused (the limit read, never changed), lone surrogates escaped, text equal to compact json.dumps otherwise. The path is built only on refusal (a linked node per level): a string per level made a 1 000 000-deep payload quadratic (67 s); now linear (under 5 s). _draft.py (DRF-01 to DRF-03; FWD-02's splice; FWD-03). _tracing.py (Step 23a, the user's defence in depth): traceparent and tracestate parsed by the SDK; tracestate read to at most 32 list members and 512 characters, members past either limit dropped, invalid members and repeated keys dropped; TraceState built from these pairs only, so its constructor never logs; send and receive spans per PH-SPN-03 and -04; semantic conventions 1.45.0 as constants. _client.py: AgentClient a thin handle over ClientCore, with weakref.finalize(_collect, core, name) (P-10); start, publish (never retried; credential_expired noted), credential, close (idempotent, concurrent callers share one close; close during start aborts the bootstrap with ClientStateError closed; the caller's own cancellation passes through), async with; repr and pickling hold no credential (CredentialInfo pickling also refused). subscribe() raises until G7. Two findings, both in my tests, none in the specification: (1) opentelemetry-sdk 1.45 sets W3C Level 2's random-trace-id flag, so a sampled span's flags are 03, not 01; the draft carries the span's flags as TRC-02 requires, and the test now expects them; (2) without an SDK, Python's no-op tracer returns an invalid span (JavaScript's returns the parent's context): TRC-03 then makes a client publish random with flags 00, which the implementation did; the test expected the active trace and was wrong. Added: a conftest loop exception handler failing any test with an unretrieved task exception or a raising callback (P-11; probed with a deliberately unretrieved task, which failed as it should); a static check that no module reads the environment or the host (PH-API-05; TC-PH-006's unit half). Tests: test_json (42), test_draft (3), test_tracing (28, including the test that TraceState.from_header, the trace-context propagator's extract, propagate.extract and the global propagator's extract are never called), test_client (20, including TC-PH-076's client half: a forgotten started client's weakref dies on gc.collect(), exactly one ResourceWarning 'unclosed AgentClient 'agent-a'', the renewal timer cancelled, no SDK task left, nothing scheduled; a closed or unstarted client collected warns nothing), test_no_environment (2). Gate: ruff, mypy (41 files) clean; pytest 344 passed on 3.11.18 and 3.15.2; pip-audit clean for both groups; Node 24.22.3: typecheck, lint, prettier, checks, audit exceptions, vitest 299 passed. Plan Steps 23a to 25 ticked."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G6
+
+---
