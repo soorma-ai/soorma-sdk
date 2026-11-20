@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-11-17T07:29:06Z
-- **Current Stage**: CONSTRUCTION - U4 python-harness, QA enrichment done; next: the Construction Design PR gate, after asking the user
+- **Current Stage**: CONSTRUCTION - U4 python-harness, Construction Design PR gate: opening the PR (dev → main)
 - **Milestone**: M1 — Walking skeleton (from the slice brief; matches `aiprd-docs/build-sequence.md`)
 
 ## Workspace State
@@ -175,6 +175,13 @@ Each is an input to the named unit's Functional Design; the unit is set at Units
 - **CDI-05**: every case passes through the TypeScript driver; the cases judged and their outcomes are in code-summary.md
 - **Final head `1c8c5ee`** (the bookkeeping commit): CI run 44584492128 (pull request) green on every job, `conformance-typescript` (three entries), `e2e-typescript`, `package-typescript` and dependency review included; DCO run 44584491713 green; CI run 44584478257 (push) green, `e2e-typescript` and dependency review skipped (`aidlc-docs/` only)
 - **Merged**: merge commit `7fcb4998ace85efbee73cac78c0c3b3498929f1b` on `main`, 2026-11-19T18:29:42Z, parents `06b9df8` (main) and `1c8c5ee` (PR head); dev fast-forwarded to it
+
+### Construction Design PR Gate — python-harness
+- **Status**: PENDING
+- **Branch**: dev (the user's standing instruction; confirmed for this gate 2026-11-20T00:09:04Z: dev → main, as for #9, #16 and #18)
+- **Instructions**: aidlc-docs/harness/m1-walking-skeleton/construction/working/python-harness-design-pr-checkpoint-instructions.md
+- **Created**: 2026-11-20T00:09:04Z
+- **Approved**: —
 
 ## Extension Configuration
 

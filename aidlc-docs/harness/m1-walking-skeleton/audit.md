@@ -1877,3 +1877,21 @@ Then ask me before opening U4's Construction Design PR."
 **Context**: Construction, U4 python-harness, QA enrichment complete
 
 ---
+
+## U4 python-harness — Construction Design PR gate: the user's go-ahead
+**Timestamp**: 2026-11-20T00:08:32Z
+**User Input**: "Yes, open U4's Construction Design PR, dev → main, as for #9, #16 and #18. Wait for every check, including DCO and dependency review, record its state with the run IDs, and stop with the PR number. Don't record it merged until I tell you it is and you've seen it on GitHub.
+
+Log this message word for word in audit.md."
+**AI Response**: "Branch confirmed for this gate: dev → main. Opening U4's Construction Design PR per pr-checkpoint §5, waiting for every check, recording its state with run IDs, and stopping with the PR number; not recorded merged until the user says so and GitHub shows it."
+**Context**: Construction, U4 python-harness, Construction Design PR gate
+
+---
+
+## U4 python-harness — Construction Design PR gate: instructions and state
+**Timestamp**: 2026-11-20T00:09:04Z
+**User Input**: (none)
+**AI Response**: "pr-checkpoint §5: the functional-design artifacts exist (5.1); NFR Requirements and NFR Design present, Infrastructure Design N/A (5.2); the PR description built (5.3) and written beside the instructions file (5.5), both session artifacts; the gate persisted as PENDING (5.6). Committing the initiative's artifacts and opening the PR from dev to main."
+**Context**: Construction, U4 python-harness, Construction Design PR gate
+
+---
