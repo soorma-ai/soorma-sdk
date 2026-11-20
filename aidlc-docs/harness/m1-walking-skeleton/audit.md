@@ -2133,3 +2133,11 @@ Log this message word for word in audit.md, then go on to G5."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G10 (Step 38a)
 
 ---
+
+## Code Generation Part 2: G11 (Steps 41, 42)
+**Timestamp**: 2026-11-20T03:54:11Z
+**User Input**: (none)
+**AI Response**: "ab8eea7 (Step 38a, signed off) pushed: CI run 44670360719 success, every job (package-python green on 3.11.18 and 3.15.2; e2e-python green). G11: construction/python-harness/code/code-summary.md (the files; the F42 changes with class, diff and covering message: G1 under the plan approval 2026-11-20T00:37:17Z, the stub's key identifiers under the user's message 2026-11-20T02:30:41Z, the U3 fix in G2; CDI-05's two driver findings; the budgets; each group's commit and run; the technology decisions; the local run). The L1 matrix's 25 applicable rows and the invariant matrix's 9 to Implemented; I9's search of python/src/soorma/ found no local-stack value, tenant identifier or event name; I10 stated. Both become Verified on the code PR's own run. Plan Steps 41 and 42 ticked. Next: Step 43, the code PR, dev to main."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G11
+
+---
