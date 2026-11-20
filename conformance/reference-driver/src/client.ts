@@ -29,6 +29,8 @@ export interface Values {
   T_idle: number;
   T_req: number;
   R_min: number;
+  L_event: number;
+  B_body: number;
 }
 
 export class DriverError extends Error {

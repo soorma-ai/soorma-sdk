@@ -8,7 +8,7 @@ import { request } from 'node:https';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { makeCerts, makeRunDir, removeRunDir, type Certs } from '../../runner/src/rundir.ts';
 import type { StubControl } from '../../runner/src/types.ts';
-import { atSend, deepPayload } from './delivery.ts';
+import { atSend, deepPayload, generatedBody, generatedEvent, generateSpec } from './delivery.ts';
 import { startStub } from './stub.ts';
 
 let dir = '';
@@ -217,5 +217,68 @@ describe('$expiresIn', () => {
     });
     const plain = { a: 1, b: { c: [true, null, 'x'] }, d: { $expiresIn: 'not a number' } };
     expect(atSend(plain, now)).toEqual(plain);
+  });
+});
+
+describe('generate (added at U4, RCV-09)', () => {
+  const MiB = 1_048_576;
+
+  it('writes one event of many short data lines, at least the bytes asked, before one blank line', () => {
+    const text = generatedEvent(
+      generateSpec({ bytes: MiB + 65_536, line: 'x'.repeat(1000), event: 'delivery' }),
+    );
+    const [event = '', after = 'missing'] = text.split('\n\n');
+    expect(after).toBe('');
+    expect(Buffer.byteLength(event) + 1).toBeGreaterThanOrEqual(MiB + 65_536);
+    const lines = event.split('\n');
+    expect(lines[0]).toBe('event: delivery');
+    expect(lines.slice(1).every((l) => l === `data: ${'x'.repeat(1000)}`)).toBe(true);
+    expect(lines.length).toBeGreaterThan(1000);
+  });
+
+  it('writes a JSON body of at least the bytes asked, the filler in one member', () => {
+    const body = generatedBody(
+      { type: 'about:blank', title: 't', status: 422, code: 'c' },
+      generateSpec({ bytes: MiB + 1, line: 'ab', member: 'detail' }),
+    );
+    expect(Buffer.byteLength(body)).toBeGreaterThanOrEqual(MiB + 1);
+    const p = JSON.parse(body) as Record<string, unknown>;
+    expect(p.code).toBe('c');
+    expect(String(p.detail)).toMatch(/^(ab)+$/);
+  });
+
+  it('refuses a missing size or a line that would break the framing', () => {
+    expect(() => generateSpec({ line: 'x' })).toThrow(/bytes/);
+    expect(() => generateSpec({ bytes: 10, line: 'a\nb' })).toThrow(/one-line/);
+  });
+
+  it('serves a generated stream event and a generated body through the stub', async () => {
+    stub.load(
+      {
+        exchanges: [
+          {
+            match: { path: '/subscriptions' },
+            respond: {
+              stream: [
+                { generate: { bytes: 4096, line: 'y'.repeat(100), event: 'delivery' } },
+                { end: 'drained' },
+              ],
+            },
+          },
+          {
+            match: { path: '/events' },
+            respond: { status: 422, json: { code: 'c' }, generate: { bytes: 4096, line: 'z' } },
+          },
+        ],
+      },
+      blank,
+    );
+    const s = await send(stub.urls.S4, '/subscriptions', '{}');
+    expect(s.text?.startsWith(`event: delivery\ndata: ${'y'.repeat(100)}\n`)).toBe(true);
+    expect(s.text?.endsWith('\n\nevent: end\ndata: {"code":"drained"}\n\n')).toBe(true);
+    const b = await send(stub.urls.S4, '/events', '{}');
+    expect(b.status).toBe(422);
+    expect(Buffer.byteLength(b.text ?? '')).toBeGreaterThanOrEqual(4096);
+    expect((JSON.parse(b.text ?? '{}') as { code?: string }).code).toBe('c');
   });
 });

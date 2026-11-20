@@ -8,9 +8,10 @@ const SPEC = join(import.meta.dirname, '..', '..', '..', 'spec', 'behaviour.md')
 describe('spec/behaviour.md', () => {
   const statements = loadStatements(SPEC);
 
-  it('holds the 104 statements of the approved design, in 16 areas', () => {
-    // 103 at U1, plus REN-07 at U3 (class 3, approved by the user 2026-11-19T07:09:13Z).
-    expect(statements).toHaveLength(104);
+  it('holds the 105 statements of the approved design, in 16 areas', () => {
+    // 103 at U1, plus REN-07 at U3 (class 3, approved by the user 2026-11-19T07:09:13Z),
+    // plus RCV-09 at U4 (class 3, approved with U4's Code Generation plan, 2026-11-20T00:37:17Z).
+    expect(statements).toHaveLength(105);
     expect(new Set(statements.map((s) => s.area)).size).toBe(16);
   });
 

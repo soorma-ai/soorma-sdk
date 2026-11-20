@@ -33,7 +33,9 @@
           "N_buf",
           "T_idle",
           "T_req",
-          "R_min"
+          "R_min",
+          "L_event",
+          "B_body"
         ]
       },
       "additionalProperties": { "type": "number", "minimum": 0 }

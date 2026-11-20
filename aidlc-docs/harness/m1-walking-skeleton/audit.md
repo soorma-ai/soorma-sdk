@@ -1931,3 +1931,27 @@ Log this message word for word in audit.md."
 **Context**: Construction, U4 python-harness, Code Generation Part 1, Steps 1 to 6
 
 ---
+
+## U4 python-harness — Code Generation Part 1: plan approved
+**Timestamp**: 2026-11-20T00:37:17Z
+**User Input**: "Plan approved, including your deviation: the uv Dependabot entry and its opentelemetry-* group go in at Step 13, when python/ exists, not now.
+
+Approving the plan covers the two count changes (statements 104 to 105, cases 95 to 97) as class 3 changes. Each is recorded with its before and after, and the cases test keeps checking every U1 ID.
+
+Two reminders:
+- G2: the TypeScript fix must also pass CC-RCV-09 and CC-RCV-10 under the TypeScript driver on Node 24 and 26, and conformance-typescript must still pass 97 of 97 on all three entries in CI.
+- Step 13: when you add the uv entry, check on the first scheduled or manual run that Dependabot's uv job succeeds, and record it.
+
+Log this message word for word in audit.md, then start G1."
+**AI Response**: "Plan approved, with the uv deviation and the two class 3 count changes. The reminders added to the plan at Steps 8e and 13. Starting G1."
+**Context**: Construction, U4 python-harness, Code Generation Part 1 approved; Part 2 starts
+
+---
+
+## U4 Code Generation — G1: the changes to U1, each with its class (Step 7)
+**Timestamp**: 2026-11-20T00:51:53Z
+**User Input**: (none)
+**AI Response**: "Step 1, class 1: spec/names.md gains two Python-only rows, '| payload not parsed (Python only: TypeScript leaves payload absent) | — | PayloadNotParsed |' and '| warning category (Python only: Node's is a process warning, not an export) | — | SoormaWarning |' (TypeScript cells hold no backticked name; the TypeScript names check unchanged). Step 2, class 1: spec §0 gains L_event and B_body (1 MiB each); the runner's NAMED_VALUES, case.schema.json's values enum and the reference driver's Values and DEFAULTS (1 048 576 each) gain them; no test asserts the named-value list exactly (U3's skeleton.test.ts pins LIMITS and changes in G2). Step 4, class 1: the stub gains the generated-body directive (generate: {bytes, line, event?, member?}, produced at send time) for stream events and bodies, with four stub tests; existing scripts unchanged. Steps 3 and 5 together (two-way links): spec §12 gains RCV-09; conformance/cases/rcv/CC-RCV-09.json and CC-RCV-10.json added (class 1). Class 3, approved with the plan (2026-11-20T00:37:17Z): spec.test.ts 'holds the 104 statements ... toHaveLength(104)' became 'holds the 105 statements ... toHaveLength(105)'; cases.test.ts 'holds U1's 90 cases and the 5 added at U3 ... toHaveLength(95)' became '... and the 2 added at U4 ... toHaveLength(97)', with U4_CASES ['CC-RCV-09', 'CC-RCV-10'] checked and every U1 and U3 id still checked. Step 6: the reference driver fails both new cases, so it does not declare them. The self-test after each step passed, every fault set as declared (147, 147, 149, 147 s). G1 is committed and pushed together with G2 (the new cases need G2's fix under the TypeScript driver)."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G1
+
+---

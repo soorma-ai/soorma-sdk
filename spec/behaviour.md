@@ -35,6 +35,8 @@ marked). No statement below fixes a number for them; every case reads them from 
 | `T_idle` | Silence on an open stream after which the SDK treats it as dropped; must exceed the platform's 15-second heartbeat | NFR Requirements |
 | `T_req` | Timeout for a request's response head | NFR Requirements |
 | `R_min` | The renewal floor: the least time between receiving a credential and the next renewal, on a monotonic clock (REN-07; added at U3) | NFR Requirements |
+| `L_event` | The most bytes one SSE event may hold before its terminating blank line (RCV-09; added at U4) | NFR Requirements (U4): 1 MiB in every language, sixteen times the contract's 64 KiB Delivery payload bound |
+| `B_body` | The most bytes a non-stream response body may hold (RCV-09; added at U4) | NFR Requirements (U4): 1 MiB in every language |
 
 ---
 
@@ -178,6 +180,7 @@ marked). No statement below fixes a number for them; every case reads them from 
 | RCV-06 | A payload nested deeper than `D_lang` **never costs the envelope or the seal**: the Delivery is yielded with them intact and forwardable, `payload` absent, `payloadText` present, `payloadParsed: false` | FR-12; D-07; NFR-03 | CC-RCV-06 |
 | RCV-07 | A line that is not JSON, not an object, or lacks `envelope` (an object), `seal` (a string) or the `payload` member yields a **delivery error** item (with the reason and the line's text) and **the stream continues** | FR-12 | CC-RCV-07 |
 | RCV-08 | Beyond RCV-07, the SDK **does not validate** a received envelope against the schema: an envelope the platform sent is passed through as received (DEC-U1-09). **The typed envelope claims no field is present that the SDK did not check**: each language either types the envelope's members as optional or documents that their presence is unchecked, decided in U3's and U4's Functional Design (CDI-04) | FR-16 (enforces nothing); NFR-05; I7 | CC-RCV-08 |
+| RCV-09 | **Bounds on what is read** (added at U4; beside RCV-07). An SSE event holding more than `L_event` bytes before its terminating blank line is **discarded up to that blank line, keeping no more than the bound in memory**; the iterator yields a **delivery error** (reason `event-too-large`, no text) and **the stream continues**. A non-stream response body holding more than `B_body` bytes is a `TransportError` (reason `response-too-large`), **never the bytes** | NFR-03; SECURITY-05; the user, at U4's NFR Requirements | CC-RCV-09, CC-RCV-10 |
 
 ## 13. Problems and Retries — `PRB`
 

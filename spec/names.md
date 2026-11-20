@@ -40,6 +40,8 @@ codes, Problem codes) are data, not exported names, and are not translated.
 | transport error | `TransportError` | `TransportError` |
 | secret source error | `SecretSourceError` | `SecretSourceError` |
 | client state error | `ClientStateError` | `ClientStateError` |
+| payload not parsed (Python only: TypeScript leaves `payload` absent) | — | `PayloadNotParsed` |
+| warning category (Python only: Node's is a process warning, not an export) | — | `SoormaWarning` |
 
 ## Members
 

@@ -119,6 +119,9 @@ const U1_CASES = [
 /** Added at U3 (REN-07, SEC-01 reworded, the STR-02 and STR-05 sentences). */
 const U3_CASES = ['CC-ACQ-08', 'CC-REN-06', 'CC-REN-07', 'CC-STR-12', 'CC-STR-13'];
 
+/** Added at U4 (RCV-09: L_event and B_body). */
+const U4_CASES = ['CC-RCV-09', 'CC-RCV-10'];
+
 describe('conformance/cases', () => {
   const loaded = loadAll({}, values);
 
@@ -126,13 +129,17 @@ describe('conformance/cases', () => {
   // 'holds the 90 cases of the approved catalogue, with no problem' and checked
   // only the count. A count alone would pass if one case were deleted and
   // another added, so every original id is checked too.
-  it("holds U1's 90 cases and the 5 added at U3, with no problem", () => {
+  // Changed again at U4 (class 3, approved with U4's Code Generation plan,
+  // 2026-11-20T00:37:17Z): 95 became 97 for RCV-09's two cases, each named below; every U1 and
+  // U3 id is still checked.
+  it("holds U1's 90 cases, the 5 added at U3 and the 2 added at U4, with no problem", () => {
     expect(loaded.problems).toEqual([]);
-    expect(loaded.cases).toHaveLength(95);
+    expect(loaded.cases).toHaveLength(97);
     const ids = new Set(loaded.cases.map((c) => c.id));
     expect(U1_CASES).toHaveLength(90);
     for (const id of U1_CASES) expect(ids.has(id), id).toBe(true);
     for (const id of U3_CASES) expect(ids.has(id), id).toBe(true);
+    for (const id of U4_CASES) expect(ids.has(id), id).toBe(true);
   });
 
   it('is data, not code', () => {

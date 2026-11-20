@@ -23,7 +23,13 @@ import type {
   StubControl,
 } from '../../runner/src/types.ts';
 import type { Certs } from '../../runner/src/rundir.ts';
-import { buildDelivery, valueText } from './delivery.ts';
+import {
+  buildDelivery,
+  generateSpec,
+  generatedBody,
+  generatedEvent,
+  valueText,
+} from './delivery.ts';
 
 type J = null | boolean | number | string | J[] | { [k: string]: J };
 
@@ -94,6 +100,9 @@ export async function startStub(certs: Certs): Promise<StubControl> {
         const built = buildDelivery(spec);
         deliveries.push({ label: String(spec.label ?? `d${deliveries.length + 1}`), ...built });
         res.write(`event: delivery\ndata: ${built.line}\n\n`);
+      } else if (a.generate) {
+        // Added at U4 (RCV-09): an event generated at send time.
+        res.write(generatedEvent(generateSpec(a.generate as J)));
       } else if (a.heartbeat) res.write(': heartbeat\n\n');
       else if (typeof a.end === 'string')
         res.write(`event: end\ndata: ${JSON.stringify({ code: a.end })}\n\n`);
@@ -182,7 +191,10 @@ export async function startStub(certs: Certs): Promise<StubControl> {
           const status = Number(s.status ?? 200);
           const hdrs = { ...((s.headers ?? {}) as Record<string, string>) };
           let body = '';
-          if ('json' in s || typeof s.text === 'string' || typeof s.fixture === 'string')
+          if (s.generate)
+            // Added at U4 (RCV-09): a body generated at send time.
+            body = generatedBody((s.json ?? null) as J, generateSpec(s.generate as J));
+          else if ('json' in s || typeof s.text === 'string' || typeof s.fixture === 'string')
             body = valueText(s as Record<string, J>);
           if (body && !Object.keys(hdrs).some((h) => h.toLowerCase() === 'content-type')) {
             hdrs['content-type'] =
