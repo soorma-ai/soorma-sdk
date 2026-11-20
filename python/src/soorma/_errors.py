@@ -44,9 +44,11 @@ class TransportError(SoormaError):
     """No usable answer: tls, connection, timeout, unusable-response, ca-file, malformed-response,
     response-too-large, truncated-response (an open set)."""
 
-    def __init__(self, reason: str, *, hint: str | None = None) -> None:
+    def __init__(self, reason: str, *, hint: str | None = None, sent: bool = False) -> None:
         super().__init__(f"transport: {reason}" + (f" ({hint})" if hint else ""))
         self.reason = reason
+        # Internal: whether the request may have reached the server (PRB-08, PRB-09).
+        self._sent = sent
 
 
 class SecretSourceError(SoormaError):

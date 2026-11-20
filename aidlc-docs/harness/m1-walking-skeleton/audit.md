@@ -1995,3 +1995,11 @@ Log this message word for word in audit.md, then finish Step 13, run G3's gate, 
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G3
 
 ---
+
+## U4 Code Generation — G4: the HTTP parser, tested before anything uses it
+**Timestamp**: 2026-11-20T01:43:19Z
+**User Input**: (none)
+**AI Response**: "Step 14: python/src/soorma/_http.py, the sans-IO ResponseParser (P-07): CRLF only in head and chunked framing, no obs-fold, token header names, HTTP/1.1 status lines, interim responses refused; bounds 1 KiB status line, 8 KiB header line, 100 headers, 64 KiB head, B_body body, 1 KiB chunk-size line, 16 KiB and 32 trailer lines, L_event per SSE event, 1 MiB per SSE line; Content-Length with Transfer-Encoding, differing lengths and codings other than chunked refused; chunk extensions ignored; framing (length, chunked, until close) separate from interpretation (a bounded body, or SSE events), since S4's stream is chunked. Steps 15 and 16: 123 tests (34 malformed/oversized/conflicting/truncated rows, each also fed a byte at a time, reasons only, the marker never in a message; valid responses identical at every split; SSE names, data lines, comments, LF/CRLF/CR, the event bound at exactly L_event and one byte over, the line buffer; a seeded fuzz over 40 seeds), mutation-checked (the Content-Length/Transfer-Encoding check and the event bound each caught). Step 17: _connection.py, the asyncio.Protocol (the request written exactly, head within T_req, bounded body, stream events with pause and resume, synchronous abort; a reset with no answer is connection and sent), 8 tests against a local TLS server. Found on Python 3.15: ssl.create_default_context sets VERIFY_X509_STRICT (3.13 and later), rejecting certificates without full RFC 5280 extensions; the test certificates were completed, and U1's stub certificates are to be checked before the Python driver's 3.15 runs (G8). Gate green on Python 3.11.18 and 3.15.2 (134 tests each, ruff, mypy, pip-audit clean) and the repository's checks."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G4
+
+---
