@@ -1955,3 +1955,11 @@ Log this message word for word in audit.md, then start G1."
 **Context**: Construction, U4 python-harness, Code Generation Part 2, G1
 
 ---
+
+## U4 Code Generation — G2: the TypeScript fix
+**Timestamp**: 2026-11-20T01:03:55Z
+**User Input**: (none)
+**AI Response**: "G2 (Steps 8a to 8f), its own commit: typescript/src/limits.ts gains L_event and B_body (1 MiB); subscription.ts splits text into complete events plus the partial one, past L_event discarding until the blank line (split across chunks too) and queuing one event-too-large delivery error, no text, also for an over-bound event arriving whole; transport.ts bounds post and readReply at B_body (TransportFailure response-too-large, never the bytes); retry.ts never retries it; every request passes maxBody. Tests: five in g5.test.ts, six in bounds.test.ts (against U1's stub); each new over-bound test fails with the fix removed. Change to an earlier unit's test, class 1: typescript/src/skeleton.test.ts's exact LIMITS gains 'L_event: 1_048_576' and 'B_body: 1_048_576' (items added; nothing removed). Gate green on Node 24.22.3: 297 tests, checks, build, package-typescript, audit, self-test (146 s, fault sets as declared). The suite under the TypeScript driver, Node 24.22.3 and 26.13.0: 96 passed, 1 not run (CC-SEC-05, locally), CC-RCV-09 and CC-RCV-10 passing, 122 s and 124 s. Step 8f: the Python suite's scripted time equals the TypeScript suite's (the values differ only in D_lang), about 2 minutes against the 5-minute budget. G1 and G2 pushed together."
+**Context**: Construction, U4 python-harness, Code Generation Part 2, G2
+
+---
