@@ -2183,3 +2183,24 @@ Log this message word for word in audit.md. Commit signed off and push."
 **Context**: Construction, Build and Test
 
 ---
+
+## Build and Test Stage
+**Timestamp**: 2026-11-20T04:39:21Z
+**Build Status**: Success
+**Test Status**: Pass
+**Files Generated**:
+- build-instructions.md
+- unit-test-instructions.md
+- integration-test-instructions.md
+- performance-test-instructions.md
+- contract-test-instructions.md
+- security-test-instructions.md
+- e2e-test-instructions.md
+- l1-conformance-test-instructions.md
+- invariant-conformance-test-instructions.md
+- build-and-test-summary.md
+**User Input**: (none)
+**AI Response**: "44 runs recorded (logs under construction/working/build-and-test-runs/, git-ignored, one per run). Runs 1 to 12 followed the README in a fresh clone at 755ccf7: three failed, causes established from their logs: runs 4 and 5 (pnpm checks, and --offline) because the README never built @soorma/sdk, which the names check's TypeScript driver loads (ERR_MODULE_NOT_FOUND for typescript/dist/index.js); run 12 (Python conformance) because the README's command lacked --local-skip CC-SEC-05, which a laptop without a second user needs. README fixed in 2a64284 (build first; --local-skip, with the reason; uv as a prerequisite; the TypeScript conformance run; a link to this stage's summary); runs 31 to 44 followed it again in a new fresh clone at 2a64284: all 14 pass. Runs 13 to 30 in the working tree at 755ccf7, all pass: pytest 395 on 3.11.18 and 3.15.2; Vitest 302; build; pnpm checks; conformance 96 passed and CC-SEC-05 not run (local) on Node 24.22.3, Node 26.13.0, Python 3.11.18 and 3.15.2 (85 to 121 s); package-typescript; package-python; no soorma-local state; core-up, setup, prove-stack (200, 200), the TypeScript and Python scenarios (60 s each), core-down (16 logs searched clean). CI evidence for CC-SEC-05 and the API floors from #23's run 44670863814 (97 of 97 on all six entries). L1: 80 applicable rows across U1 to U4, all Pass; invariants: 37 applicable rows, all Pass, I8 as a set Pass; both files generated from the units' matrices. Open obligations: 0 deferred questions open; 1 gap Open (GAP-CAC-001, built fail-closed); 2 Awaiting PRD (GAP-INT-001 Event, GAP-INT-002 Observability), each worked around and documented; OBL-03 (the DCO check imports tools/dco from the pull request's own checkout) found still open, reported, not acted on; OBL-05 open (soorma-core#36); 6 carried security obligations. The brief's Proves items for soorma-sdk, done when 2, 3 and 5: Pass in both languages. Also: .gitignore and eslint.config.js ignore .venv-*/ (the 3.15 environment the instructions create); aidlc-state's CDI-04, CDI-05 and CDI-06, stale as 'Open', updated to what U3 and U4 did."
+**Context**: Construction, Build and Test, completion; awaiting the user's approval
+
+---

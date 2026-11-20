@@ -12,6 +12,7 @@ export default tseslint.config(
       '**/node_modules/**',
       '.e2e/**',
       '**/.venv/**',
+      '**/.venv-*/**',
       'python/dist/**',
       'typescript/dist/**',
       'typescript/src/generated/**',
