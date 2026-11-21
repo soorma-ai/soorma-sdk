@@ -481,14 +481,20 @@ jobs:
   # scenario (python/e2e/scenario.py; both agents, time.time patched for one real
   # renewal, the decoy span) run from the built wheel, installed into a fresh
   # environment with the scenario's dependencies from uv.lock, hash-checked. On
-  # 3.11: the local stack's certificates fail 3.13+'s strict verification
-  # (soorma-ai/soorma-core#36, OBL-05). No cache, no artifact, no secret.
+  # 3.11 and 3.15: since contract-v0.1.0+core.2 the local stack's certificates
+  # carry key identifiers, so 3.13+'s strict verification passes with the SDK's
+  # default context (soorma-ai/soorma-core#36; OBL-05, discharged). No cache, no
+  # artifact, no secret.
   e2e-python:
-    name: End-to-end, Python (soorma-core at the contract tag)
+    name: End-to-end, Python ${{ matrix.python }} (soorma-core at the contract tag)
     needs: changes
     if: needs.changes.outputs.e2e == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [3.11.18, 3.15.2]
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -521,11 +527,13 @@ jobs:
           version: '0.13.8'
           enable-cache: false
 
-      - name: Python 3.11.18; the wheel built and installed into a fresh environment
+      - name: Python ${{ matrix.python }}; the wheel built and installed into a fresh environment
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
         run: |
-          uv python install 3.11.18
+          uv python install "$PYTHON_VERSION"
           uv build --project python --wheel --out-dir "$RUNNER_TEMP/dist"
-          uv venv "$RUNNER_TEMP/e2e-venv" --python 3.11.18 --no-project
+          uv venv "$RUNNER_TEMP/e2e-venv" --python "$PYTHON_VERSION" --no-project
           uv export --project python --locked --no-default-groups --group otel-latest \
             --no-emit-project --format requirements-txt --output-file "$RUNNER_TEMP/e2e-requirements.txt"
           uv pip install --python "$RUNNER_TEMP/e2e-venv/bin/python" --require-hashes \

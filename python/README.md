@@ -37,9 +37,11 @@ asyncio.run(main())
 - **`opentelemetry-api` `>=1.45.2,<2`**, the one runtime dependency: your application's copy, so
   the SDK's spans join your traces.
 - **Python 3.13 and later verify certificates strictly** (`VERIFY_X509_STRICT`), and the SDK
-  keeps that on. soorma-core's local stack issues server certificates without an Authority Key
-  Identifier, which strict verification refuses, so against the local stack use Python 3.11 or
-  3.12 until soorma-ai/soorma-core#36 is fixed.
+  keeps that on. soorma-core's local stack issues server certificates with Subject and Authority
+  Key Identifiers from `contract-v0.1.0+core.1` (soorma-ai/soorma-core#36), so every supported
+  Python, 3.15 included, works against the stack this repository pins
+  (`contract-v0.1.0+core.2`). A stack from the earlier tag `contract-v0.1.0` lacks them and needs
+  Python 3.11 or 3.12.
 
 ## The client
 
