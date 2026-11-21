@@ -2316,3 +2316,11 @@ Log this message word for word in audit.md."
 **Context**: Initiative complete
 
 ---
+
+## After completion: records updated by harness/contract-core2
+**Timestamp**: 2026-11-21T00:35:49Z
+**User Input**: (none here; the request and each decision are logged in aidlc-docs/harness/contract-core2/audit.md)
+**AI Response**: "The re-pin to contract-v0.1.0+core.2 (soorma-ai/soorma-sdk#27, PR #28) updated this initiative's records: OBL-05 Discharged (e2e-python on 3.11.18 and 3.15.2, green on #28's run 44844441207); GAP-CAC-001 Resolved — contract amended (contract-v0.1.0+core.2, conventions/credentials.md, Revocation and Lifetimes; the user's choice CC2-Q1); the Consumed contract and Open follow-ups lines; TH-REN-04, PH-REN-05 and DEC-U1-10 reworded to cite the contract rule; build-and-test-summary.md gains an 'After completion' section. Nothing else in this initiative changed."
+**Context**: Post-completion; see harness/contract-core2
+
+---
