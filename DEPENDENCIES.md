@@ -34,7 +34,7 @@ affected package is no longer installed, and the exception is then removed in a 
 ## The end-to-end stack
 
 **soorma-core's dependencies, in the end-to-end stack.** `e2e/core-up` installs soorma-core at
-`contract-v0.1.0` with its own frozen lock file. This repository does not audit those packages,
+`contract-v0.1.0+core.2` with its own frozen lock file. This repository does not audit those packages,
 for these reasons:
 
 - **No install scripts run.** soorma-core's `pnpm-workspace.yaml` at the tag sets

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
-// soorma-core's local stack, as soorma-core defines it at contract-v0.1.0
+// soorma-core's local stack, as soorma-core defines it at contract-v0.1.0+core.2
 // (deploy/local/compose.yaml, config/tenancy.yaml). These are the values of
 // soorma-core's local stack, not a tenant's (I9), and they live here only. They
 // hold because core-up refuses any other commit (CU-05; GEN-05). Also the
