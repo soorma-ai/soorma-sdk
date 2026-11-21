@@ -28,7 +28,7 @@ does as a courtesy the platform independently re-checks.
 
 | Path | What it is |
 | --- | --- |
-| [`contract/`](contract/) | soorma-core's wire contract at `contract-v0.1.0`, byte for byte; never edited (see [`contract.md`](contract.md)) |
+| [`contract/`](contract/) | soorma-core's wire contract at `contract-v0.1.0+core.2`, byte for byte; never edited (see [`contract.md`](contract.md)) |
 | [`spec/`](spec/) | The [behaviour specification](spec/behaviour.md) every language implements, and the [name table](spec/names.md) |
 | [`conformance/`](conformance/) | The conformance suite: cases, runner, stub, and the test-only reference driver ([README](conformance/README.md)) |
 | [`typescript/`](typescript/) | `@soorma/sdk`, the TypeScript package ([README](typescript/README.md)), its conformance driver, example and end-to-end scenario |
@@ -85,7 +85,7 @@ cooldown, into `dev`; and, from U4, the Python packages in `python/uv.lock`.
 
 ### The end-to-end stack
 
-The end-to-end tests run against a fresh soorma-core at `contract-v0.1.0`, brought up from
+The end-to-end tests run against a fresh soorma-core at `contract-v0.1.0+core.2`, brought up from
 soorma-core's own code and taken down again ([`e2e/`](e2e/README.md)). The same commands run in
 CI's `e2e-typescript` and `e2e-python` jobs and on your machine:
 
@@ -95,7 +95,7 @@ pnpm e2e:setup --agents agent-a,agent-b              # register the agents; writ
 pnpm e2e:prove-stack                                 # one bootstrap per agent: the stack works
 pnpm --filter @soorma/sdk build                      # the TypeScript scenario uses the built package
 pnpm e2e:scenario-typescript                         # two agents, one real renewal, one trace (about 1 minute)
-python/.venv/bin/python python/e2e/scenario.py       # the same in Python, on Python 3.11 or 3.12 (soorma-ai/soorma-core#36)
+python/.venv/bin/python python/e2e/scenario.py       # the same in Python (3.11 or later)
 pnpm e2e:core-down                                   # search soorma-core's logs, then take it all down
 ```
 

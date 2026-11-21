@@ -2295,3 +2295,32 @@ Log this message word for word in audit.md."
 **Context**: Construction complete; the closing PR
 
 ---
+
+## The closing PR merged; the initiative complete
+**Timestamp**: 2026-11-20T05:28:14Z
+**User Input**: "#26 is merged as 638a3af (2026-11-20T05:26:05Z, merge commit; head 68e7ac5). The user merged it through the reviewer.
+
+1. Fast-forward dev to main (git merge --ff-only origin/main) and push.
+2. Record the merge in aidlc-state.md and the audit, with the final head's runs: CI (pull_request) 44680118113, DCO 44680116160, CI (push) 44680110960. Mark the initiative complete. Log this message word for word in audit.md.
+3. The user chose to have you close all six issues. Close #4, #5, #6 and #7 first, then #3, then the handover #2. Each gets a short comment citing 638a3af and that issue's evidence: the unit's design and code PRs and their merge commits for #4 to #7; the Build and Test summary and #26 for #3; and for #2, that M1 was built against contract-v0.1.0 as handed over, citing #26. Keep any open follow-up visible: OBL-05 = soorma-core#36, GAP-CAC-001 = soorma-core#34.
+4. Commit signed off, push, and wait for dev's CI to go green. Then stop with: the commit, the CI run, and each closed issue."
+**AI Response**: "Checked on GitHub: #26 MERGED as 638a3af at 2026-11-20T05:26:05Z, head 68e7ac5. dev fast-forwarded to 638a3af (git merge --ff-only origin/main) and pushed. The final head's runs: CI (pull_request) 44680118113, DCO 44680116160, CI (push) 44680110960, all success. Closing #4 to #7, then #3, then #2, each with its evidence; then the state and this entry committed."
+**Context**: Initiative complete
+
+---
+
+## Issues closed; the initiative recorded complete
+**Timestamp**: 2026-11-20T05:28:56Z
+**User Input**: (none)
+**AI Response**: "Closed in the order asked, each with a comment citing 638a3af and its evidence: #4 (U1: design #9 c8ebb7a, code #10 91d0910; GAP-CAC-001 = soorma-core#34) at 05:28:15Z; #5 (U2: #16 d3ab234, #17 3f4883c) at 05:28:18Z; #6 (U3: #18 06b9df8, #19 7fcb499; the RCV-09 bounds from #23) at 05:28:21Z; #7 (U4: #22 91c225e, #23 73d88c3; OBL-05 = soorma-core#36) at 05:28:24Z; #3 (the initiative: #26, the Build and Test summary, the open follow-ups) at 05:28:27Z; #2 (the handover: built against contract-v0.1.0 as handed over, #26; soorma-core#34 and #36) at 05:28:31Z. The code-summary and summary links in the comments resolve. aidlc-state.md: the stage COMPLETE; the closing PR with its final head's runs (CI pull_request 44680118113, DCO 44680116160, CI push 44680110960) and the merge; the issues' closures under Tickets; an 'Initiative Complete' section with the deliverables and the open follow-ups."
+**Context**: Initiative complete
+
+---
+
+## After completion: records updated by harness/contract-core2
+**Timestamp**: 2026-11-21T00:35:49Z
+**User Input**: (none here; the request and each decision are logged in aidlc-docs/harness/contract-core2/audit.md)
+**AI Response**: "The re-pin to contract-v0.1.0+core.2 (soorma-ai/soorma-sdk#27, PR #28) updated this initiative's records: OBL-05 Discharged (e2e-python on 3.11.18 and 3.15.2, green on #28's run 44844441207); GAP-CAC-001 Resolved — contract amended (contract-v0.1.0+core.2, conventions/credentials.md, Revocation and Lifetimes; the user's choice CC2-Q1); the Consumed contract and Open follow-ups lines; TH-REN-04, PH-REN-05 and DEC-U1-10 reworded to cite the contract rule; build-and-test-summary.md gains an 'After completion' section. Nothing else in this initiative changed."
+**Context**: Post-completion; see harness/contract-core2
+
+---

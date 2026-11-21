@@ -28,7 +28,7 @@ const CREDENTIALS = readFileSync(
   'utf8',
 );
 const PREFIXES = prefixesFrom(CREDENTIALS);
-const TAG = 'contract-v0.1.0';
+const TAG = 'contract-v0.1.0+core.2';
 const TOKEN = 'eyJhbGciOiJFZDI1NTE5In0.e30.c2ln';
 
 const clean: ServiceLog[] = [

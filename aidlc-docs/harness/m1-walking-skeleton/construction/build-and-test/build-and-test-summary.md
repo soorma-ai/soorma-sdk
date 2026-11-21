@@ -126,7 +126,8 @@ failed, 0 not run (TypeScript: Node 24.22.3 with API 1.9.0, 123 s, and 1.10.0, 1
 - **PRD specification gaps, Open**: **1**, worked around, recorded as built:
   - GAP-CAC-001 (soorma-ai/soorma-core#34, the contract's question, not a PRD's): whether a
     renewal leaves the previous token valid. **Built fail-closed**: `credential_refused` on a
-    retried renewal is terminal in both SDKs (REN-05).
+    retried renewal is terminal in both SDKs (REN-05). *Since resolved, contract amended, at
+    `contract-v0.1.0+core.2`: see *After completion* below.*
 - **PRD specification gaps, Awaiting PRD**: **2**:
   - GAP-INT-001, Awaiting the **Event** PRD (soorma-prd#13): delivery guarantees. **Worked
     around**: delivery is live only, as `contract-v0.1.0` provides; both READMEs say so, with
@@ -150,7 +151,8 @@ failed, 0 not run (TypeScript: Node 24.22.3 with API 1.9.0, 123 s, and 1.10.0, 1
     that exact name.
   - **OBL-05, open**: soorma-core's local stack certificates lack key identifiers
     (soorma-ai/soorma-core#36); Python 3.13+ refuses them, so `e2e-python` and the Python example
-    run on 3.11 or 3.12. It closes with a contract tag carrying the fix.
+    run on 3.11 or 3.12. It closes with a contract tag carrying the fix. *Since discharged at
+    `contract-v0.1.0+core.2`: see *After completion* below.*
   - OBL-01, OBL-02 and OBL-04 (both languages) are discharged; OBL-03 is closed as an accepted
     risk. **One obligation stays open: OBL-05.**
 - **Carried security obligations** (`local-only`): 6, owed by the first hosted deployment or the
@@ -197,3 +199,26 @@ their PRDs land, and OBL-03's revisit conditions. Dependabot #24
 (`@opentelemetry/context-async-hooks` 3.1.1) was merged into `dev` as `d68520a`, all 16 checks
 green; my earlier note that it repeated a "split" was wrong (`aidlc-state.md`, *Dependency
 Updates*).
+
+## After completion: contract-v0.1.0+core.2
+
+Recorded by `aidlc-docs/harness/contract-core2/` (soorma-ai/soorma-sdk#27; PR soorma-ai/soorma-sdk#28).
+The figures above stand as they were at the gate; this section reports what changed.
+
+- **Pin**: `contract/` re-vendored at soorma-core `contract-v0.1.0+core.2` (`0405e2a96a9389cab45e67312de903fd42f5d01e`,
+  `contract/` tree `8d375fd66899184b4d7871e188d02268a992325e`): the same wire contract 0.1.0, at soorma-core
+  revision 2. The drift check passes with its remote half
+- **GAP-CAC-001: Resolved — contract amended** (not in the gap rule's set, which names only PRDs;
+  the user's choice, contract-core2 CC2-Q1). Resolved by `contract-v0.1.0+core.2`,
+  `conventions/credentials.md`, *Revocation and Lifetimes*: a token issued before a renewal stays
+  valid until its own `expiresAt` unless the credential or its agent is revoked, and renewing with
+  it is accepted. No code path changed: `credential_refused` on a retried renewal stays terminal,
+  as a real refusal. New proof: each keeper retries a renewal lost after sending with the earlier
+  token and adopts the result (unit tests, TypeScript and Python); on the real stack,
+  `typescript/e2e/renewal-rule.test.ts` passes in `e2e-typescript` (renew, then renew again with
+  the first token: `200`, a later `expiresAt`)
+- **OBL-05: discharged**. `e2e-python` runs on 3.11.18 and 3.15.2; both green on #28's run
+  44844441207 and the push run 44843922365
+- **Counts now**: PRD specification gaps Open **0**; Awaiting PRD **2** (GAP-INT-001, GAP-INT-002,
+  unchanged); other open obligations **0** (OBL-03 stays an accepted risk); unit tests 303
+  (TypeScript) and 396 per Python runtime

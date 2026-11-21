@@ -247,7 +247,9 @@ export class Keeper {
     } catch (error) {
       if (this.#stopped) return;
       if (error instanceof ProblemError && error.code === 'credential_refused') {
-        // REN-05; also on a retried renewal (GAP-CAC-001, soorma-ai/soorma-core#34): terminal.
+        // REN-05: terminal, also on a retried renewal. The earlier token stays valid until its
+        // own expiresAt and renewing with it is accepted (contract-v0.1.0+core.2,
+        // conventions/credentials.md, Revocation and Lifetimes), so a refusal is a revocation.
         this.revoke(error);
       } else if (error instanceof ProblemError && error.code === 'credential_expired') {
         // REN-04: bootstrap again (one provider call per attempt).

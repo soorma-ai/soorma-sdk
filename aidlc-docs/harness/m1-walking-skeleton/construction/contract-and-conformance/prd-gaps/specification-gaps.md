@@ -12,7 +12,7 @@ Gaps found while building U1, qualified by repository whenever they leave this i
 **Owner**: the soorma-core initiative (the wire contract); the Identity and Platform Foundations PRDs if it is a PRD-level rule
 **Unit**: contract-and-conformance (U1); implemented in typescript-harness (U3), python-harness (U4)
 **Issue**: soorma-ai/soorma-core#34: https://github.com/soorma-ai/soorma-core/issues/34 (opened 2026-11-18T07:25:27Z; routing A, the user, 2026-11-18T07:24:45Z)
-**Resolved by**: —
+**Resolved by**: soorma-core contract @ `contract-v0.1.0+core.2` (peels to `0405e2a96a9389cab45e67312de903fd42f5d01e`), `conventions/credentials.md` *Revocation and Lifetimes*; `renewAgentCredential`'s description
 
 ### What the build needs
 
@@ -65,4 +65,22 @@ bootstrapping around a possible revocation). The cost, if option 2 or 3 turns ou
 platform's behaviour, is a rare false stop after a lost renewal response, which tenant code
 sees as a terminal `ClientStateError` and a terminal *stream ended*.
 
-**Status**: Open: raised against soorma-core's wire contract (soorma-ai/soorma-core#34); worked around (a `credential_refused` answering a retried renewal is terminal; fail closed)
+**Status**: Resolved — contract amended (the user's choice, harness/contract-core2 CC2-Q1: the gap rule's status set names only PRDs, so this is the contract's analogue of *Resolved — PRD amended*). Was: Open, raised against soorma-core's wire contract (soorma-ai/soorma-core#34); worked around (a `credential_refused` answering a retried renewal is terminal; fail closed)
+
+### Resolution
+
+soorma-core answered with option 1 at `contract-v0.1.0+core.2`, wire contract 0.1.0 at soorma-core
+revision 2. `conventions/credentials.md`, *Revocation and Lifetimes*, and `renewAgentCredential`'s
+description now say: "A token issued before a renewal stays valid until its own expiresAt unless
+the credential or its agent is revoked, and renewing with it is accepted." 0.1.0 has behaved this
+way since `contract-v0.1.0`.
+
+- **What changes in the SDK**: nothing on the code path. The work-around becomes the contract's
+  rule: a retried renewal presenting the earlier token succeeds, so `credential_refused` on it is a
+  real refusal, terminal as REN-05 says. TH-REN-04, PH-REN-05, DEC-U1-10 and the keepers' comments
+  cite the rule instead of the gap
+- **Proved by**: each keeper's unit test of a renewal lost after sending, retried with the earlier
+  token and adopted (`typescript/src/keeper.test.ts`, `python/tests/test_keeper.py`); on the real
+  stack at the pin, `typescript/e2e/renewal-rule.test.ts` (renew, then renew again with the first
+  token: `200` with a later `expiresAt`)
+- **Recorded by**: `aidlc-docs/harness/contract-core2/` (soorma-ai/soorma-sdk#27)

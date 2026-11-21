@@ -2,7 +2,7 @@
 
 # The end-to-end stack
 
-Four commands bring up a fresh **soorma-core at `contract-v0.1.0`**, register the agents the
+Four commands bring up a fresh **soorma-core at `contract-v0.1.0+core.2`**, register the agents the
 end-to-end tests use, prove the stack works, and take it down. They are test infrastructure: no
 package imports `e2e/`, and the packaging guard keeps it out of every package. How to run them,
 and what they do to your machine, is in the [repository README](../README.md#the-end-to-end-stack).

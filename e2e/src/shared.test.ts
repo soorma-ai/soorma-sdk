@@ -66,8 +66,8 @@ describe('the stack values and the limits', () => {
   it('reads the tag and commit from contract.pin.json only', () => {
     expect(readPin(REPOSITORY_ROOT)).toEqual({
       repository: 'https://github.com/soorma-ai/soorma-core',
-      tag: 'contract-v0.1.0',
-      commit: 'c1e3d7f3a71eddb0a2bce8e7d27fd736181c667d',
+      tag: 'contract-v0.1.0+core.2',
+      commit: '0405e2a96a9389cab45e67312de903fd42f5d01e',
     });
   });
 });
