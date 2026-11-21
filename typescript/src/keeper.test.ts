@@ -3,7 +3,8 @@
 // The keeper with the transport's post mocked and fake timers (P-02, P-03, P-05,
 // P-08): bootstrap and the provider per attempt (SEC-01 as reworded; TC-TH-079),
 // REN-07's floor and warning (TC-TH-072, 075), CDI-06's renewal retry on a
-// skewed lineage (TC-TH-076), REN-03 to REN-06, revocation and GAP-CAC-001.
+// skewed lineage (TC-TH-076), REN-03 to REN-06, revocation, and the contract's
+// renewal rule on a retried renewal (TH-REN-04; contract-v0.1.0+core.2).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClientStateError, ProblemError } from './errors.ts';
 import { LIMITS, type Limits } from './limits.ts';
@@ -257,7 +258,7 @@ describe('renewal (REN-01 to REN-07; P-03)', () => {
     await k.stop();
   });
 
-  it('credential_refused is terminal, also on a retried renewal (REN-05; GAP-CAC-001)', async () => {
+  it('credential_refused is terminal, also on a retried renewal (REN-05; TH-REN-04)', async () => {
     replies = [() => cred('soorma_ac_one', now() + 15 * MIN)];
     const k = keeper();
     let revoked = '';
@@ -270,5 +271,37 @@ describe('renewal (REN-01 to REN-07; P-03)', () => {
     expect(e).toBeInstanceOf(ClientStateError);
     expect((e as ClientStateError).problem?.code).toBe('credential_refused');
     expect(providerCalls).toBe(1);
+  });
+
+  it('a renewal whose response is lost after sending is retried with the earlier token and adopted (TH-REN-04; contract-v0.1.0+core.2)', async () => {
+    const { TransportFailure } = await import('./transport.ts');
+    const first = now() + 15 * MIN;
+    replies = [() => cred('soorma_ac_one', first)];
+    const k = keeper();
+    const events: string[] = [];
+    k.onCredential({
+      credential: (newLineage) => events.push(newLineage ? 'lineage' : 'renewed'),
+      revoked: (p) => events.push(`revoked:${p.code ?? ''}`),
+    });
+    await k.bootstrap();
+    // The platform renewed, but the answer was lost after the request was written (PRB-09).
+    // The earlier token stays valid until its own expiresAt and renewing with it is accepted.
+    replies = [
+      () => {
+        throw new TransportFailure('connection', true);
+      },
+      () => cred('soorma_ac_three', first + 15 * MIN),
+    ];
+    await vi.advanceTimersByTimeAsync(13 * MIN + LIMITS.B_cap);
+    expect(calls.map((c) => [c.path, c.auth])).toEqual([
+      ['/agent-credentials', undefined],
+      ['/agent-credentials/current/renewal', 'Bearer soorma_ac_one'],
+      ['/agent-credentials/current/renewal', 'Bearer soorma_ac_one'],
+    ]);
+    expect(events).toEqual(['lineage', 'renewed']);
+    expect(k.isUsable()).toBe(true);
+    expect(await k.token()).toBe('soorma_ac_three');
+    expect(providerCalls).toBe(1);
+    await k.stop();
   });
 });

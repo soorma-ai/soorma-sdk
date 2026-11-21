@@ -264,7 +264,9 @@ class KeeperCore:
             if self._stopped:
                 return
             if e.code == "credential_refused":
-                # REN-05; also on a retried renewal (GAP-CAC-001, soorma-ai/soorma-core#34).
+                # REN-05: terminal, also on a retried renewal. The earlier token stays valid
+                # until its own expiresAt and renewing with it is accepted (contract-v0.1.0+core.2,
+                # conventions/credentials.md, Revocation and Lifetimes): a refusal is a revocation.
                 self.revoke(e)
             elif e.code == "credential_expired":
                 # REN-04: bootstrap again (one provider call per attempt).

@@ -298,6 +298,34 @@ async def test_a_refused_renewal_is_terminal(monkeypatch: pytest.MonkeyPatch) ->
 
 
 @pytest.mark.asyncio
+async def test_a_renewal_lost_after_sending_is_retried_with_the_earlier_token_and_adopted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # PH-REN-05; contract-v0.1.0+core.2, conventions/credentials.md, Revocation and Lifetimes:
+    # a token issued before a renewal stays valid until its own expiresAt, and renewing with it
+    # is accepted. The first renewal's answer is lost after the request was written (PRB-09).
+    s3 = S3(
+        {
+            BOOT: [cred("A", 5)],
+            RENEW: [TransportError("connection", sent=True), cred("B", 10)],
+        }
+    )
+    k, listener = keeper(s3, monkeypatch, limits=replace(LIMITS_FAST, H_renew=4_900))
+    await k.bootstrap()
+    await s3.wait_for(RENEW, 2)
+    await listener.until(lambda ev: ("credential", False) in ev)
+    assert [(path, headers["Authorization"]) for path, headers, _ in s3.calls[1:]] == [
+        (RENEW, "Bearer A"),
+        (RENEW, "Bearer A"),
+    ]
+    assert listener.events == [("credential", True), ("credential", False)]
+    assert k.is_usable()
+    assert await k.token() == "B"
+    assert s3.count(BOOT) == 1
+    await k.stop()
+
+
+@pytest.mark.asyncio
 async def test_a_renewal_without_a_later_expiry_starts_a_new_lineage(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
