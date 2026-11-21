@@ -188,3 +188,16 @@ I merge."
 **Context**: GAP-CAC-001
 
 ---
+
+## Merge recorded; initiative complete
+**Timestamp**: 2026-11-21T00:54:11Z
+**User Input**: "#28 is merged as 3f09adf (2026-11-21T00:50:32Z).
+
+1. Fast-forward dev to main and push.
+2. Record the merge in aidlc-docs/harness/contract-core2/ (aidlc-state.md and an audit.md entry, with a real timestamp) and mark the initiative complete. Commit with -s and the Co-Authored-By line, and push to dev. This rides with the next soorma-sdk PR; don't open one now.
+3. Comment on #27: done in #28, merged as 3f09adf. The pin is at contract-v0.1.0+core.2, OBL-05 is discharged (cite the 3.15.2 e2e run), and GAP-CAC-001 is Resolved — contract amended. Grep the comment for closing keywords, post it, then run gh issue close 27.
+Then STOP."
+**AI Response**: "Checked on GitHub: #28 MERGED as 3f09adfac51cf0649066c2918fa3af6215cdc1f9 at 2026-11-21T00:50:32Z. dev fast-forwarded to 3f09adf (git merge --ff-only origin/main) and pushed. aidlc-state.md: the stage COMPLETE, the final head's runs (CI pull_request 44844931427, DCO 44844931504, CI push 44844925789), the merge, and an Initiative Complete section. Then: this record committed and pushed to dev (no PR); a comment on #27 citing #28, 3f09adf, the pin, OBL-05's 3.15.2 end-to-end run (44844441207, job 136660621071) and GAP-CAC-001's status, grepped for closing keywords before posting; #27 closed with gh issue close."
+**Context**: Initiative complete
+
+---
